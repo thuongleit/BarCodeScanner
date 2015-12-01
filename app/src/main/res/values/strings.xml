@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">BarScanner</string>
+    <string name="action_settings">Settings</string>
+    <string name="text.action_search">Search</string>
+
+    <integer name="viewfinder_border_width">4</integer>
+    <integer name="viewfinder_border_length">60</integer>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+</resources>
