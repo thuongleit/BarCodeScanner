@@ -23,10 +23,6 @@
                 android:id="@+id/nav_account"
                 android:icon="@drawable/ic_menu_account"
                 android:title="Account" />
-            <item
-                android:id="@+id/nav_manage"
-                android:icon="@drawable/ic_menu_manage"
-                android:title="Settings" />
         </menu>
     </item>
 

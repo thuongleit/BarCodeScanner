@@ -3,6 +3,7 @@
     package="com.example.barscanner">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature android:name="android.hardware.camera" />
@@ -15,6 +16,14 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.parse.APPLICATION_ID"
+            android:value="n54lBhnIqnMHF6D3COwMm4IKKorqpSeGZz6bzhns" />
+        <meta-data
+            android:name="com.parse.CLIENT_KEY"
+            android:value="u4J7MU3cy2R0NRjLPpIYOaYXV8VIgFAiSqMKfZiX" />
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -40,6 +49,24 @@
         </activity>
         <activity
             android:name=".BarViewActivity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".LoginActivity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".RegisterActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

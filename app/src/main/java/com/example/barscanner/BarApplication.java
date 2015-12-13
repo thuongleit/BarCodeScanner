@@ -3,6 +3,7 @@ package com.example.barscanner;
 import android.app.Application;
 
 import com.example.barscanner.utils.Log;
+import com.parse.Parse;
 
 /**
  * Created by thuongle on 11/24/15.
@@ -17,5 +18,8 @@ public class BarApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Log.init(BuildConfig.DEBUG);
+
+        Parse.enableLocalDatastore(this);
+        Parse.initialize(this);
     }
 }

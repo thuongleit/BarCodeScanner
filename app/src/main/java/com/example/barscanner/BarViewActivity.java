@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.barscanner.model.BarCode;
+import com.parse.ParseObject;
+import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
@@ -69,6 +71,21 @@ public class BarViewActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_add: {
                 Intent intent = getIntent();
+
+                if (ParseUser.getCurrentUser() != null) {
+                    //put data to server
+                    ParseObject product = new ParseObject("Products");
+                    product.put("image", barCode.image);
+                    product.put("upcA", barCode.upcA);
+                    product.put("ean", barCode.ean);
+                    product.put("country", barCode.country);
+                    product.put("manufacture", barCode.manufacture);
+                    product.put("model", barCode.model);
+//                    product.put("quantity", barCode.quantity);
+                    product.put("userId", ParseUser.getCurrentUser().getObjectId());
+                    product.saveInBackground();
+                }
+
                 intent.putExtra("data", Parcels.wrap(barCode));
                 setResult(RESULT_OK, intent);
                 this.finish();

@@ -21,11 +21,18 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.barscanner.adapter.BarViewRecyclerAdapter;
 import com.example.barscanner.database.SQLHelper;
 import com.example.barscanner.model.BarCode;
 import com.example.barscanner.net.GetBarCodeAsyncTask;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import org.parceler.Parcels;
 
@@ -60,14 +67,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
 
-        try {
-            sqlHelper = new SQLHelper(this);
-            barCodes = sqlHelper.getBarCodeDao().queryForAll();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
         setupReCyclerView();
         setupNavigationView();
+
+        //try restore login session
+        tryRestoreLoginSession();
+    }
+
+    private void tryRestoreLoginSession() {
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        MenuItem accountMenu = mNavigationView.getMenu().findItem(R.id.nav_account);
+        if (currentUser == null) {
+            accountMenu.setTitle("Login");
+        } else {
+            accountMenu.setTitle("Logout");
+            //username textview
+            TextView usernameView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_username);
+            usernameView.setText(currentUser.getUsername());
+
+            TextView emailView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_email);
+            emailView.setText(currentUser.getEmail());
+        }
     }
 
     private void setupNavigationView() {
@@ -86,8 +106,47 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setupReCyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerView.Adapter adapter = new BarViewRecyclerAdapter(this, barCodes);
-        mRecyclerView.setAdapter(adapter);
+        if (ParseUser.getCurrentUser() == null) {
+            try {
+                sqlHelper = new SQLHelper(this);
+                barCodes = sqlHelper.getBarCodeDao().queryForAll();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            RecyclerView.Adapter adapter = new BarViewRecyclerAdapter(MainActivity.this, barCodes);
+            mRecyclerView.setAdapter(adapter);
+
+        } else {
+
+            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Products").whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException e) {
+                    if (e == null && objects != null)
+                        for (ParseObject object : objects) {
+                            String image = object.getString("image");
+                            String upcA = object.getString("upcA");
+                            String ean = object.getString("ean");
+                            String country = object.getString("country");
+                            String manufacture = object.getString("manufacture");
+                            String model = object.getString("model");
+                            Number quantity = object.getNumber("quantity");
+
+                            BarCode barCode = new BarCode();
+                            barCode.image = image;
+                            barCode.upcA = upcA;
+                            barCode.ean = ean;
+                            barCode.country = country;
+                            barCode.manufacture = manufacture;
+                            barCode.model = model;
+
+                            barCodes.add(barCode);
+                        }
+                    RecyclerView.Adapter adapter = new BarViewRecyclerAdapter(MainActivity.this, barCodes);
+                    mRecyclerView.setAdapter(adapter);
+                }
+            });
+        }
     }
 
     @Override
@@ -151,11 +210,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Parcelable parcelableExtra = data.getParcelableExtra("data");
             BarCode barCode = Parcels.unwrap(parcelableExtra);
             barCodes.add(barCode);
-            try {
-                sqlHelper.getBarCodeDao().createIfNotExists(barCode);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
             mRecyclerView.getAdapter().notifyDataSetChanged();
         }
     }
@@ -185,6 +239,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.nav_account:
+                if (ParseUser.getCurrentUser() == null) {
+                    Intent i = new Intent(this, LoginActivity.class);
+                    startActivity(i);
+                    this.finish();
+                } else {
+                    Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show();
+                    ParseUser.logOutInBackground();
+                    this.finish();
+                    startActivity(getIntent());
+                }
+                break;
+        }
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
