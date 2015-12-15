@@ -1,21 +1,15 @@
 package com.example.barscanner;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -32,18 +26,11 @@ import butterknife.OnClick;
  */
 public class LoginActivity extends AppCompatActivity {
 
-    @Bind(R.id.username)
-    EditText mUsernameView;
-    @Bind(R.id.password)
-    EditText mPasswordView;
-    @Bind(R.id.login_progress)
-    View mProgressView;
-    @Bind(R.id.login_form)
-    View mLoginFormView;
-    @Bind(R.id.email_sign_in_button)
-    Button mEmailSignInButton;
-    @Bind(R.id.toolbar)
-    Toolbar mToolbar;
+    private static final int REQUEST_SIGNUP = 0;
+    @Bind(R.id.input_username)
+    EditText mInputEmail;
+    @Bind(R.id.input_password)
+    EditText mInputPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,26 +38,22 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         ButterKnife.bind(this);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mInputPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                if (id == R.id.btn_login || id == EditorInfo.IME_NULL) {
                     attemptLogin();
                     return true;
                 }
                 return false;
             }
         });
+    }
 
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
+    @OnClick(R.id.btn_login)
+    public void onButtonLoginClick() {
+        attemptLogin();
     }
 
 
@@ -81,27 +64,27 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void attemptLogin() {
         // Reset errors.
-        mUsernameView.setError(null);
-        mPasswordView.setError(null);
+        mInputEmail.setError(null);
+        mInputPassword.setError(null);
 
         // Store values at the time of the login attempt.
-        final String password = mPasswordView.getText().toString();
-        final String username = mUsernameView.getText().toString();
+        final String password = mInputPassword.getText().toString();
+        final String username = mInputEmail.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
         if (TextUtils.isEmpty(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
+            mInputPassword.setError(getString(R.string.error_invalid_password));
+            focusView = mInputPassword;
             cancel = true;
         }
 
         //check for a valid username
         if (TextUtils.isEmpty(username)) {
-            mUsernameView.setError(getString(R.string.error_invalid_username));
-            focusView = mUsernameView;
+            mInputEmail.setError(getString(R.string.error_invalid_username));
+            focusView = mInputEmail;
             cancel = true;
         }
 
@@ -145,48 +128,26 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
+    private void showProgress(boolean b) {
+        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Authenticating...");
+        progressDialog.show();
     }
 
-    @OnClick(R.id.link_to_register)
+    @OnClick(R.id.link_signup)
     public void onLinkToRegisterClick() {
-        showProgress(false);
-        Intent intent = new Intent(this, RegisterActivity.class);
-        startActivity(intent);
-        this.finish();
+        startActivityForResult(new Intent(this, SignUpActivity.class), REQUEST_SIGNUP);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_SIGNUP && resultCode == RESULT_OK) {
+            setResult(RESULT_OK, getIntent());
+            this.finish();
+        }
     }
 }
 

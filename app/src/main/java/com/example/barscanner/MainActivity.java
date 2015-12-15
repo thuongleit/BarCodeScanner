@@ -21,8 +21,6 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.barscanner.adapter.BarViewRecyclerAdapter;
 import com.example.barscanner.database.SQLHelper;
@@ -76,18 +74,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void tryRestoreLoginSession() {
         ParseUser currentUser = ParseUser.getCurrentUser();
-        MenuItem accountMenu = mNavigationView.getMenu().findItem(R.id.nav_account);
-        if (currentUser == null) {
-            accountMenu.setTitle("Login");
-        } else {
-            accountMenu.setTitle("Logout");
-            //username textview
-            TextView usernameView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_username);
-            usernameView.setText(currentUser.getUsername());
-
-            TextView emailView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_email);
-            emailView.setText(currentUser.getEmail());
-        }
+//        MenuItem accountMenu = mNavigationView.getMenu().findItem(R.id.nav_account);
+//        if (currentUser == null) {
+//            accountMenu.setTitle("Login");
+//        } else {
+//            accountMenu.setTitle("Logout");
+//            //username textview
+//            TextView usernameView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_username);
+//            usernameView.setText(currentUser.getUsername());
+//
+//            TextView emailView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_email);
+//            emailView.setText(currentUser.getEmail());
+//        }
     }
 
     private void setupNavigationView() {
@@ -241,18 +239,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.nav_account:
-                if (ParseUser.getCurrentUser() == null) {
-                    Intent i = new Intent(this, LoginActivity.class);
-                    startActivity(i);
-                    this.finish();
-                } else {
-                    Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show();
-                    ParseUser.logOutInBackground();
-                    this.finish();
-                    startActivity(getIntent());
-                }
-                break;
+//            case R.id.nav_account:
+//                if (ParseUser.getCurrentUser() == null) {
+//                    Intent i = new Intent(this, LoginActivity.class);
+//                    startActivity(i);
+//                    this.finish();
+//                } else {
+//                    Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show();
+//                    ParseUser.logOutInBackground();
+//                    this.finish();
+//                    startActivity(getIntent());
+//                }
+//                break;
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
