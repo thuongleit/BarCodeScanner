@@ -22,16 +22,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
-import com.whooo.barscanner.adapter.BarViewRecyclerAdapter;
-import com.whooo.barscanner.database.SQLHelper;
-import com.whooo.barscanner.model.BarCode;
-import com.whooo.barscanner.net.GetBarCodeAsyncTask;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.whooo.barscanner.adapter.BarViewRecyclerAdapter;
+import com.whooo.barscanner.database.SQLHelper;
+import com.whooo.barscanner.model.BarCode;
+import com.whooo.barscanner.net.GetBarCodeAsyncTask;
 
 import org.parceler.Parcels;
 
@@ -74,19 +76,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void tryRestoreLoginSession() {
-        ParseUser currentUser = ParseUser.getCurrentUser();
-//        MenuItem accountMenu = mNavigationView.getMenu().findItem(R.id.nav_account);
-//        if (currentUser == null) {
-//            accountMenu.setTitle("Login");
-//        } else {
-//            accountMenu.setTitle("Logout");
-//            //username textview
-//            TextView usernameView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_username);
-//            usernameView.setText(currentUser.getUsername());
-//
-//            TextView emailView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_email);
-//            emailView.setText(currentUser.getEmail());
-//        }
+        final ParseUser currentUser = ParseUser.getCurrentUser();
+        ImageButton imageLogin = (ImageButton) mNavigationView.getHeaderView(0).findViewById(R.id.image_button_login);
+        TextView textUsername = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_username);
+        TextView textEmail = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_email);
+        if (currentUser == null) {
+            imageLogin.setBackgroundResource(R.drawable.ic_login);
+            imageLogin.setContentDescription("Login");
+            textUsername.setText("Guest");
+            textEmail.setText("");
+        } else {
+            imageLogin.setBackgroundResource(R.drawable.ic_logout);
+            imageLogin.setContentDescription("Logout");
+            //username textview
+            textUsername.setText(currentUser.getUsername());
+            textEmail.setText(currentUser.getEmail());
+        }
+
+        imageLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentUser != null) {
+                    ParseUser.logOutInBackground();
+                }
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                MainActivity.this.finish();
+            }
+        });
     }
 
     private void setupNavigationView() {
