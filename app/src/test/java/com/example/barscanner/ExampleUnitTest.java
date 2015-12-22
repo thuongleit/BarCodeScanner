@@ -1,4 +1,4 @@
-package com.example.barscanner;
+package com.whooo.barscanner;
 
 import org.junit.Test;
 

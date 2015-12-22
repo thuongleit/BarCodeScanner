@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/fragment"
-        class="com.example.barscanner.fragments.CameraFragment"
+        class="com.whooo.barscanner.fragments.CameraFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
