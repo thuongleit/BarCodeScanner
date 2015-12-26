@@ -25,7 +25,7 @@
             android:value="u4J7MU3cy2R0NRjLPpIYOaYXV8VIgFAiSqMKfZiX" />
 
         <activity
-            android:name="com.whooo.barscanner.MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -35,29 +35,29 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name="com.whooo.barscanner.CameraActivity"
-            android:parentActivityName="com.whooo.barscanner.MainActivity">
+            android:name=".activities.CameraActivity"
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.whooo.barscanner.MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name="com.whooo.barscanner.BarViewActivity"
-            android:parentActivityName="com.whooo.barscanner.MainActivity">
+            android:name=".activities.BarViewActivity"
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.whooo.barscanner.MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
 
-        <activity android:name="com.whooo.barscanner.LoginActivity"
+        <activity android:name=".activities.LoginActivity"
             android:theme="@style/AppTheme.FullScreen"
             android:configChanges="keyboardHidden|orientation"/>
-        <activity android:name="com.whooo.barscanner.SignUpActivity"
+        <activity android:name=".activities.SignUpActivity"
             android:theme="@style/AppTheme.FullScreen"
             android:configChanges="keyboardHidden|orientation"/>
 
         <activity
-            android:name=".SplashActivity"
+            android:name=".activities.SplashActivity"
             android:theme="@style/AppTheme.SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

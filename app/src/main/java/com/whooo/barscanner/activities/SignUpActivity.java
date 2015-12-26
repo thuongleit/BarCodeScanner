@@ -1,4 +1,4 @@
-package com.whooo.barscanner;
+package com.whooo.barscanner.activities;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
+import com.whooo.barscanner.R;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

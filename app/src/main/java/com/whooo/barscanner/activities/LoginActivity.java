@@ -1,4 +1,4 @@
-package com.whooo.barscanner;
+package com.whooo.barscanner.activities;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.whooo.barscanner.R;
 import com.whooo.barscanner.utils.Log;
 
 import org.brickred.socialauth.Profile;

@@ -1,9 +1,10 @@
-package com.whooo.barscanner;
+package com.whooo.barscanner.activities;
 
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -23,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
@@ -30,10 +32,12 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.whooo.barscanner.R;
 import com.whooo.barscanner.adapter.BarViewRecyclerAdapter;
 import com.whooo.barscanner.database.SQLHelper;
 import com.whooo.barscanner.model.BarCode;
 import com.whooo.barscanner.net.GetBarCodeAsyncTask;
+import com.whooo.barscanner.utils.AppUtils;
 
 import org.parceler.Parcels;
 
@@ -77,20 +81,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void tryRestoreLoginSession() {
         final ParseUser currentUser = ParseUser.getCurrentUser();
+        View headerView = mNavigationView.getHeaderView(0);
+        headerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, AppUtils.getStatusBarHeight(this) + AppUtils.getToolbarHeight(this)));
         ImageButton imageLogin = (ImageButton) mNavigationView.getHeaderView(0).findViewById(R.id.image_button_login);
         TextView textUsername = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_username);
-        TextView textEmail = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_email);
+        textUsername.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/KaushanScript-Regular.ttf"));
         if (currentUser == null) {
             imageLogin.setBackgroundResource(R.drawable.ic_login);
             imageLogin.setContentDescription("Login");
-            textUsername.setText("Guest");
-            textEmail.setText("");
+            textUsername.setText("guest");
         } else {
             imageLogin.setBackgroundResource(R.drawable.ic_logout);
             imageLogin.setContentDescription("Logout");
             //username textview
             textUsername.setText(currentUser.getUsername());
-            textEmail.setText(currentUser.getEmail());
         }
 
         imageLogin.setOnClickListener(new View.OnClickListener() {

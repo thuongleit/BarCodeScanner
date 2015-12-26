@@ -1,4 +1,4 @@
-package com.whooo.barscanner;
+package com.whooo.barscanner.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.whooo.barscanner.R;
 import com.whooo.barscanner.model.BarCode;
 import com.parse.ParseObject;
 import com.parse.ParseUser;

@@ -1,8 +1,10 @@
-package com.whooo.barscanner;
+package com.whooo.barscanner.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+
+import com.whooo.barscanner.R;
 
 public class CameraActivity extends AppCompatActivity {
 
