@@ -1,5 +1,7 @@
 package com.whooo.barscanner.utils;
 
+import com.whooo.barscanner.Constant;
+
 /**
  * This is a Log tool，with this you can the following
  * <ol>

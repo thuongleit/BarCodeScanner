@@ -3,6 +3,8 @@ package com.whooo.barscanner.utils;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.whooo.barscanner.Constant;
+
 /**
  * Created by zhaokaiqiang on 15/11/18.
  */

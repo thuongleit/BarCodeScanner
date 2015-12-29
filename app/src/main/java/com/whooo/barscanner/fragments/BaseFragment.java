@@ -5,15 +5,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.whooo.barscanner.activities.BaseActivity;
+import com.whooo.barscanner.injectors.components.ApplicationComponent;
+import com.whooo.barscanner.utils.Log;
+
 import butterknife.ButterKnife;
 
+/**
+ * Created by thuongle on 10/18/15.
+ */
 public abstract class BaseFragment extends Fragment {
 
     @Nullable
@@ -23,30 +28,40 @@ public abstract class BaseFragment extends Fragment {
 
         ButterKnife.bind(this, rootView);
 
-        setUpVariables();
-        initViews();
+        initializeInjectors();
+        initializeVariables();
+        setupViews();
 
         return rootView;
     }
 
-    protected abstract void setUpVariables();
-
-    protected abstract void initViews();
+    protected ApplicationComponent getApplicationComponent() {
+        return ((BaseActivity) getActivity()).getApplicationComponent();
+    }
 
     protected abstract int getLayoutId();
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (getFragmentManager().getBackStackEntryCount() > 0) {
-                    getFragmentManager().popBackStack();
-                } else {
-                    NavUtils.navigateUpFromSameTask(getActivity());
-                }
-                break;
+    protected void initializeInjectors() {}
+
+    protected void initializeVariables() {}
+
+    protected void setupViews() {}
+
+    public static BaseFragment create(Class<? extends BaseFragment> clazz) {
+        return BaseFragment.create(clazz, null);
+    }
+
+    public static BaseFragment create(Class<? extends BaseFragment> clazz, Bundle args) {
+        try {
+            BaseFragment fragment = clazz.newInstance();
+            if (args != null) {
+                fragment.setArguments(args);
+            }
+            return fragment;
+        } catch (Exception e) {
+            Log.e("Cannot create new fragment " + e.getMessage());
         }
-        return true;
+        return null;
     }
 
     protected void showErrorDialog(String message, boolean isReload) {

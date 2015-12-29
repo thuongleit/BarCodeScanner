@@ -2,8 +2,11 @@ package com.whooo.barscanner;
 
 import android.app.Application;
 
-import com.whooo.barscanner.utils.Log;
 import com.parse.Parse;
+import com.whooo.barscanner.injectors.components.ApplicationComponent;
+import com.whooo.barscanner.injectors.components.DaggerApplicationComponent;
+import com.whooo.barscanner.injectors.modules.ApplicationModule;
+import com.whooo.barscanner.utils.Log;
 
 /**
  * Created by thuongle on 11/24/15.
@@ -14,6 +17,8 @@ public class BarApplication extends Application {
         System.loadLibrary("iconv");
     }
 
+    private ApplicationComponent mApplicationModule;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -21,5 +26,13 @@ public class BarApplication extends Application {
 
         Parse.enableLocalDatastore(this);
         Parse.initialize(this);
+    }
+
+    private void initializeInjectors() {
+        mApplicationModule = DaggerApplicationComponent.builder().applicationModule(new ApplicationModule(this)).build();
+    }
+
+    public ApplicationComponent getApplicationComponent() {
+        return mApplicationModule;
     }
 }

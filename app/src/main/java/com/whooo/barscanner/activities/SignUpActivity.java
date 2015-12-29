@@ -3,9 +3,7 @@ package com.whooo.barscanner.activities;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,9 +17,9 @@ import com.parse.SignUpCallback;
 import com.whooo.barscanner.R;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class SignUpActivity extends AppCompatActivity {
+public class SignUpActivity extends NoToolbarActivity {
 
     @Bind(R.id.input_username)
     EditText mInputUsername;
@@ -34,16 +32,16 @@ public class SignUpActivity extends AppCompatActivity {
     private ProgressDialog mProgressDialog;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signup);
+    protected int getLayoutId() {
+        return R.layout.activity_signup;
+    }
 
-        ButterKnife.bind(this);
-
+    @Override
+    protected void setupViews() {
         mInputConfirmPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.btn_signup || id == EditorInfo.IME_NULL) {
+                if (id == R.id.button_sign_up || id == EditorInfo.IME_NULL) {
                     attemptSignUp();
                     return true;
                 }
@@ -52,12 +50,14 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    public void onButtonCreateAccountClick(View view) {
+    @OnClick(R.id.button_sign_up)
+    public void signUp(View view) {
         attemptSignUp();
     }
 
 
-    public void onButtonSignInClick(View view) {
+    @OnClick(R.id.button_sign_in)
+    public void backToSignIn(View view) {
         setResult(RESULT_CANCELED);
         this.finish();
     }
@@ -68,7 +68,6 @@ public class SignUpActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptSignUp() {
-        showProgress();
         // Reset errors.
         mInputUsername.setError(null);
         mInputUsername.setError(null);
@@ -122,6 +121,7 @@ public class SignUpActivity extends AppCompatActivity {
             // form field with an error.
             focusView.requestFocus();
         } else {
+            showProgress();
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             ParseUser parseUser = new ParseUser();
@@ -169,6 +169,7 @@ public class SignUpActivity extends AppCompatActivity {
     private boolean isPasswordMatch(String password, String confirmPassword) {
         return password.equalsIgnoreCase(confirmPassword);
     }
+
     private void showProgress() {
         mProgressDialog = new ProgressDialog(this, R.style.AppTheme_Dialog);
         mProgressDialog.setIndeterminate(true);

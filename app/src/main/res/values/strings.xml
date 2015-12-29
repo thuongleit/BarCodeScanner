@@ -25,4 +25,5 @@
     <string name="help_and_feedback">Help and Feedback</string>
     <string name="login"><b>Login</b></string>
     <string name="signup_text_link">Don\'t have an account yet? Sign up</string>
+    <string name="login_as_guest"><![CDATA[<u>login as guest</u>]]></string>
 </resources>

@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,14 +25,14 @@ import org.brickred.socialauth.android.SocialAuthError;
 import org.brickred.socialauth.android.SocialAuthListener;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends NoToolbarActivity {
 
-    private static final int REQUEST_SIGNUP = 0;
+    private static final int REQUEST_SIGN_UP = 0;
     @Bind(R.id.input_username)
     EditText mInputUsername;
     @Bind(R.id.input_password)
@@ -42,17 +41,17 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressDialog mProgressDialog;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+    protected int getLayoutId() {
+        return R.layout.activity_login;
+    }
 
-        ButterKnife.bind(this);
-
+    @Override
+    protected void setupViews() {
         mInputPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.btn_login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                if (id == R.id.button_sign_in || id == EditorInfo.IME_NULL) {
+                    attemptSignIn();
                     return true;
                 }
                 return false;
@@ -92,8 +91,9 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public void onButtonLoginClick(View view) {
-        attemptLogin();
+    @OnClick(R.id.button_sign_in)
+    public void signIn(View view) {
+        attemptSignIn();
     }
 
     /**
@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin() {
+    private void attemptSignIn() {
         // Reset errors.
         mInputUsername.setError(null);
         mInputPassword.setError(null);
@@ -134,7 +134,6 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress();
 
             if (!TextUtils.isEmpty(password)) {
                 //try log-in first
@@ -185,26 +184,30 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_SIGNUP && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_SIGN_UP && resultCode == RESULT_OK) {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             this.finish();
         }
     }
 
-    public void onButtonLoginFBClick(View view) {
+    @OnClick(R.id.button_facebook_login)
+    public void loginFacebook(View view) {
         mSocialAuthAdapter.authorize(this, SocialAuthAdapter.Provider.FACEBOOK);
     }
 
-    public void onButtonLoginGplusClick(View view) {
+    @OnClick(R.id.button_google_login)
+    public void loginGooglePlus(View view) {
         mSocialAuthAdapter.authorize(this, SocialAuthAdapter.Provider.GOOGLEPLUS);
     }
 
+    @OnClick(R.id.button_sign_up)
     public void onButtonSignUpClick(View view) {
-        startActivityForResult(new Intent(this, SignUpActivity.class), REQUEST_SIGNUP);
+        startActivityForResult(new Intent(this, SignUpActivity.class), REQUEST_SIGN_UP);
     }
 
-    public void onLinkAsGuestClick(View view) {
+    @OnClick(R.id.text_link_sign_up)
+    public void linkToSignUp(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         this.finish();

@@ -1,4 +1,4 @@
-package com.whooo.barscanner.utils;
+package com.whooo.barscanner;
 
 public interface Constant {
 
@@ -11,4 +11,7 @@ public interface Constant {
     int W = 0x4;
     int E = 0x5;
     int A = 0x6;
+    String PREFERENCE_KEY = "AST_PREFS";
+    String KEY_PERFERENCE_USER = "username";
+    String KEY_PREFERENCE_IS_FIRST_RUN = "isfirstrun";;
 }

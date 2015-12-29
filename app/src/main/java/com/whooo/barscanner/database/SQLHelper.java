@@ -17,7 +17,7 @@ import java.sql.SQLException;
 public class SQLHelper extends OrmLiteSqliteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "database";
+    private static final String DATABASE_NAME = "barscanner";
 
     public SQLHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

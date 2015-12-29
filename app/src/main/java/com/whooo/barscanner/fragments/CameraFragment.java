@@ -57,12 +57,12 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
     }
 
     @Override
-    protected void setUpVariables() {
+    protected void initializeVariables() {
         mAutoFocusHandler = new Handler();
     }
 
     @Override
-    protected void initViews() {
+    protected void setupViews() {
         // Create and configure the ImageScanner;
         setupScanner();
         setHasOptionsMenu(true);
