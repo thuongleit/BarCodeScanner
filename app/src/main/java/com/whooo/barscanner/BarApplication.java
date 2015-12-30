@@ -26,6 +26,8 @@ public class BarApplication extends Application {
 
         Parse.enableLocalDatastore(this);
         Parse.initialize(this);
+
+        initializeInjectors();
     }
 
     private void initializeInjectors() {

@@ -1,10 +1,13 @@
 package com.whooo.barscanner.activities;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.whooo.barscanner.BarApplication;
 import com.whooo.barscanner.injectors.components.ApplicationComponent;
+import com.whooo.barscanner.injectors.modules.ActivityModule;
 
 import butterknife.ButterKnife;
 
@@ -36,7 +39,23 @@ public abstract class NoToolbarActivity extends AppCompatActivity {
     protected void setupViews() {
     }
 
+    public void startNewActivity(Class<? extends Activity> clazz) {
+        startNewActivity(clazz, null);
+    }
+
+    private void startNewActivity(Class<? extends Activity> clazz, Bundle arg) {
+        Intent intent = new Intent(this, clazz);
+        if (arg != null) {
+            intent.putExtras(arg);
+        }
+        startActivity(intent);
+    }
+
     public ApplicationComponent getApplicationComponent() {
         return ((BarApplication) getApplication()).getApplicationComponent();
+    }
+
+    public ActivityModule getActivityModule() {
+        return new ActivityModule(this);
     }
 }

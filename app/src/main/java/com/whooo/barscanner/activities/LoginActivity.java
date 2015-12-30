@@ -12,10 +12,12 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.parse.LogInCallback;
-import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.whooo.barscanner.R;
+import com.whooo.barscanner.injectors.components.DaggerLoginComponent;
+import com.whooo.barscanner.injectors.modules.LoginModule;
+import com.whooo.barscanner.mvp.presenters.LoginPresenter;
+import com.whooo.barscanner.mvp.views.LoginView;
 import com.whooo.barscanner.utils.Log;
 
 import org.brickred.socialauth.Profile;
@@ -24,13 +26,15 @@ import org.brickred.socialauth.android.SocialAuthAdapter;
 import org.brickred.socialauth.android.SocialAuthError;
 import org.brickred.socialauth.android.SocialAuthListener;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.OnClick;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends NoToolbarActivity {
+public class LoginActivity extends NoToolbarActivity implements LoginView {
 
     private static final int REQUEST_SIGN_UP = 0;
     @Bind(R.id.input_username)
@@ -40,13 +44,28 @@ public class LoginActivity extends NoToolbarActivity {
     private SocialAuthAdapter mSocialAuthAdapter;
     private ProgressDialog mProgressDialog;
 
+    @Inject
+    LoginPresenter mLoginPresenter;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_login;
     }
 
     @Override
+    protected void initializeInjectors() {
+        DaggerLoginComponent.builder()
+                .applicationComponent(getApplicationComponent())
+                .activityModule(getActivityModule())
+                .loginModule(new LoginModule())
+                .build()
+                .inject(this);
+    }
+
+    @Override
     protected void setupViews() {
+        mLoginPresenter.attach(this);
+
         mInputPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -64,12 +83,13 @@ public class LoginActivity extends NoToolbarActivity {
                 mSocialAuthAdapter.getUserProfileAsync(new SocialAuthListener<Profile>() {
                     @Override
                     public void onExecute(String s, Profile profile) {
-
+                        String token = mSocialAuthAdapter.getCurrentProvider().getAccessGrant().getKey();
+                        mLoginPresenter.loginWithSocial(profile, token);
                     }
 
                     @Override
                     public void onError(SocialAuthError socialAuthError) {
-                        Log.e(socialAuthError.getMessage());
+                        onError(socialAuthError);
                     }
                 });
             }
@@ -136,48 +156,8 @@ public class LoginActivity extends NoToolbarActivity {
             // perform the user login attempt.
 
             if (!TextUtils.isEmpty(password)) {
-                //try log-in first
-                ParseUser.logInInBackground(username, password, new LogInCallback() {
-                    @Override
-                    public void done(ParseUser user, ParseException e) {
-                        showProgress();
-                        if (e == null) {
-                            //the user is logged in
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            hideProgress();
-                            LoginActivity.this.finish();
-                        } else {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                            builder.setTitle("Login Error");
-                            builder.setMessage("Cannot log in " + e.getMessage());
-                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    hideProgress();
-                                    dialog.dismiss();
-                                }
-                            });
-                            builder.setCancelable(true);
-                            builder.create().show();
-                        }
-                    }
-                });
-
+                mLoginPresenter.login(username, password);
             }
-        }
-    }
-
-    private void showProgress() {
-        mProgressDialog = new ProgressDialog(this, R.style.AppTheme_Dialog);
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setMessage("Authenticating...");
-        mProgressDialog.show();
-    }
-
-    private void hideProgress() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
         }
     }
 
@@ -185,9 +165,7 @@ public class LoginActivity extends NoToolbarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_SIGN_UP && resultCode == RESULT_OK) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            this.finish();
+            onLoginSuccess(null);
         }
     }
 
@@ -208,9 +186,45 @@ public class LoginActivity extends NoToolbarActivity {
 
     @OnClick(R.id.text_link_sign_up)
     public void linkToSignUp(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        this.finish();
+        startNewActivity(MainActivity.class);
+        finish();
+    }
+
+    @Override
+    public void showProgress() {
+        mProgressDialog = new ProgressDialog(this, R.style.AppTheme_Dialog);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setMessage("Authenticating...");
+        mProgressDialog.show();
+    }
+
+    @Override
+    public void hideProgress() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void onError(Exception e) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+        builder.setTitle("Login Error");
+        builder.setMessage("Cannot log in " + e.getMessage());
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setCancelable(true);
+        builder.create().show();
+    }
+
+    @Override
+    public void onLoginSuccess(ParseUser user) {
+        //the user is logged in
+        startNewActivity(MainActivity.class);
+        finish();
     }
 }
 

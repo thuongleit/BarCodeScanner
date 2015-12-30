@@ -11,7 +11,7 @@ import rx.subscriptions.Subscriptions;
 /**
  * Created by thuongle on 12/23/15.
  */
-public abstract class UseCase<T> {
+public abstract class UseCase<T>{
 
     private ObserverOn mObserverOn;
     private SubscribeOn mSubscribeOn;

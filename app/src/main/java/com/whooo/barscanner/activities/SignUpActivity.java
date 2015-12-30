@@ -2,7 +2,6 @@ package com.whooo.barscanner.activities;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -11,15 +10,18 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.parse.ParseException;
-import com.parse.ParseUser;
-import com.parse.SignUpCallback;
 import com.whooo.barscanner.R;
+import com.whooo.barscanner.injectors.components.DaggerLoginComponent;
+import com.whooo.barscanner.injectors.modules.LoginModule;
+import com.whooo.barscanner.mvp.presenters.SignUpPresenter;
+import com.whooo.barscanner.mvp.views.SignUpView;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.OnClick;
 
-public class SignUpActivity extends NoToolbarActivity {
+public class SignUpActivity extends NoToolbarActivity implements SignUpView {
 
     @Bind(R.id.input_username)
     EditText mInputUsername;
@@ -31,13 +33,28 @@ public class SignUpActivity extends NoToolbarActivity {
     EditText mInputConfirmPassword;
     private ProgressDialog mProgressDialog;
 
+    @Inject
+    SignUpPresenter mSignUpPresenter;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_signup;
     }
 
     @Override
+    protected void initializeInjectors() {
+        DaggerLoginComponent.builder()
+                .applicationComponent(getApplicationComponent())
+                .activityModule(getActivityModule())
+                .loginModule(new LoginModule())
+                .build()
+                .inject(this);
+    }
+
+    @Override
     protected void setupViews() {
+        mSignUpPresenter.attach(this);
+
         mInputConfirmPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -121,40 +138,7 @@ public class SignUpActivity extends NoToolbarActivity {
             // form field with an error.
             focusView.requestFocus();
         } else {
-            showProgress();
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            ParseUser parseUser = new ParseUser();
-            parseUser.setUsername(username);
-            parseUser.setEmail(email);
-            parseUser.setPassword(password);
-
-            parseUser.signUpInBackground(new SignUpCallback() {
-                                             @Override
-                                             public void done(ParseException e) {
-                                                 hideProgress();
-                                                 if (e == null) {
-                                                     //the user is logged in
-                                                     Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
-                                                     startActivity(intent);
-                                                 } else {
-                                                     AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
-                                                     builder.setTitle("Register Error");
-                                                     builder.setMessage("Cannot sign up " + e.getMessage());
-                                                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                                         @Override
-                                                         public void onClick(DialogInterface dialog, int which) {
-                                                             dialog.dismiss();
-                                                         }
-                                                     });
-                                                     builder.setCancelable(true);
-                                                     builder.create().show();
-                                                 }
-                                             }
-                                         }
-
-            );
-
+            mSignUpPresenter.signUp(username, email, password);
         }
     }
 
@@ -170,16 +154,39 @@ public class SignUpActivity extends NoToolbarActivity {
         return password.equalsIgnoreCase(confirmPassword);
     }
 
-    private void showProgress() {
+    @Override
+    public void showProgress() {
         mProgressDialog = new ProgressDialog(this, R.style.AppTheme_Dialog);
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setMessage("Creating account...");
         mProgressDialog.show();
     }
 
-    private void hideProgress() {
+    @Override
+    public void hideProgress() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
+    }
+
+    @Override
+    public void onError(Exception e) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+        builder.setTitle("Register Error");
+        builder.setMessage("Cannot sign up " + e.getMessage());
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setCancelable(true);
+        builder.create().show();
+    }
+
+    @Override
+    public void onSignUpSuccess() {
+        setResult(RESULT_OK);
+        finish();
     }
 }
