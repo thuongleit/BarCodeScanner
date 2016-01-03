@@ -13,5 +13,7 @@ public interface Constant {
     int A = 0x6;
     String PREFERENCE_KEY = "AST_PREFS";
     String KEY_PERFERENCE_USER = "username";
-    String KEY_PREFERENCE_IS_FIRST_RUN = "isfirstrun";;
+    String KEY_PREFERENCE_IS_FIRST_RUN = "isfirstrun";
+
+    String PARSE_PRODUCTS = "Products";
 }

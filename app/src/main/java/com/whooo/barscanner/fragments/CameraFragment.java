@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -16,9 +15,16 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.parse.ParseObject;
+import com.parse.ParseUser;
+import com.whooo.barscanner.Constant;
 import com.whooo.barscanner.R;
+import com.whooo.barscanner.database.SQLHelper;
+import com.whooo.barscanner.injectors.components.DaggerJobsComponent;
+import com.whooo.barscanner.injectors.modules.JobsModule;
 import com.whooo.barscanner.model.BarCode;
-import com.whooo.barscanner.net.GetBarCodeAsyncTask;
+import com.whooo.barscanner.mvp.presenters.ScanQrCodePresenter;
+import com.whooo.barscanner.mvp.views.ScanQrCodeView;
 import com.whooo.barscanner.utils.AppUtils;
 import com.whooo.barscanner.utils.Log;
 import com.whooo.barscanner.widget.CameraPreview;
@@ -32,28 +38,46 @@ import net.sourceforge.zbar.SymbolSet;
 
 import org.parceler.Parcels;
 
+import java.sql.SQLException;
+
+import javax.inject.Inject;
+
 import butterknife.Bind;
 
-public class CameraFragment extends BaseFragment implements Camera.PreviewCallback {
+public class CameraFragment extends BaseFragment implements Camera.PreviewCallback, ScanQrCodeView {
 
     @Bind(R.id.cameraPreview)
     FrameLayout mCameraPreview;
 
+    @Inject
+    ScanQrCodePresenter mScanQrCodePresenter;
+
+    @Inject
+    SQLHelper mSqlHelper;
 
     private CameraPreview mPreview;
     private Camera mCamera;
     private ImageScanner mScanner;
     private Handler mAutoFocusHandler;
-    private boolean mPreviewing = true;
 
+    private boolean mPreviewing = true;
     private CustomProgressDialog mProgressDialog;
     private boolean mFlash = false;
     private String qrCode;
 
-
     @Override
     protected int getLayoutId() {
         return R.layout.fragment_qrscan_camera;
+    }
+
+    @Override
+    protected void initializeInjectors() {
+        DaggerJobsComponent.builder()
+                .applicationComponent(getApplicationComponent())
+                .activityModule(getActivityModule())
+                .jobsModule(new JobsModule())
+                .build()
+                .inject(this);
     }
 
     @Override
@@ -73,6 +97,7 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
             cancelRequest();
             return;
         }
+        mScanQrCodePresenter.attach(this);
     }
 
     private void setupScanner() {
@@ -170,7 +195,7 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
                         String scanResult = sym.getData().trim();
 
                         //Use Below function to make a server call and complete request.
-                        executeQRCode(scanResult);
+                        mScanQrCodePresenter.executeQrCode(scanResult);
                         break;
                     }
                 }
@@ -179,35 +204,6 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
             Log.e("Failed in getting qr code from server" + e.getMessage());
             showErrorDialog("Cannot check this QR Code from server. Please try again", true);
         }
-    }
-
-    void executeQRCode(String qrcode) {
-        showProgress();
-        this.qrCode = qrcode;
-        new GetBarCodeAsyncTask(new GetBarCodeAsyncTask.OnUpdateUICallback() {
-            @Override
-            public void onUpdateUI(BarCode barCode) {
-                hideProgress();
-                if (barCode != null) {
-                    FragmentActivity activity = CameraFragment.this.getActivity();
-                    Intent intent = activity.getIntent();
-                    intent.putExtra("data", Parcels.wrap(barCode));
-                    activity.setResult(Activity.RESULT_OK, intent);
-                    activity.finish();
-                } else {
-                    buildFailedDialog(String.format("Number %s was incorrect or invalid, either the length or the the check digit may have been incorrect.", qrCode)).show();
-                }
-            }
-        }).execute("http://www.upcitemdb.com/upc/" + qrcode);
-    }
-
-    private void showProgress() {
-        mProgressDialog = new CustomProgressDialog(getActivity());
-        mProgressDialog.show("Please wait...");
-    }
-
-    private void hideProgress() {
-        mProgressDialog.dismiss("");
     }
 
     private Runnable doAutoFocus = new Runnable() {
@@ -279,5 +275,47 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void showProgress() {
+        mProgressDialog = new CustomProgressDialog(getActivity());
+        mProgressDialog.show("Please wait...");
+    }
 
+    @Override
+    public void hideProgress() {
+        mProgressDialog.dismiss("");
+    }
+
+    @Override
+    public void onError(Exception e) {
+        buildFailedDialog(e.getMessage()).show();
+    }
+
+    @Override
+    public void onExecuteFinished(BarCode barCode) {
+        //if user is guest
+        if (ParseUser.getCurrentUser() == null) {
+            try {
+                mSqlHelper.getBarCodeDao().createOrUpdate(barCode);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            ParseObject parseProduct = new ParseObject(Constant.PARSE_PRODUCTS);
+            parseProduct.add("userId", ParseUser.getCurrentUser().getObjectId());
+            parseProduct.add("image", barCode.image);
+            parseProduct.add("upcA", barCode.upcA);
+            parseProduct.add("ean", barCode.ean);
+            parseProduct.add("country", barCode.country);
+            parseProduct.add("manufacture", barCode.manufacture);
+            parseProduct.add("model", barCode.model);
+            parseProduct.add("quantity", barCode.quantity);
+
+            parseProduct.saveInBackground();
+        }
+        Intent intent = getActivity().getIntent();
+        intent.putExtra("data", Parcels.wrap(barCode));
+        getActivity().setResult(Activity.RESULT_OK, intent);
+        getActivity().finish();
+    }
 }

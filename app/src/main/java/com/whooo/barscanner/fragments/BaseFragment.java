@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.whooo.barscanner.activities.BaseActivity;
 import com.whooo.barscanner.injectors.components.ApplicationComponent;
+import com.whooo.barscanner.injectors.modules.ActivityModule;
 import com.whooo.barscanner.utils.Log;
 
 import butterknife.ButterKnife;
@@ -39,13 +40,20 @@ public abstract class BaseFragment extends Fragment {
         return ((BaseActivity) getActivity()).getApplicationComponent();
     }
 
+    protected ActivityModule getActivityModule() {
+        return new ActivityModule(getActivity());
+    }
+
     protected abstract int getLayoutId();
 
-    protected void initializeInjectors() {}
+    protected void initializeInjectors() {
+    }
 
-    protected void initializeVariables() {}
+    protected void initializeVariables() {
+    }
 
-    protected void setupViews() {}
+    protected void setupViews() {
+    }
 
     public static BaseFragment create(Class<? extends BaseFragment> clazz) {
         return BaseFragment.create(clazz, null);

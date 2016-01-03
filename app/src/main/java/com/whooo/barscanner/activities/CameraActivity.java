@@ -1,19 +1,17 @@
 package com.whooo.barscanner.activities;
 
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
 import com.whooo.barscanner.R;
 
-public class CameraActivity extends AppCompatActivity {
+public class CameraActivity extends BaseActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    protected int getLayoutId() {
+        return R.layout.activity_camera;
+    }
+
+    @Override
+    protected void setupViews() {
+        super.setupViews();
+        mSupportActionBar.setDisplayHomeAsUpEnabled(true);
     }
 }

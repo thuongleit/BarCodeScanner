@@ -14,8 +14,8 @@ import android.widget.TextView;
 
 import com.parse.ParseUser;
 import com.whooo.barscanner.R;
-import com.whooo.barscanner.injectors.components.DaggerLoginComponent;
-import com.whooo.barscanner.injectors.modules.LoginModule;
+import com.whooo.barscanner.injectors.components.DaggerJobsComponent;
+import com.whooo.barscanner.injectors.modules.JobsModule;
 import com.whooo.barscanner.mvp.presenters.LoginPresenter;
 import com.whooo.barscanner.mvp.views.LoginView;
 import com.whooo.barscanner.utils.Log;
@@ -54,10 +54,10 @@ public class LoginActivity extends NoToolbarActivity implements LoginView {
 
     @Override
     protected void initializeInjectors() {
-        DaggerLoginComponent.builder()
+        DaggerJobsComponent.builder()
                 .applicationComponent(getApplicationComponent())
                 .activityModule(getActivityModule())
-                .loginModule(new LoginModule())
+                .jobsModule(new JobsModule())
                 .build()
                 .inject(this);
     }
@@ -184,10 +184,25 @@ public class LoginActivity extends NoToolbarActivity implements LoginView {
         startActivityForResult(new Intent(this, SignUpActivity.class), REQUEST_SIGN_UP);
     }
 
-    @OnClick(R.id.text_link_sign_up)
-    public void linkToSignUp(View view) {
-        startNewActivity(MainActivity.class);
-        finish();
+    @OnClick(R.id.text_login_as_guest)
+    public void loginAsGuest(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Login as guest will store your products locally. If you want to save them in the cloud, login as your account instead.");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("Ignore", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                startNewActivity(MainActivity.class);
+                finish();
+            }
+        });
+        builder.create().show();
     }
 
     @Override

@@ -3,6 +3,8 @@ package com.whooo.barscanner.injectors.modules;
 import com.whooo.barscanner.injectors.PerActivity;
 import com.whooo.barscanner.mvp.presenters.LoginPresenter;
 import com.whooo.barscanner.mvp.presenters.LoginPresenterImpl;
+import com.whooo.barscanner.mvp.presenters.ScanQrCodePresenter;
+import com.whooo.barscanner.mvp.presenters.ScanQrCodePresenterImpl;
 import com.whooo.barscanner.mvp.presenters.SignUpPresenter;
 import com.whooo.barscanner.mvp.presenters.SignUpPresenterImpl;
 
@@ -14,7 +16,7 @@ import dagger.Provides;
  */
 @Module
 @PerActivity
-public class LoginModule {
+public class JobsModule {
 
     @PerActivity
     @Provides
@@ -26,5 +28,11 @@ public class LoginModule {
     @Provides
     SignUpPresenter provideSignUpPresenter() {
         return new SignUpPresenterImpl();
+    }
+
+    @PerActivity
+    @Provides
+    ScanQrCodePresenter provideScanQrCodePresenter() {
+        return new ScanQrCodePresenterImpl();
     }
 }

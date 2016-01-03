@@ -11,8 +11,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.whooo.barscanner.R;
-import com.whooo.barscanner.injectors.components.DaggerLoginComponent;
-import com.whooo.barscanner.injectors.modules.LoginModule;
+import com.whooo.barscanner.injectors.components.DaggerJobsComponent;
+import com.whooo.barscanner.injectors.modules.JobsModule;
 import com.whooo.barscanner.mvp.presenters.SignUpPresenter;
 import com.whooo.barscanner.mvp.views.SignUpView;
 
@@ -43,10 +43,10 @@ public class SignUpActivity extends NoToolbarActivity implements SignUpView {
 
     @Override
     protected void initializeInjectors() {
-        DaggerLoginComponent.builder()
+        DaggerJobsComponent.builder()
                 .applicationComponent(getApplicationComponent())
                 .activityModule(getActivityModule())
-                .loginModule(new LoginModule())
+                .jobsModule(new JobsModule())
                 .build()
                 .inject(this);
     }

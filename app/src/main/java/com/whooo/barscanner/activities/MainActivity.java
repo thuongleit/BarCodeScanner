@@ -144,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mRecyclerView.setAdapter(adapter);
 
         } else {
-
             ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Products").whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
             query.findInBackground(new FindCallback<ParseObject>() {
                 @Override

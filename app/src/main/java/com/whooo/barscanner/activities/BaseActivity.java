@@ -26,4 +26,10 @@ public abstract class BaseActivity extends NoToolbarActivity {
         mSupportActionBar = getSupportActionBar();
         mSupportActionBar.setDisplayShowHomeEnabled(false);
     }
+
+    @Override
+    protected void setupViews() {
+        super.setupViews();
+        setupToolbar();
+    }
 }
