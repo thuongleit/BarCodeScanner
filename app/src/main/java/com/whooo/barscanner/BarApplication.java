@@ -2,11 +2,13 @@ package com.whooo.barscanner;
 
 import android.app.Application;
 
+import com.crashlytics.android.Crashlytics;
 import com.parse.Parse;
 import com.whooo.barscanner.injectors.components.ApplicationComponent;
 import com.whooo.barscanner.injectors.components.DaggerApplicationComponent;
 import com.whooo.barscanner.injectors.modules.ApplicationModule;
 import com.whooo.barscanner.utils.Log;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by thuongle on 11/24/15.
@@ -22,6 +24,7 @@ public class BarApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         Log.init(BuildConfig.DEBUG);
 
         Parse.enableLocalDatastore(this);
