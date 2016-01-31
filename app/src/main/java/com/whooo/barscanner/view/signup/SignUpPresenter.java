@@ -1,8 +1,6 @@
 package com.whooo.barscanner.view.signup;
 
-import com.parse.ParseException;
 import com.parse.ParseUser;
-import com.parse.SignUpCallback;
 import com.whooo.barscanner.data.DataManager;
 import com.whooo.barscanner.view.base.BasePresenter;
 
@@ -30,18 +28,15 @@ public class SignUpPresenter extends BasePresenter<SignUpView> {
         parseUser.setEmail(email);
         parseUser.setPassword(password);
 
-        parseUser.signUpInBackground(new SignUpCallback() {
-            @Override
-            public void done(ParseException e) {
-                mView.showProgress(false);
-                if (e == null) {
-                    Timber.i("User %s sign up successfully", username);
-                    //the user is logged in
-                    mView.onSignUpSuccess();
-                } else {
-                    Timber.i(e, "User %s sign up failed", username);
-                    mView.onSignUpFailed(e.getMessage());
-                }
+        parseUser.signUpInBackground(e -> {
+            mView.showProgress(false);
+            if (e == null) {
+                Timber.i("User %s sign up successfully", username);
+                //the user is logged in
+                mView.onSignUpSuccess();
+            } else {
+                Timber.i(e, "User %s sign up failed", username);
+                mView.onSignUpFailed(e.getMessage());
             }
         });
     }

@@ -3,11 +3,14 @@ package com.whooo.barscanner.data;
 import android.app.Application;
 
 import com.whooo.barscanner.BarApplication;
+import com.whooo.barscanner.config.Config;
 import com.whooo.barscanner.config.Constant;
 import com.whooo.barscanner.data.local.ProductModel;
 import com.whooo.barscanner.data.remote.ParseService;
 import com.whooo.barscanner.data.remote.ProductService;
 import com.whooo.barscanner.vo.Product;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -26,6 +29,8 @@ public class DataManager {
     ProductService mProductService;
     @Inject
     ParseService mParseService;
+    @Inject
+    Config mConfig;
 
     @Inject
     public DataManager(Application app) {
@@ -38,8 +43,27 @@ public class DataManager {
                     //save to db
                     mProductModel.saveProduct(product);
 
-                    //save to parse service
-                    mParseService.saveProduct(product);
+                    if (mConfig.isUserLogin()) {
+                        //save to parse service
+                        mParseService.saveProduct(product);
+                    }
                 });
+    }
+
+    public Observable<List<Product>> getProducts() {
+        if (mConfig.isUserLogin()) {
+            return Observable.create(subscriber -> {
+
+            });
+        } else {
+            return Observable.create(subscriber -> {
+                try {
+                    subscriber.onNext(mProductModel.loadProducts());
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            });
+        }
     }
 }

@@ -12,6 +12,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -20,6 +21,7 @@ import timber.log.Timber;
 /**
  * Created by thuongle on 1/31/16.
  */
+@Singleton
 public class ProductService {
 
     @Inject

@@ -2,178 +2,92 @@ package com.whooo.barscanner.view.main;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.parse.ParseUser;
+import com.pnikosis.materialishprogress.ProgressWheel;
 import com.whooo.barscanner.R;
+import com.whooo.barscanner.config.Config;
 import com.whooo.barscanner.util.AppUtils;
 import com.whooo.barscanner.view.AppIntroActivity;
+import com.whooo.barscanner.view.base.ToolbarActivity;
 import com.whooo.barscanner.view.product.BarViewRecyclerAdapter;
 import com.whooo.barscanner.view.scan.CameraActivity;
 import com.whooo.barscanner.view.scan.CameraFragment;
 import com.whooo.barscanner.view.signin.SignInActivity;
+import com.whooo.barscanner.view.widget.DancingScriptTextView;
 import com.whooo.barscanner.vo.Product;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends ToolbarActivity implements NavigationView.OnNavigationItemSelectedListener, MainView {
 
-    private static final int QR_CODE = 1001;
-    private static List<Product> products = new ArrayList<>();
-
+    private static final int REQUEST_QR_CODE = 1;
     @Bind(R.id.recycler_view)
     RecyclerView mRecyclerView;
-    @Bind(R.id.toolbar)
-    Toolbar mToolbar;
     @Bind(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
     @Bind(R.id.nav_view)
     NavigationView mNavigationView;
+    @Bind(R.id.progress_wheel)
+    ProgressWheel mProgressWheel;
+
+    @Inject
+    Config mConfig;
+    @Inject
+    MainPresenter mMainPresenter;
+
+    private static List<Product> products = new ArrayList<>();
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_main;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        getComponent().inject(this);
+        mMainPresenter.attachView(this);
 
-        boolean is_first_run = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("is_first_run", true);
-        if (is_first_run) {
+        if (mConfig.isFirstRun()) {
             startActivity(new Intent(this, AppIntroActivity.class));
-            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("is_first_run", true).apply();
+            mConfig.putIsFirstRun(false);
         }
-        ButterKnife.bind(this);
-        setSupportActionBar(mToolbar);
-
         setupReCyclerView();
         setupNavigationView();
 
         //try restore login session
         tryRestoreLoginSession();
+        mMainPresenter.getProducts();
     }
 
-    private void tryRestoreLoginSession() {
-        final ParseUser currentUser = ParseUser.getCurrentUser();
-        View headerView = mNavigationView.getHeaderView(0);
-        headerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, AppUtils.getStatusBarHeight(this) + AppUtils.getToolbarHeight(this)));
-        ImageButton imageLogin = (ImageButton) mNavigationView.getHeaderView(0).findViewById(R.id.image_button_login);
-        TextView textUsername = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_username);
-        textUsername.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/KaushanScript-Regular.ttf"));
-        if (currentUser == null) {
-            imageLogin.setBackgroundResource(R.drawable.ic_login);
-            imageLogin.setContentDescription("Login");
-            textUsername.setText("guest");
-        } else {
-            imageLogin.setBackgroundResource(R.drawable.ic_logout);
-            imageLogin.setContentDescription("Logout");
-            //username textview
-            textUsername.setText(currentUser.getUsername());
-        }
-
-        imageLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentUser != null) {
-                    ParseUser.logOutInBackground();
-                }
-                startActivity(new Intent(MainActivity.this, SignInActivity.class));
-                MainActivity.this.finish();
-            }
-        });
-    }
-
-    private void setupNavigationView() {
-        mDrawerLayout.setScrimColor(Color.TRANSPARENT);
-        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                float moveFactor = (drawerView.getWidth() * slideOffset);
-                mRecyclerView.setTranslationX(moveFactor);
-                super.onDrawerSlide(drawerView, slideOffset);
-            }
-        };
-
-        mDrawerLayout.setDrawerListener(drawerToggle);
-        drawerToggle.syncState();
-
-        mNavigationView.setNavigationItemSelectedListener(this);
-    }
-
-    @OnClick(R.id.fab)
-    public void onFabButtonClick() {
-        Intent intent = new Intent(MainActivity.this, CameraActivity.class);
-        startActivityForResult(intent, QR_CODE);
-    }
-
-    private void setupReCyclerView() {
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        if (ParseUser.getCurrentUser() == null) {
-//            try {
-//                sqlHelper = new SQLHelper(this);
-//                products = sqlHelper.getBarCodeDao().queryForAll();
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-            RecyclerView.Adapter adapter = new BarViewRecyclerAdapter(MainActivity.this, products);
-            mRecyclerView.setAdapter(adapter);
-
-        } else {
-//            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Products").whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
-//            query.findInBackground(new FindCallback<ParseObject>() {
-//                @Override
-//                public void done(List<ParseObject> objects, ParseException e) {
-//                    if (e == null && objects != null)
-//                        for (ParseObject object : objects) {
-//                            String image = object.getString("image");
-//                            String upcA = object.getString("upcA");
-//                            String ean = object.getString("ean");
-//                            String country = object.getString("country");
-//                            String manufacture = object.getString("manufacture");
-//                            String model = object.getString("model");
-//                            Number quantity = object.getNumber("quantity");
-//
-//                            Product product = new Product();
-//                            product.image = image;
-//                            product.upcA = upcA;
-//                            product.ean = ean;
-//                            product.country = country;
-//                            product.manufacture = manufacture;
-//                            product.model = model;
-//
-//                            products.add(product);
-//                        }
-//                    RecyclerView.Adapter adapter = new BarViewRecyclerAdapter(MainActivity.this, products);
-//                    mRecyclerView.setAdapter(adapter);
-                }
-//            });
-//        }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mMainPresenter.detachView();
     }
 
     @Override
@@ -195,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                            if (product != null) {
 //                                Intent intent = new Intent(MainActivity.this, BarViewActivity.class);
 //                                intent.putExtra("data", Parcels.wrap(product));
-//                                startActivityForResult(intent, QR_CODE);
+//                                startActivityForResult(intent, REQUEST_QR_CODE);
 //                            } else {
 //                                buildFailedDialog(String.format("Number %s was incorrect or invalid, either the length or the the check digit may have been incorrect.", query)).show();
 //                            }
@@ -233,25 +147,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == QR_CODE && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_QR_CODE && resultCode == RESULT_OK) {
             Product product = data.getParcelableExtra(CameraFragment.EXTRA_DATA);
             products.add(product);
-            mRecyclerView.getAdapter().notifyDataSetChanged();
+            ((BarViewRecyclerAdapter)mRecyclerView.getAdapter()).addItem(product);
         }
-    }
-
-    @NonNull
-    private AlertDialog.Builder buildFailedDialog(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Error").setMessage(message);
-        builder.setNegativeButton("ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.setCancelable(true);
-        return builder;
     }
 
     @Override
@@ -282,5 +182,87 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    @Override
+    public void showNetworkError() {
+
+    }
+
+    @Override
+    public void showGeneralError(String message) {
+
+    }
+
+    @Override
+    public void showProgress(boolean show) {
+        if (show) {
+            mProgressWheel.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mProgressWheel.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void showProducts(List<Product> products) {
+        RecyclerView.Adapter adapter = new BarViewRecyclerAdapter(MainActivity.this, products);
+        mRecyclerView.setAdapter(adapter);
+    }
+
+    @OnClick(R.id.fab)
+    public void onFabButtonClick() {
+        Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+        startActivityForResult(intent, REQUEST_QR_CODE);
+    }
+
+    private void setupReCyclerView() {
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void setupNavigationView() {
+        mDrawerLayout.setScrimColor(Color.TRANSPARENT);
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                float moveFactor = (drawerView.getWidth() * slideOffset);
+                mRecyclerView.setTranslationX(moveFactor);
+                super.onDrawerSlide(drawerView, slideOffset);
+            }
+        };
+
+        mDrawerLayout.setDrawerListener(drawerToggle);
+        drawerToggle.syncState();
+
+        mNavigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void tryRestoreLoginSession() {
+        final ParseUser currentUser = mConfig.getCurrentUser();
+        View headerView = mNavigationView.getHeaderView(0);
+
+        headerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, AppUtils.getStatusBarHeight(this) + AppUtils.getToolbarHeight(this)));
+        ImageButton imageLogin = (ImageButton) mNavigationView.getHeaderView(0).findViewById(R.id.image_button_login);
+        DancingScriptTextView textUsername = (DancingScriptTextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_username);
+        if (currentUser == null) {
+            imageLogin.setBackgroundResource(R.drawable.ic_login);
+            imageLogin.setContentDescription("Login");
+            textUsername.setText("guest");
+        } else {
+            imageLogin.setBackgroundResource(R.drawable.ic_logout);
+            imageLogin.setContentDescription("Logout");
+            //username textview
+            textUsername.setText(currentUser.getUsername());
+        }
+
+        imageLogin.setOnClickListener(v -> {
+            if (currentUser != null) {
+                ParseUser.logOutInBackground();
+            }
+            startActivity(new Intent(MainActivity.this, SignInActivity.class));
+            finish();
+        });
     }
 }

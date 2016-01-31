@@ -74,4 +74,9 @@ public class BarViewRecyclerAdapter extends RecyclerView.Adapter<BarViewRecycler
             }
         }
     }
+
+    public void addItem(Product product){
+        this.values.add(product);
+        notifyDataSetChanged();
+    }
 }

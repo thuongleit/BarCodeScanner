@@ -6,10 +6,12 @@ import com.whooo.barscanner.config.Constant;
 import com.whooo.barscanner.vo.Product;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Created by thuongle on 1/31/16.
  */
+@Singleton
 public class ParseService {
 
     @Inject

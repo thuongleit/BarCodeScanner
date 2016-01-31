@@ -46,14 +46,10 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
     public static final String EXTRA_DATA =
             "com.whooo.barscanner.view.scan.CameraFragment.EXTRA_DATA";
 
-    @Bind(R.id.cameraPreview)
-    FrameLayout mCameraPreview;
+    @Bind(R.id.cameraPreview) FrameLayout mCameraPreview;
 
-    @Inject
-    ScanQrCodePresenter mScanQrCodePresenter;
-    @Inject
-    @ActivityScope
-    Context mContext;
+    @Inject ScanQrCodePresenter mScanQrCodePresenter;
+    @Inject @ActivityScope Context mContext;
 
     private CameraPreview mPreview;
     private Camera mCamera;
@@ -113,6 +109,12 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mScanQrCodePresenter.detachView();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_camera, menu);
@@ -158,12 +160,12 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
 
     @Override
     public void showNetworkError() {
-        DialogFactory.createGenericErrorDialog(mContext, "You has been disconnected!").show();
+        buildFailedDialog("You has been disconnected!").show();
     }
 
     @Override
     public void showGeneralError(String message) {
-        DialogFactory.createGenericErrorDialog(mContext, message).show();
+        buildFailedDialog(message).show();
     }
 
     private void setupScanner() {
@@ -273,28 +275,19 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
     private AlertDialog.Builder buildFailedDialog(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getResources().getString(R.string.dialog_error_title)).setMessage(message);
-        builder.setPositiveButton("Scan Again", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                startScan();
-            }
+        builder.setPositiveButton("Scan Again", (dialog, which) -> {
+            dialog.dismiss();
+            startScan();
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                getActivity().setResult(Activity.RESULT_CANCELED);
-                getActivity().finish();
-            }
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            dialog.dismiss();
+            getActivity().setResult(Activity.RESULT_CANCELED);
+            getActivity().finish();
         });
         builder.setCancelable(true);
-        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                dialog.dismiss();
-                activity().reloadActivity();
-            }
+        builder.setOnCancelListener(dialog -> {
+            dialog.dismiss();
+            activity().reloadActivity();
         });
         return builder;
     }

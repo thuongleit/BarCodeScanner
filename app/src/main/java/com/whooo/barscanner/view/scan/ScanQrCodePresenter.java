@@ -49,6 +49,7 @@ public class ScanQrCodePresenter extends BasePresenter<ScanQrCodeView> {
                     @Override
                     public void onError(Throwable e) {
                         mView.showProgress(false);
+                        mView.showGeneralError(e.getMessage());
                     }
 
                     @Override
