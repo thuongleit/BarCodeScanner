@@ -26,4 +26,9 @@
     <string name="login"><b>Login</b></string>
     <string name="signup_text_link">Don\'t have an account yet? Sign up</string>
     <string name="login_as_guest"><![CDATA[<u>login as guest</u>]]></string>
+
+    <string name="dialog_action_ok">OK</string>
+    <string name="dialog_action_cancel">Cancel</string>
+    <string name="dialog_error_title">Sorry</string>
+    <string name="dialog_action_try_again">Try Again</string>
 </resources>

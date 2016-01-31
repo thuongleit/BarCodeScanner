@@ -25,7 +25,7 @@
             android:value="u4J7MU3cy2R0NRjLPpIYOaYXV8VIgFAiSqMKfZiX" />
 
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".view.main.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -35,35 +35,39 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activities.CameraActivity"
-            android:parentActivityName=".activities.MainActivity">
+            android:name=".view.scan.CameraActivity"
+            android:parentActivityName=".view.main.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity" />
+                android:value=".view.main.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.BarViewActivity"
-            android:parentActivityName=".activities.MainActivity">
+            android:name=".view.product.BarViewActivity"
+            android:parentActivityName=".view.main.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity" />
+                android:value=".view.main.MainActivity" />
         </activity>
 
-        <activity android:name=".activities.LoginActivity"
-            android:theme="@style/AppTheme.FullScreen"
-            android:configChanges="keyboardHidden|orientation"/>
-        <activity android:name=".activities.SignUpActivity"
-            android:theme="@style/AppTheme.FullScreen"
-            android:configChanges="keyboardHidden|orientation"/>
+        <activity
+            android:name=".view.signin.SignInActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:theme="@style/AppTheme.FullScreen" />
+        <activity
+            android:name=".view.signup.SignUpActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:theme="@style/AppTheme.FullScreen" />
 
         <activity
-            android:name=".activities.SplashActivity"
+            android:name=".view.SplashActivity"
             android:theme="@style/AppTheme.SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".view.AppIntroActivity" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="22d4614fff80c524f8d3b07d3501fedd20385f40" />
