@@ -10,12 +10,14 @@ import com.whooo.barscanner.data.remote.ParseService;
 import com.whooo.barscanner.data.remote.ProductService;
 import com.whooo.barscanner.vo.Product;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by thuongle on 1/30/16.
@@ -53,7 +55,13 @@ public class DataManager {
     public Observable<List<Product>> getProducts() {
         if (mConfig.isUserLogin()) {
             return Observable.create(subscriber -> {
-
+                List<Product> products = new ArrayList<>();
+                mParseService.getProducts().doOnNext(product -> {
+                    products.add(product);
+                    subscriber.onNext(products);
+                }).doOnCompleted(() -> subscriber.onCompleted())
+                        .subscribeOn(Schedulers.newThread())
+                        .subscribe();
             });
         } else {
             return Observable.create(subscriber -> {

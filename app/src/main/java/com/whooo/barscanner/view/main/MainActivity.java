@@ -17,8 +17,8 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.parse.ParseUser;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -150,7 +150,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         if (requestCode == REQUEST_QR_CODE && resultCode == RESULT_OK) {
             Product product = data.getParcelableExtra(CameraFragment.EXTRA_DATA);
             products.add(product);
-            ((BarViewRecyclerAdapter)mRecyclerView.getAdapter()).addItem(product);
+            ((BarViewRecyclerAdapter) mRecyclerView.getAdapter()).addItem(product);
         }
     }
 
@@ -167,18 +167,15 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     public boolean onNavigationItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-//            case R.id.nav_account:
-//                if (ParseUser.getCurrentUser() == null) {
-//                    Intent i = new Intent(this, SignInActivity.class);
-//                    startActivity(i);
-//                    this.finish();
-//                } else {
-//                    Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show();
-//                    ParseUser.logOutInBackground();
-//                    this.finish();
-//                    startActivity(getIntent());
-//                }
-//                break;
+            case R.id.nav_log_in:
+                if (mConfig.isUserLogin()) {
+                    Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show();
+                    ParseUser.logOutInBackground();
+                }
+                Intent i = new Intent(this, SignInActivity.class);
+                startActivity(i);
+                this.finish();
+                break;
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
@@ -237,6 +234,12 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         drawerToggle.syncState();
 
         mNavigationView.setNavigationItemSelectedListener(this);
+        MenuItem navSignIn = mNavigationView.getMenu().findItem(R.id.nav_log_in);
+        if (mConfig.isUserLogin()) {
+            navSignIn.setTitle(R.string.menu_log_out);
+        } else {
+            navSignIn.setTitle(R.string.menu_login);
+        }
     }
 
     private void tryRestoreLoginSession() {
@@ -244,25 +247,11 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         View headerView = mNavigationView.getHeaderView(0);
 
         headerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, AppUtils.getStatusBarHeight(this) + AppUtils.getToolbarHeight(this)));
-        ImageButton imageLogin = (ImageButton) mNavigationView.getHeaderView(0).findViewById(R.id.image_button_login);
-        DancingScriptTextView textUsername = (DancingScriptTextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_username);
+        DancingScriptTextView textUsername = (DancingScriptTextView) headerView.findViewById(R.id.text_nav_username);
         if (currentUser == null) {
-            imageLogin.setBackgroundResource(R.drawable.ic_login);
-            imageLogin.setContentDescription("Login");
             textUsername.setText("guest");
         } else {
-            imageLogin.setBackgroundResource(R.drawable.ic_logout);
-            imageLogin.setContentDescription("Logout");
-            //username textview
             textUsername.setText(currentUser.getUsername());
         }
-
-        imageLogin.setOnClickListener(v -> {
-            if (currentUser != null) {
-                ParseUser.logOutInBackground();
-            }
-            startActivity(new Intent(MainActivity.this, SignInActivity.class));
-            finish();
-        });
     }
 }

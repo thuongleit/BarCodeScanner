@@ -46,10 +46,14 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
     public static final String EXTRA_DATA =
             "com.whooo.barscanner.view.scan.CameraFragment.EXTRA_DATA";
 
-    @Bind(R.id.cameraPreview) FrameLayout mCameraPreview;
+    @Bind(R.id.cameraPreview)
+    FrameLayout mCameraPreview;
 
-    @Inject ScanQrCodePresenter mScanQrCodePresenter;
-    @Inject @ActivityScope Context mContext;
+    @Inject
+    ScanQrCodePresenter mScanQrCodePresenter;
+    @Inject
+    @ActivityScope
+    Context mContext;
 
     private CameraPreview mPreview;
     private Camera mCamera;
@@ -239,6 +243,7 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
 
                         //Use Below function to make a server call and complete request.
                         mScanQrCodePresenter.executeQrCode(scanResult);
+                        AppUtils.playSound(mContext);
                         break;
                     }
                 }

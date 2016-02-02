@@ -5,10 +5,10 @@
     <color name="window_background_black">#000000</color>
     <color name="bt_accent">#00B8D4</color>
 
-    <color name="colorPrimary">#009688</color>
-    <color name="colorPrimaryDark">#00796B</color>
-    <color name="colorPrimaryDarker">#004D40</color>
-    <color name="colorAccent">#F50057</color>
+    <color name="colorPrimary">#FF212121</color>
+    <color name="colorPrimaryDark">#FF131313</color>
+    <color name="colorPrimaryDarker">#FF050505</color>
+    <color name="colorAccent">#F57C00</color>
 
     <color name="colorPrimaryDarkTheme">#4a4959</color>
     <color name="colorPrimaryDarkDarkTheme">#525065</color>

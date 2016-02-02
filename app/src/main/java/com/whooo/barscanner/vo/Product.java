@@ -30,7 +30,7 @@ public class Product extends BaseModel implements Parcelable {
     @Column
     String model;
     @Column
-    int quantity;
+    int quantity = 0;
 
     public Product() {
     }

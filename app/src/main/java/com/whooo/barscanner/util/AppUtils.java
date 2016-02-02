@@ -3,8 +3,11 @@ package com.whooo.barscanner.util;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 
 import com.whooo.barscanner.R;
 
@@ -55,6 +58,16 @@ public class AppUtils {
         return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 
+    public static void playSound(Context context) {
+        try {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+            Ringtone r = RingtoneManager.getRingtone(context, notification);
+            r.play();
+        } catch (Exception e) {
+            Timber.i(e, e.getMessage());
+        }
+    }
+
     private static boolean isNetworkAvailable(Context ctx) {
         try {
             ConnectivityManager connectivityManager
@@ -66,5 +79,4 @@ public class AppUtils {
             return false;
         }
     }
-
 }
