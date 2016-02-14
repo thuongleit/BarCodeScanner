@@ -2,13 +2,12 @@ package com.whooo.barscanner.view.main;
 
 import com.whooo.barscanner.data.DataManager;
 import com.whooo.barscanner.view.base.BasePresenter;
-import com.whooo.barscanner.vo.Product;
 
-import java.util.List;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
 import javax.inject.Inject;
 
-import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -38,25 +37,26 @@ public class MainPresenter extends BasePresenter<MainView> {
     public void getProducts() {
         checkViewAttached();
         mView.showProgress(true);
-        mSubscription = mDataManager.getProducts()
+        mSubscription = mDataManager
+                .getProducts()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<Product>>() {
-                    @Override
-                    public void onCompleted() {
-                        mView.showProgress(false);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.showProgress(false);
-                        mView.showGeneralError(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(List<Product> products) {
-                        mView.showProducts(products);
-                    }
-                });
+                .subscribe(
+                        products -> {
+                            if (products == null || products.isEmpty()) {
+                                mView.showEmptyView();
+                            } else {
+                                mView.showProducts(products);
+                            }
+                        },
+                        e -> {
+                            mView.showProgress(false);
+                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                mView.showNetworkError();
+                            } else {
+                                mView.showGeneralError(e.getMessage());
+                            }
+                        }
+                        , () -> mView.showProgress(false));
     }
 }

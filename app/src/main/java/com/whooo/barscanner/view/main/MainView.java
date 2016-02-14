@@ -12,4 +12,6 @@ public interface MainView extends ErrorableView {
     void showProgress(boolean show);
 
     void showProducts(List<Product> products);
+
+    void showEmptyView();
 }

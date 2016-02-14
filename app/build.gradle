@@ -86,9 +86,17 @@ dependencies {
     compile "com.google.dagger:dagger:$DAGGER_VERSION"
     compile "com.github.Raizlabs.DBFlow:dbflow-core:$DB_FLOW_VERSION"
     compile "com.github.Raizlabs.DBFlow:dbflow:$DB_FLOW_VERSION"
+    compile 'com.getbase:floatingactionbutton:1.10.1'
 
     provided 'javax.annotation:jsr250-api:1.0'
     
     apt "com.github.Raizlabs.DBFlow:dbflow-processor:$DB_FLOW_VERSION"
     apt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:1.9.5'
+    testCompile 'com.android.support.test.espresso:espresso-core:2.0'
+    testCompile 'com.android.support.test:testing-support-lib:0.1'
+    testCompile 'org.assertj:assertj-core:1.7.1'
+    testCompile 'org.robolectric:robolectric:3.0'
 }

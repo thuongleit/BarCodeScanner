@@ -48,6 +48,16 @@ public class BarViewRecyclerAdapter extends RecyclerView.Adapter<BarViewRecycler
         return (values == null) ? 0 : values.size();
     }
 
+    public void addItem(Product product) {
+        this.values.add(product);
+        notifyDataSetChanged();
+    }
+
+    public void addItems(List<Product> products) {
+        this.values.addAll(products);
+        notifyDataSetChanged();
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.image_bar_view)
@@ -73,10 +83,5 @@ public class BarViewRecyclerAdapter extends RecyclerView.Adapter<BarViewRecycler
                 Picasso.with(context).load(product.getImage()).into(imageBarView);
             }
         }
-    }
-
-    public void addItem(Product product){
-        this.values.add(product);
-        notifyDataSetChanged();
     }
 }

@@ -9,6 +9,7 @@
     <color name="colorPrimaryDark">#FF131313</color>
     <color name="colorPrimaryDarker">#FF050505</color>
     <color name="colorAccent">#F57C00</color>
+    <color name="colorAccentDark">#EF6C00</color>
 
     <color name="colorPrimaryDarkTheme">#4a4959</color>
     <color name="colorPrimaryDarkDarkTheme">#525065</color>
@@ -37,6 +38,14 @@
     <color name="login_green">#73C547</color>
     <color name="hint_color">#B8B7B6</color>
 
+    <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-    <color name="white">#ffffff</color>
+    <color name="black_87">#212121</color> <!-- Text -->
+    <color name="black_54">#545454</color> <!-- Secondary Text -->
+    <color name="black_38">#9B9B9B</color> <!-- Hint Text -->
+    <color name="black_12">#DBDBDB</color> <!-- Dividers-->
+    <color name="black_10">#C5c5c5</color>
+    <color name="transparent">#00000000</color>
+    <color name="black_overlay">#81000000</color>
+    <color name="white_overlay">#b8d2cfcf</color>
 </resources>
