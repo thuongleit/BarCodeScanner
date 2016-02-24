@@ -1,8 +1,8 @@
-package com.thuongleit.babr.data.remote;
+package com.thuongleit.babr.data.remote.upc;
 
 import com.thuongleit.babr.data.exception.ItemNotFoundException;
 import com.thuongleit.babr.data.exception.ItemParsingErrorException;
-import com.thuongleit.babr.vo.Product;
+import com.thuongleit.babr.vo.UpcProduct;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -28,12 +28,12 @@ public class ProductService {
     public ProductService() {
     }
 
-    public Observable<Product> getProduct(final String url) {
-        return Observable.create(new Observable.OnSubscribe<Product>() {
+    public Observable<UpcProduct> getProduct(final String url) {
+        return Observable.create(new Observable.OnSubscribe<UpcProduct>() {
             @Override
-            public void call(Subscriber<? super Product> subscriber) {
+            public void call(Subscriber<? super UpcProduct> subscriber) {
                 try {
-                    Product product = new Product();
+                    UpcProduct upcProduct = new UpcProduct();
                     Document document = Jsoup.connect(url).get();
 
                     //check if item is valid or not
@@ -54,15 +54,15 @@ public class ProductService {
                         String textInElement = element.text();
 
                         if (textInElement.startsWith("UPC-A")) {
-                            product.setUpcA(textInElement);
+                            upcProduct.setUpcA(textInElement);
                         } else if (textInElement.startsWith("EAN-13")) {
-                            product.setEan(textInElement);
+                            upcProduct.setEan(textInElement);
                         } else if (textInElement.startsWith("Country of Registration")) {
-                            product.setCountry(textInElement);
+                            upcProduct.setCountry(textInElement);
                         } else if (textInElement.startsWith("Manufacture")) {
-                            product.setManufacture(textInElement);
+                            upcProduct.setManufacture(textInElement);
                         } else if (textInElement.startsWith("Model")) {
-                            product.setModel(textInElement);
+                            upcProduct.setModel(textInElement);
                         }
                     }
 
@@ -71,11 +71,11 @@ public class ProductService {
                         String aClass = element.attr("class");
                         if ("amzn".equals(aClass)) {
                             String src = element.attr("src");
-                            product.setImage(src);
+                            upcProduct.setImage(src);
                         }
                     }
 
-                    subscriber.onNext(product);
+                    subscriber.onNext(upcProduct);
                     subscriber.onCompleted();
                 } catch (IOException e) {
                     Timber.e(e, "Cannot get product from url %s", url);

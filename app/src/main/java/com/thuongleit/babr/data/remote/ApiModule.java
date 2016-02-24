@@ -2,7 +2,8 @@ package com.thuongleit.babr.data.remote;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
-import com.thuongleit.babr.config.Constant;
+import com.thuongleit.babr.data.remote.amazon.AmazonService;
+import com.thuongleit.babr.data.remote.amazon.util.AmazonSignedRequestsHelper;
 
 import javax.inject.Singleton;
 
@@ -39,7 +40,7 @@ public class ApiModule {
     @Singleton
     Retrofit provideRetrofit(OkHttpClient client, SimpleXmlConverterFactory converter, CallAdapter.Factory callAdapter) {
         return new Retrofit.Builder()
-                .baseUrl(Constant.AMAZON_PRODUCT_ENDPOINT_URL)
+                .baseUrl("http://" + AmazonSignedRequestsHelper.ENDPOINT + AmazonSignedRequestsHelper.REQUEST_URI)
                 .client(client)
                 .addCallAdapterFactory(callAdapter)
                 .addConverterFactory(converter)
@@ -60,4 +61,11 @@ public class ApiModule {
 
         return okHttpClient;
     }
+
+    @Provides
+    @Singleton
+    AmazonService provideAmazonService(Retrofit retrofit) {
+        return retrofit.create(AmazonService.class);
+    }
+
 }

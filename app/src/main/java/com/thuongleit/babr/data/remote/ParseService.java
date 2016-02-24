@@ -4,7 +4,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.thuongleit.babr.config.Constant;
-import com.thuongleit.babr.vo.Product;
+import com.thuongleit.babr.vo.UpcProduct;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -22,38 +22,38 @@ public class ParseService {
     public ParseService() {
     }
 
-    public void saveProduct(Product product) {
+    public void saveProduct(UpcProduct upcProduct) {
         //save to parse
         ParseObject parseProduct = new ParseObject(Constant.PARSE_PRODUCTS);
         parseProduct.put("userId", ParseUser.getCurrentUser().getObjectId());
-        if (product.getImage() != null) {
-            parseProduct.put("image", product.getImage());
+        if (upcProduct.getImage() != null) {
+            parseProduct.put("image", upcProduct.getImage());
         }
-        if (product.getUpcA() != null) {
-            parseProduct.put("upcA", product.getUpcA());
+        if (upcProduct.getUpcA() != null) {
+            parseProduct.put("upcA", upcProduct.getUpcA());
         }
-        if (product.getEan() != null) {
-            parseProduct.put("ean", product.getEan());
+        if (upcProduct.getEan() != null) {
+            parseProduct.put("ean", upcProduct.getEan());
         }
-        if (product.getCountry() != null) {
-            parseProduct.put("country", product.getCountry());
+        if (upcProduct.getCountry() != null) {
+            parseProduct.put("country", upcProduct.getCountry());
         }
-        if (product.getManufacture() != null) {
-            parseProduct.put("manufacture", product.getManufacture());
+        if (upcProduct.getManufacture() != null) {
+            parseProduct.put("manufacture", upcProduct.getManufacture());
         }
-        if (product.getModel() != null) {
-            parseProduct.put("model", product.getModel());
+        if (upcProduct.getModel() != null) {
+            parseProduct.put("model", upcProduct.getModel());
         }
-        parseProduct.put("quantity", product.getQuantity());
+        parseProduct.put("quantity", upcProduct.getQuantity());
 
         parseProduct.saveInBackground();
     }
 
-    public Observable<Product> getProducts() {
+    public Observable<UpcProduct> getProducts() {
         ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
-        return Observable.create(new Observable.OnSubscribe<Product>() {
+        return Observable.create(new Observable.OnSubscribe<UpcProduct>() {
             @Override
-            public void call(Subscriber<? super Product> subscriber) {
+            public void call(Subscriber<? super UpcProduct> subscriber) {
                 query.findInBackground((objects, e) -> {
                     if (e == null && objects != null)
                         for (ParseObject object : objects) {
@@ -65,15 +65,15 @@ public class ParseService {
                             String model = object.getString("model");
                             Number quantity = object.getNumber("quantity");
 
-                            Product product = new Product();
-                            product.setImage(image);
-                            product.setUpcA(upcA);
-                            product.setEan(ean);
-                            product.setCountry(country);
-                            product.setManufacture(manufacture);
-                            product.setModel(model);
+                            UpcProduct upcProduct = new UpcProduct();
+                            upcProduct.setImage(image);
+                            upcProduct.setUpcA(upcA);
+                            upcProduct.setEan(ean);
+                            upcProduct.setCountry(country);
+                            upcProduct.setManufacture(manufacture);
+                            upcProduct.setModel(model);
 
-                            subscriber.onNext(product);
+                            subscriber.onNext(upcProduct);
                         }
                     subscriber.onCompleted();
                 });

@@ -42,7 +42,7 @@
                 android:value="com.thuongleit.babr.view.main.MainActivity" />
         </activity>
         <activity
-            android:name="com.thuongleit.babr.view.product.BarViewActivity"
+            android:name="com.thuongleit.babr.view.upcProduct.BarViewActivity"
             android:parentActivityName="com.thuongleit.babr.view.main.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

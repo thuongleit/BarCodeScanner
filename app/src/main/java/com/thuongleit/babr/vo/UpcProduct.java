@@ -1,19 +1,17 @@
 package com.thuongleit.babr.vo;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.thuongleit.babr.data.local.BarDatabase;
 
 /**
  * Created by thuongle on 11/23/15.
  */
 @Table(database = BarDatabase.class)
-public class Product extends BaseModel implements Parcelable {
+public class UpcProduct extends BaseProduct {
     @Column
     @PrimaryKey(autoincrement = true)
     long id;
@@ -32,10 +30,10 @@ public class Product extends BaseModel implements Parcelable {
     @Column
     int quantity = 0;
 
-    public Product() {
+    public UpcProduct() {
     }
 
-    protected Product(Parcel in) {
+    protected UpcProduct(Parcel in) {
         this.id = in.readLong();
         this.image = in.readString();
         this.upcA = in.readString();
@@ -140,13 +138,13 @@ public class Product extends BaseModel implements Parcelable {
         this.quantity = quantity;
     }
 
-    public static final Creator<Product> CREATOR = new Creator<Product>() {
-        public Product createFromParcel(Parcel source) {
-            return new Product(source);
+    public static final Creator<UpcProduct> CREATOR = new Creator<UpcProduct>() {
+        public UpcProduct createFromParcel(Parcel source) {
+            return new UpcProduct(source);
         }
 
-        public Product[] newArray(int size) {
-            return new Product[size];
+        public UpcProduct[] newArray(int size) {
+            return new UpcProduct[size];
         }
     };
 }

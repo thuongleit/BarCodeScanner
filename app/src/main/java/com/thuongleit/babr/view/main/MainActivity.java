@@ -30,6 +30,7 @@ import com.parse.ParseUser;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.config.Config;
+import com.thuongleit.babr.config.Constant;
 import com.thuongleit.babr.di.ActivityScope;
 import com.thuongleit.babr.util.AppUtils;
 import com.thuongleit.babr.util.DialogFactory;
@@ -40,7 +41,7 @@ import com.thuongleit.babr.view.scan.CameraActivity;
 import com.thuongleit.babr.view.scan.CameraFragment;
 import com.thuongleit.babr.view.signin.SignInActivity;
 import com.thuongleit.babr.view.widget.DancingScriptTextView;
-import com.thuongleit.babr.vo.Product;
+import com.thuongleit.babr.vo.UpcProduct;
 
 import java.util.Arrays;
 import java.util.List;
@@ -51,7 +52,7 @@ import butterknife.Bind;
 
 public class MainActivity extends ToolbarActivity implements NavigationView.OnNavigationItemSelectedListener, MainView {
 
-    private static final int REQUEST_QR_CODE = 1;
+    private static final int REQUEST_CAMERA = 1;
 
     @Bind(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -127,11 +128,11 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                 public boolean onQueryTextSubmit(final String query) {
 //                    new GetBarCodeAsyncTask(new GetBarCodeAsyncTask.OnUpdateUICallback() {
 //                        @Override
-//                        public void onUpdateUI(Observable<Product> product) {
+//                        public void onUpdateUI(Observable<UpcProduct> product) {
 //                            if (product != null) {
 //                                Intent intent = new Intent(MainActivity.this, BarViewActivity.class);
 //                                intent.putExtra("data", Parcels.wrap(product));
-//                                startActivityForResult(intent, REQUEST_QR_CODE);
+//                                startActivityForResult(intent, REQUEST_CAMERA);
 //                            } else {
 //                                buildFailedDialog(String.format("Number %s was incorrect or invalid, either the length or the the check digit may have been incorrect.", query)).show();
 //                            }
@@ -169,14 +170,14 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_QR_CODE && resultCode == RESULT_OK) {
-            Product product = data.getParcelableExtra(CameraFragment.EXTRA_DATA);
+        if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
+            UpcProduct upcProduct = data.getParcelableExtra(CameraFragment.EXTRA_DATA);
             removeAdditionalViews();
             if (mRecyclerView.getAdapter() == null) {
-                RecyclerView.Adapter adapter = new BarViewRecyclerAdapter(mContext, Arrays.asList(product));
+                RecyclerView.Adapter adapter = new BarViewRecyclerAdapter(mContext, Arrays.asList(upcProduct));
                 mRecyclerView.setAdapter(adapter);
             } else {
-                ((BarViewRecyclerAdapter) mRecyclerView.getAdapter()).addItem(product);
+                ((BarViewRecyclerAdapter) mRecyclerView.getAdapter()).addItem(upcProduct);
             }
         }
     }
@@ -249,13 +250,13 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     }
 
     @Override
-    public void showProducts(List<Product> products) {
+    public void showProducts(List<UpcProduct> upcProducts) {
         removeAdditionalViews();
         if (mRecyclerView.getAdapter() == null) {
-            RecyclerView.Adapter adapter = new BarViewRecyclerAdapter(MainActivity.this, products);
+            RecyclerView.Adapter adapter = new BarViewRecyclerAdapter(MainActivity.this, upcProducts);
             mRecyclerView.setAdapter(adapter);
         } else {
-            ((BarViewRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
+            ((BarViewRecyclerAdapter) mRecyclerView.getAdapter()).addItems(upcProducts);
         }
     }
 
@@ -335,11 +336,16 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             }
         });
         mFabAmazon.setOnClickListener(v -> {
+            Intent intent = new Intent(mContext, CameraActivity.class);
+            intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_AMAZON_SERVICE);
+            startActivityForResult(intent, REQUEST_CAMERA);
+            mFabMenu.collapse();
 
         });
         mFabUpcItemDb.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, CameraActivity.class);
-            startActivityForResult(intent, REQUEST_QR_CODE);
+            Intent intent = new Intent(mContext, CameraActivity.class);
+            intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_UPC_SERVICE);
+            startActivityForResult(intent, REQUEST_CAMERA);
             mFabMenu.collapse();
         });
     }

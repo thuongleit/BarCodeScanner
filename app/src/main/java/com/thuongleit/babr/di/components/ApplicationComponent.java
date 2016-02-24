@@ -8,6 +8,7 @@ import com.thuongleit.babr.data.DataManager;
 import com.thuongleit.babr.data.local.ProductModel;
 import com.thuongleit.babr.data.remote.ApiModule;
 import com.thuongleit.babr.data.remote.ParseService;
+import com.thuongleit.babr.data.remote.amazon.AmazonService;
 import com.thuongleit.babr.di.ApplicationScope;
 import com.thuongleit.babr.di.modules.ApplicationModule;
 
@@ -28,6 +29,8 @@ public interface ApplicationComponent {
     Context context();
 
     ParseService parseService();
+
+    AmazonService amazonService();
 
     DataManager dataManager();
 

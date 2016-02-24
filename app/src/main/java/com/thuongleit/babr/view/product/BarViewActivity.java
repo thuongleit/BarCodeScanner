@@ -13,7 +13,7 @@ import com.squareup.picasso.Picasso;
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.data.remote.ParseService;
 import com.thuongleit.babr.view.base.ToolbarActivity;
-import com.thuongleit.babr.vo.Product;
+import com.thuongleit.babr.vo.UpcProduct;
 
 import javax.inject.Inject;
 
@@ -36,7 +36,7 @@ public class BarViewActivity extends ToolbarActivity {
     @Inject
     ParseService mParseService;
 
-    private Product mProduct;
+    private UpcProduct mUpcProduct;
 
     @Override
     protected int getLayoutId() {
@@ -52,8 +52,8 @@ public class BarViewActivity extends ToolbarActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mProduct = getIntent().getParcelableExtra(EXTRA_PRODUCT);
-        bindView(mProduct);
+        mUpcProduct = getIntent().getParcelableExtra(EXTRA_PRODUCT);
+        bindView(mUpcProduct);
     }
 
     @Override
@@ -70,10 +70,10 @@ public class BarViewActivity extends ToolbarActivity {
 
                 if (ParseUser.getCurrentUser() != null) {
                     //put data to server
-                    mParseService.saveProduct(mProduct);
+                    mParseService.saveProduct(mUpcProduct);
                 }
 
-                intent.putExtra(EXTRA_PRODUCT, mProduct);
+                intent.putExtra(EXTRA_PRODUCT, mUpcProduct);
                 setResult(RESULT_OK, intent);
                 this.finish();
                 return true;
@@ -82,13 +82,13 @@ public class BarViewActivity extends ToolbarActivity {
         return false;
     }
 
-    private void bindView(Product product) {
-        mTextBarcodeTitle.setText(product.getModel());
-        mTextBarcodeManufacture.setText(product.getManufacture());
-        mTextBarcodeCountry.setText(product.getCountry());
+    private void bindView(UpcProduct upcProduct) {
+        mTextBarcodeTitle.setText(upcProduct.getModel());
+        mTextBarcodeManufacture.setText(upcProduct.getManufacture());
+        mTextBarcodeCountry.setText(upcProduct.getCountry());
 
-        if (!TextUtils.isEmpty(product.getImage())) {
-            Picasso.with(this).load(product.getImage()).into(mImageBarView);
+        if (!TextUtils.isEmpty(upcProduct.getImage())) {
+            Picasso.with(this).load(upcProduct.getImage()).into(mImageBarView);
         }
     }
 }

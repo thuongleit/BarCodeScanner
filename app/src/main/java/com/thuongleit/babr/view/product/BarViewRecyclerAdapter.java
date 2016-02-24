@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.thuongleit.babr.R;
-import com.thuongleit.babr.vo.Product;
+import com.thuongleit.babr.vo.UpcProduct;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -24,9 +24,9 @@ import butterknife.ButterKnife;
 public class BarViewRecyclerAdapter extends RecyclerView.Adapter<BarViewRecyclerAdapter.ViewHolder> {
 
     private final Context context;
-    private final List<Product> values;
+    private final List<UpcProduct> values;
 
-    public BarViewRecyclerAdapter(Context context, List<Product> values) {
+    public BarViewRecyclerAdapter(Context context, List<UpcProduct> values) {
         this.context = context;
         this.values = values;
     }
@@ -39,8 +39,8 @@ public class BarViewRecyclerAdapter extends RecyclerView.Adapter<BarViewRecycler
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Product product = values.get(position);
-        holder.bindView(product);
+        UpcProduct upcProduct = values.get(position);
+        holder.bindView(upcProduct);
     }
 
     @Override
@@ -48,13 +48,13 @@ public class BarViewRecyclerAdapter extends RecyclerView.Adapter<BarViewRecycler
         return (values == null) ? 0 : values.size();
     }
 
-    public void addItem(Product product) {
-        this.values.add(product);
+    public void addItem(UpcProduct upcProduct) {
+        this.values.add(upcProduct);
         notifyDataSetChanged();
     }
 
-    public void addItems(List<Product> products) {
-        this.values.addAll(products);
+    public void addItems(List<UpcProduct> upcProducts) {
+        this.values.addAll(upcProducts);
         notifyDataSetChanged();
     }
 
@@ -74,13 +74,13 @@ public class BarViewRecyclerAdapter extends RecyclerView.Adapter<BarViewRecycler
             ButterKnife.bind(this, view);
         }
 
-        public void bindView(Product product) {
-            textBarcodeTitle.setText(product.getModel());
-            textBarcodeManufacture.setText(product.getManufacture());
-            textBarcodeCountry.setText(product.getCountry());
+        public void bindView(UpcProduct upcProduct) {
+            textBarcodeTitle.setText(upcProduct.getModel());
+            textBarcodeManufacture.setText(upcProduct.getManufacture());
+            textBarcodeCountry.setText(upcProduct.getCountry());
 
-            if (!TextUtils.isEmpty(product.getImage())) {
-                Picasso.with(context).load(product.getImage()).into(imageBarView);
+            if (!TextUtils.isEmpty(upcProduct.getImage())) {
+                Picasso.with(context).load(upcProduct.getImage()).into(imageBarView);
             }
         }
     }

@@ -22,12 +22,13 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.thuongleit.babr.R;
+import com.thuongleit.babr.config.Constant;
 import com.thuongleit.babr.di.ActivityScope;
 import com.thuongleit.babr.util.AppUtils;
 import com.thuongleit.babr.util.DialogFactory;
 import com.thuongleit.babr.view.base.BaseFragment;
 import com.thuongleit.babr.view.widget.CameraPreview;
-import com.thuongleit.babr.vo.Product;
+import com.thuongleit.babr.vo.UpcProduct;
 
 import net.sourceforge.zbar.Config;
 import net.sourceforge.zbar.Image;
@@ -41,7 +42,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class CameraFragment extends BaseFragment implements Camera.PreviewCallback, ScanQrCodeView {
+public class CameraFragment extends BaseFragment implements Camera.PreviewCallback, ScanView {
 
     public static final String EXTRA_DATA =
             "com.whooo.barscanner.view.scan.CameraFragment.EXTRA_DATA";
@@ -50,7 +51,7 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
     FrameLayout mCameraPreview;
 
     @Inject
-    ScanQrCodePresenter mScanQrCodePresenter;
+    ProductLookupPresenter mProductLookupPresenter;
     @Inject
     @ActivityScope
     Context mContext;
@@ -63,6 +64,13 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
     private boolean mPreviewing = true;
     private boolean mFlash = false;
     private ProgressDialog mProgressDialog;
+    private String mService;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mService = ((CameraActivity) context).getService();
+    }
 
     @Nullable
     @Override
@@ -82,7 +90,7 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
             // Cancel request if there is no rear-facing camera.
             cancelRequest();
         }
-        mScanQrCodePresenter.attachView(this);
+        mProductLookupPresenter.attachView(this);
 
         return view;
     }
@@ -115,7 +123,7 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mScanQrCodePresenter.detachView();
+        mProductLookupPresenter.detachView();
     }
 
     @Override
@@ -142,9 +150,9 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
     }
 
     @Override
-    public void onExecuteFinished(Product product) {
+    public void onExecuteFinished(UpcProduct upcProduct) {
         Intent intent = getActivity().getIntent();
-        intent.putExtra(EXTRA_DATA, product);
+        intent.putExtra(EXTRA_DATA, upcProduct);
         getActivity().setResult(Activity.RESULT_OK, intent);
         getActivity().finish();
     }
@@ -242,7 +250,7 @@ public class CameraFragment extends BaseFragment implements Camera.PreviewCallba
                         String scanResult = sym.getData().trim();
 
                         //Use Below function to make a server call and complete request.
-                        mScanQrCodePresenter.executeQrCode(scanResult);
+                        mProductLookupPresenter.execute(scanResult, Constant.KEY_AMAZON_SERVICE);
                         AppUtils.playSound(mContext);
                         break;
                     }

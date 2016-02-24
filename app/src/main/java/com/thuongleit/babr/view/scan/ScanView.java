@@ -1,14 +1,14 @@
 package com.thuongleit.babr.view.scan;
 
 import com.thuongleit.babr.view.base.ErrorableView;
-import com.thuongleit.babr.vo.Product;
+import com.thuongleit.babr.vo.UpcProduct;
 
 /**
  * Created by thuongle on 1/3/16.
  */
-public interface ScanQrCodeView extends ErrorableView {
+public interface ScanView extends ErrorableView {
 
-    void onExecuteFinished(Product product);
+    void onExecuteFinished(UpcProduct upcProduct);
 
     void showProgress(boolean show);
 }
