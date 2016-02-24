@@ -10,7 +10,7 @@
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-    <com.whooo.barscanner.view.widget.DancingScriptTextView
+    <com.thuongleit.babr.view.widget.DancingScriptTextView
         android:id="@+id/text_toolbar_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

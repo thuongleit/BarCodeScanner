@@ -6,7 +6,7 @@
     android:clickable="true"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <com.whooo.barscanner.view.widget.DancingScriptTextView
+    <com.thuongleit.babr.view.widget.DancingScriptTextView
         android:id="@+id/text_nav_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

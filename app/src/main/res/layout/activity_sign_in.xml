@@ -22,7 +22,7 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <com.whooo.barscanner.view.widget.DancingScriptTextView
+            <com.thuongleit.babr.view.widget.DancingScriptTextView
                 android:layout_width="200dp"
                 android:layout_height="150dp"
                 android:layout_gravity="center_vertical|center_horizontal"
@@ -142,7 +142,7 @@
                 android:text="or"
                 android:textColor="@android:color/white" />
 
-            <com.whooo.barscanner.view.widget.HTMLTextView
+            <com.thuongleit.babr.view.widget.HTMLTextView
                 android:id="@+id/text_login_as_guest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
