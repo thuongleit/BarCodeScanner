@@ -8,7 +8,8 @@ import com.thuongleit.babr.di.PerActivity;
 import com.thuongleit.babr.di.modules.ActivityModule;
 import com.thuongleit.babr.view.main.MainActivity;
 import com.thuongleit.babr.view.product.BarViewActivity;
-import com.thuongleit.babr.view.scan.CameraFragment;
+import com.thuongleit.babr.view.scan.CameraActivity;
+import com.thuongleit.babr.view.scan.SearchResultActivity;
 import com.thuongleit.babr.view.signin.SignInActivity;
 import com.thuongleit.babr.view.signup.SignUpActivity;
 
@@ -30,9 +31,12 @@ public interface ActivityComponent {
 
     void inject(SignUpActivity activity);
 
-    void inject(CameraFragment fragment);
 
     void inject(BarViewActivity activity);
 
     void inject(MainActivity activity);
+
+    void inject(CameraActivity activity);
+
+    void inject(SearchResultActivity activity);
 }

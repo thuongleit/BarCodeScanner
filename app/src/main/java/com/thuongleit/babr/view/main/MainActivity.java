@@ -36,12 +36,11 @@ import com.thuongleit.babr.util.AppUtils;
 import com.thuongleit.babr.util.DialogFactory;
 import com.thuongleit.babr.view.AppIntroActivity;
 import com.thuongleit.babr.view.base.ToolbarActivity;
-import com.thuongleit.babr.view.product.BarViewRecyclerAdapter;
+import com.thuongleit.babr.view.product.ProductRecyclerAdapter;
 import com.thuongleit.babr.view.scan.CameraActivity;
-import com.thuongleit.babr.view.scan.CameraFragment;
 import com.thuongleit.babr.view.signin.SignInActivity;
 import com.thuongleit.babr.view.widget.DancingScriptTextView;
-import com.thuongleit.babr.vo.UpcProduct;
+import com.thuongleit.babr.vo.Product;
 
 import java.util.Arrays;
 import java.util.List;
@@ -128,7 +127,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                 public boolean onQueryTextSubmit(final String query) {
 //                    new GetBarCodeAsyncTask(new GetBarCodeAsyncTask.OnUpdateUICallback() {
 //                        @Override
-//                        public void onUpdateUI(Observable<UpcProduct> product) {
+//                        public void onUpdateUI(Observable<Product> product) {
 //                            if (product != null) {
 //                                Intent intent = new Intent(MainActivity.this, BarViewActivity.class);
 //                                intent.putExtra("data", Parcels.wrap(product));
@@ -171,13 +170,13 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
-            UpcProduct upcProduct = data.getParcelableExtra(CameraFragment.EXTRA_DATA);
+            Product product = null;
             removeAdditionalViews();
             if (mRecyclerView.getAdapter() == null) {
-                RecyclerView.Adapter adapter = new BarViewRecyclerAdapter(mContext, Arrays.asList(upcProduct));
+                RecyclerView.Adapter adapter = new ProductRecyclerAdapter(mContext, Arrays.asList(product));
                 mRecyclerView.setAdapter(adapter);
             } else {
-                ((BarViewRecyclerAdapter) mRecyclerView.getAdapter()).addItem(upcProduct);
+                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItem(product);
             }
         }
     }
@@ -250,13 +249,13 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     }
 
     @Override
-    public void showProducts(List<UpcProduct> upcProducts) {
+    public void showProducts(List<Product> products) {
         removeAdditionalViews();
         if (mRecyclerView.getAdapter() == null) {
-            RecyclerView.Adapter adapter = new BarViewRecyclerAdapter(MainActivity.this, upcProducts);
+            RecyclerView.Adapter adapter = new ProductRecyclerAdapter(MainActivity.this, products);
             mRecyclerView.setAdapter(adapter);
         } else {
-            ((BarViewRecyclerAdapter) mRecyclerView.getAdapter()).addItems(upcProducts);
+            ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
         }
     }
 

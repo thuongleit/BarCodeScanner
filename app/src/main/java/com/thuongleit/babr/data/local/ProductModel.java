@@ -4,8 +4,8 @@ import android.app.Application;
 
 import com.raizlabs.android.dbflow.sql.language.Insert;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
-import com.thuongleit.babr.vo.UpcProduct;
-import com.thuongleit.babr.vo.UpcProduct_Table;
+import com.thuongleit.babr.vo.Product;
+import com.thuongleit.babr.vo.Product_Table;
 
 import java.util.List;
 
@@ -25,25 +25,26 @@ public class ProductModel extends BaseModel {
         super(application);
     }
 
-    public void saveProduct(UpcProduct upcProduct) {
-        Insert<UpcProduct> insertQuery = SQLite
-                .insert(UpcProduct.class)
+    public void saveProduct(Product product) {
+        Insert<Product> insertQuery = SQLite
+                .insert(Product.class)
                 .columnValues(
-                        UpcProduct_Table.country.eq(upcProduct.getCountry()),
-                        UpcProduct_Table.ean.eq(upcProduct.getEan()),
-                        UpcProduct_Table.image.eq(upcProduct.getImage()),
-                        UpcProduct_Table.manufacture.eq(upcProduct.getManufacture()),
-                        UpcProduct_Table.model.eq(upcProduct.getModel()),
-                        UpcProduct_Table.quantity.eq(upcProduct.getQuantity()),
-                        UpcProduct_Table.upcA.eq(upcProduct.getUpcA()));
+                        Product_Table.country.eq(product.getCountry()),
+                        Product_Table.ean.eq(product.getEan()),
+                        Product_Table.name.eq(product.getName()),
+                        Product_Table.imageUrl.eq(product.getImageUrl()),
+                        Product_Table.manufacture.eq(product.getManufacture()),
+                        Product_Table.model.eq(product.getModel()),
+                        Product_Table.quantity.eq(product.getQuantity()),
+                        Product_Table.upcA.eq(product.getUpcA()));
         Timber.i(insertQuery.getQuery());
         insertQuery.execute();
     }
 
-    public List<UpcProduct> loadProducts() {
+    public List<Product> loadProducts() {
         return SQLite
                 .select()
-                .from(UpcProduct.class)
+                .from(Product.class)
                 .queryList();
     }
 }

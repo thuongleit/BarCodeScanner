@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.thuongleit.babr.R;
-import com.thuongleit.babr.vo.UpcProduct;
+import com.thuongleit.babr.vo.Product;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -21,12 +21,12 @@ import butterknife.ButterKnife;
 /**
  * Created by thuongle on 11/24/15.
  */
-public class BarViewRecyclerAdapter extends RecyclerView.Adapter<BarViewRecyclerAdapter.ViewHolder> {
+public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecyclerAdapter.ViewHolder> {
 
     private final Context context;
-    private final List<UpcProduct> values;
+    private final List<Product> values;
 
-    public BarViewRecyclerAdapter(Context context, List<UpcProduct> values) {
+    public ProductRecyclerAdapter(Context context, List<Product> values) {
         this.context = context;
         this.values = values;
     }
@@ -39,8 +39,8 @@ public class BarViewRecyclerAdapter extends RecyclerView.Adapter<BarViewRecycler
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        UpcProduct upcProduct = values.get(position);
-        holder.bindView(upcProduct);
+        Product product = values.get(position);
+        holder.bindView(product);
     }
 
     @Override
@@ -48,13 +48,13 @@ public class BarViewRecyclerAdapter extends RecyclerView.Adapter<BarViewRecycler
         return (values == null) ? 0 : values.size();
     }
 
-    public void addItem(UpcProduct upcProduct) {
-        this.values.add(upcProduct);
+    public void addItem(Product product) {
+        this.values.add(product);
         notifyDataSetChanged();
     }
 
-    public void addItems(List<UpcProduct> upcProducts) {
-        this.values.addAll(upcProducts);
+    public void addItems(List<Product> products) {
+        this.values.addAll(products);
         notifyDataSetChanged();
     }
 
@@ -74,13 +74,13 @@ public class BarViewRecyclerAdapter extends RecyclerView.Adapter<BarViewRecycler
             ButterKnife.bind(this, view);
         }
 
-        public void bindView(UpcProduct upcProduct) {
-            textBarcodeTitle.setText(upcProduct.getModel());
-            textBarcodeManufacture.setText(upcProduct.getManufacture());
-            textBarcodeCountry.setText(upcProduct.getCountry());
+        public void bindView(Product product) {
+            textBarcodeTitle.setText(product.getModel());
+            textBarcodeManufacture.setText(product.getManufacture());
+            textBarcodeCountry.setText(product.getCountry());
 
-            if (!TextUtils.isEmpty(upcProduct.getImage())) {
-                Picasso.with(context).load(upcProduct.getImage()).into(imageBarView);
+            if (!TextUtils.isEmpty(product.getImageUrl())) {
+                Picasso.with(context).load(product.getImageUrl()).fit().into(imageBarView);
             }
         }
     }

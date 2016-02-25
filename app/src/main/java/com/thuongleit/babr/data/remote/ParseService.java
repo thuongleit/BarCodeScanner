@@ -4,7 +4,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.thuongleit.babr.config.Constant;
-import com.thuongleit.babr.vo.UpcProduct;
+import com.thuongleit.babr.vo.Product;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -22,38 +22,38 @@ public class ParseService {
     public ParseService() {
     }
 
-    public void saveProduct(UpcProduct upcProduct) {
+    public void saveProduct(Product product) {
         //save to parse
         ParseObject parseProduct = new ParseObject(Constant.PARSE_PRODUCTS);
         parseProduct.put("userId", ParseUser.getCurrentUser().getObjectId());
-        if (upcProduct.getImage() != null) {
-            parseProduct.put("image", upcProduct.getImage());
+        if (product.getImageUrl() != null) {
+            parseProduct.put("image", product.getImageUrl());
         }
-        if (upcProduct.getUpcA() != null) {
-            parseProduct.put("upcA", upcProduct.getUpcA());
+        if (product.getUpcA() != null) {
+            parseProduct.put("upcA", product.getUpcA());
         }
-        if (upcProduct.getEan() != null) {
-            parseProduct.put("ean", upcProduct.getEan());
+        if (product.getEan() != null) {
+            parseProduct.put("ean", product.getEan());
         }
-        if (upcProduct.getCountry() != null) {
-            parseProduct.put("country", upcProduct.getCountry());
+        if (product.getCountry() != null) {
+            parseProduct.put("country", product.getCountry());
         }
-        if (upcProduct.getManufacture() != null) {
-            parseProduct.put("manufacture", upcProduct.getManufacture());
+        if (product.getManufacture() != null) {
+            parseProduct.put("manufacture", product.getManufacture());
         }
-        if (upcProduct.getModel() != null) {
-            parseProduct.put("model", upcProduct.getModel());
+        if (product.getModel() != null) {
+            parseProduct.put("model", product.getModel());
         }
-        parseProduct.put("quantity", upcProduct.getQuantity());
+        parseProduct.put("quantity", product.getQuantity());
 
         parseProduct.saveInBackground();
     }
 
-    public Observable<UpcProduct> getProducts() {
+    public Observable<Product> getProducts() {
         ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
-        return Observable.create(new Observable.OnSubscribe<UpcProduct>() {
+        return Observable.create(new Observable.OnSubscribe<Product>() {
             @Override
-            public void call(Subscriber<? super UpcProduct> subscriber) {
+            public void call(Subscriber<? super Product> subscriber) {
                 query.findInBackground((objects, e) -> {
                     if (e == null && objects != null)
                         for (ParseObject object : objects) {
@@ -65,15 +65,15 @@ public class ParseService {
                             String model = object.getString("model");
                             Number quantity = object.getNumber("quantity");
 
-                            UpcProduct upcProduct = new UpcProduct();
-                            upcProduct.setImage(image);
-                            upcProduct.setUpcA(upcA);
-                            upcProduct.setEan(ean);
-                            upcProduct.setCountry(country);
-                            upcProduct.setManufacture(manufacture);
-                            upcProduct.setModel(model);
+                            Product product = new Product();
+                            product.setImageUrl(image);
+                            product.setUpcA(upcA);
+                            product.setEan(ean);
+                            product.setCountry(country);
+                            product.setManufacture(manufacture);
+                            product.setModel(model);
 
-                            subscriber.onNext(upcProduct);
+                            subscriber.onNext(product);
                         }
                     subscriber.onCompleted();
                 });

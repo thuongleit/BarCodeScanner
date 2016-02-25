@@ -3,13 +3,12 @@ package com.thuongleit.babr.view.scan;
 import com.thuongleit.babr.config.Constant;
 import com.thuongleit.babr.data.DataManager;
 import com.thuongleit.babr.view.base.BasePresenter;
-import com.thuongleit.babr.vo.UpcProduct;
 
-import java.util.List;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
 import javax.inject.Inject;
 
-import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -39,39 +38,50 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
     public void execute(final String code, String service) {
         checkViewAttached();
         mView.showProgress(true);
+        mView.playRingtone();
 
-        Observable<List<UpcProduct>> listObservable = null;
         switch (service) {
             case Constant.KEY_AMAZON_SERVICE:
-                listObservable = mDataManager.searchProductsInAmazon(code);
+                mSubscription = mDataManager
+                        .searchProductsInAmazon(code)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                response -> {
+                                    if (response.getProducts() == null || response.getProducts().isEmpty()) {
+                                        mView.onEmptyProductReturn();
+                                    } else {
+                                        mView.onRequestSuccess(response);
+                                    }
+                                }, e -> {
+                                    if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                        mView.showNetworkError();
+                                    } else {
+                                        mView.showGeneralError(e.getMessage());
+                                    }
+                                },
+                                () -> mView.showProgress(false));
                 break;
             case Constant.KEY_UPC_SERVICE:
-                mDataManager.getProduct(code);
+                mSubscription = mDataManager
+                        .getProduct(code)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(product -> {
+                                    if (product == null) {
+                                        mView.onEmptyProductReturn();
+                                    } else {
+                                        mView.onRequestSuccess(product);
+                                    }
+                                },
+                                e -> {
+                                    if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                        mView.showNetworkError();
+                                    } else {
+                                        mView.showGeneralError(e.getMessage());
+                                    }
+                                }, () -> mView.showProgress(false));
                 break;
-//            .subscribeOn(Schedulers.newThread())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe(new Subscriber<UpcProduct>() {
-//                        @Override
-//                        public void onCompleted() {
-//                            mView.showProgress(false);
-//                        }
-//
-//                        @Override
-//                        public void onError(Throwable e) {
-//                            mView.showProgress(false);
-//                            mView.showGeneralError(e.getMessage());
-//                        }
-//
-//                        @Override
-//                        public void onNext(UpcProduct upcProduct) {
-//                            mView.onExecuteFinished(upcProduct);
-//                        }
-//                    });
         }
-
-        listObservable
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
     }
 }

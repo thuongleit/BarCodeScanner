@@ -7,12 +7,12 @@ import com.thuongleit.babr.config.Config;
 import com.thuongleit.babr.config.Constant;
 import com.thuongleit.babr.data.local.ProductModel;
 import com.thuongleit.babr.data.remote.ParseService;
-import com.thuongleit.babr.data.remote.amazon.model.AmazonProductResponse;
+import com.thuongleit.babr.data.remote.amazon.AmazonParseService;
 import com.thuongleit.babr.data.remote.amazon.AmazonService;
-import com.thuongleit.babr.data.remote.amazon.model.AmazonSearchProduct;
+import com.thuongleit.babr.data.remote.amazon.model.AmazonProductResponse;
 import com.thuongleit.babr.data.remote.amazon.util.AmazonSignedRequestsHelper;
-import com.thuongleit.babr.data.remote.upc.ProductService;
-import com.thuongleit.babr.vo.UpcProduct;
+import com.thuongleit.babr.data.remote.upc.UpcParseService;
+import com.thuongleit.babr.vo.Product;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -24,7 +24,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -36,7 +35,9 @@ public class DataManager {
     @Inject
     ProductModel mProductModel;
     @Inject
-    ProductService mProductService;
+    UpcParseService mUpcParseService;
+    @Inject
+    AmazonParseService mAmazonParseService;
     @Inject
     ParseService mParseService;
     @Inject
@@ -49,8 +50,8 @@ public class DataManager {
         ((BarApplication) app).getAppComponent().inject(this);
     }
 
-    public Observable<UpcProduct> getProduct(String qrCode) {
-        return mProductService.getProduct(Constant.UPC_ENDPOINT_URL + qrCode)
+    public Observable<Product> getProduct(String qrCode) {
+        return mUpcParseService.getProduct(Constant.UPC_ENDPOINT_URL + qrCode)
                 .doOnNext(product -> {
                     //save to db
                     mProductModel.saveProduct(product);
@@ -62,13 +63,13 @@ public class DataManager {
                 });
     }
 
-    public Observable<List<UpcProduct>> getProducts() {
+    public Observable<List<Product>> getProducts() {
         if (mConfig.isUserLogin()) {
             return Observable.create(subscriber -> {
-                List<UpcProduct> upcProducts = new ArrayList<>();
+                List<Product> products = new ArrayList<>();
                 mParseService.getProducts().doOnNext(product -> {
-                    upcProducts.add(product);
-                    subscriber.onNext(upcProducts);
+                    products.add(product);
+                    subscriber.onNext(products);
                 }).doOnCompleted(() -> subscriber.onCompleted())
                         .subscribeOn(Schedulers.newThread())
                         .subscribe();
@@ -85,8 +86,7 @@ public class DataManager {
         }
     }
 
-    public Observable<List<UpcProduct>> searchProductsInAmazon(String keyword) {
-
+    public Observable<AmazonProductResponse> searchProductsInAmazon(String keyword) {
         String signedUrl = null;
         try {
             AmazonSignedRequestsHelper signer = AmazonSignedRequestsHelper.
@@ -100,18 +100,12 @@ public class DataManager {
         }
 
         if (signedUrl != null) {
-            return mAmazonService.search(signedUrl).map(new Func1<AmazonProductResponse, List<UpcProduct>>() {
-                @Override
-                public List<UpcProduct> call(AmazonProductResponse amazonProductResponse) {
-                    List<AmazonSearchProduct> amazonProducts = amazonProductResponse.getProducts();
-                    for (AmazonSearchProduct product : amazonProducts) {
-
-                    }
-
-                    return null;
-                }
-            });
+            return mAmazonService.search(signedUrl);
         }
         return null;
+    }
+
+    public Observable<Product> parseProductFromAmazon(String detailPageURL) {
+        return mAmazonParseService.parse(detailPageURL);
     }
 }
