@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -31,6 +32,7 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.config.Config;
 import com.thuongleit.babr.config.Constant;
+import com.thuongleit.babr.data.remote.amazon.model.AmazonProductResponse;
 import com.thuongleit.babr.di.ActivityScope;
 import com.thuongleit.babr.util.AppUtils;
 import com.thuongleit.babr.util.DialogFactory;
@@ -40,8 +42,10 @@ import com.thuongleit.babr.view.product.ProductRecyclerAdapter;
 import com.thuongleit.babr.view.scan.CameraActivity;
 import com.thuongleit.babr.view.signin.SignInActivity;
 import com.thuongleit.babr.view.widget.DancingScriptTextView;
+import com.thuongleit.babr.view.widget.DividerItemDecoration;
 import com.thuongleit.babr.vo.Product;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -170,13 +174,13 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
-            Product product = null;
+            ArrayList<Product> products = data.getParcelableArrayListExtra(CameraActivity.EXTRA_DATA);
             removeAdditionalViews();
             if (mRecyclerView.getAdapter() == null) {
-                RecyclerView.Adapter adapter = new ProductRecyclerAdapter(mContext, Arrays.asList(product));
+                RecyclerView.Adapter adapter = new ProductRecyclerAdapter(mContext, products);
                 mRecyclerView.setAdapter(adapter);
             } else {
-                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItem(product);
+                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
             }
         }
     }
@@ -271,6 +275,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
     private void setupReCyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST));
     }
 
     private void setupNavigationView() {

@@ -42,15 +42,12 @@ public class SignUpActivity extends BaseActivity implements SignUpView {
         getComponent().inject(this);
         mSignUpPresenter.attachView(this);
 
-        mInputConfirmPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.button_sign_up || id == EditorInfo.IME_NULL) {
-                    attemptSignUp();
-                    return true;
-                }
-                return false;
+        mInputConfirmPassword.setOnEditorActionListener((textView, id, keyEvent) -> {
+            if (id == R.id.button_sign_up || id == EditorInfo.IME_NULL) {
+                attemptSignUp();
+                return true;
             }
+            return false;
         });
     }
 

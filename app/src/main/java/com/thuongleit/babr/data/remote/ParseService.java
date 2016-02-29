@@ -71,7 +71,7 @@ public class ParseService {
                             product.setEan(ean);
                             product.setCountry(country);
                             product.setManufacture(manufacture);
-                            product.setModel(model);
+                            product.setName(model);
 
                             subscriber.onNext(product);
                         }

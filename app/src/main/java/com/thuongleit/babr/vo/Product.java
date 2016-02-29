@@ -37,18 +37,6 @@ public class Product extends BaseModel implements Parcelable {
     public Product() {
     }
 
-    protected Product(Parcel in) {
-        this.id = in.readLong();
-        this.imageUrl = in.readString();
-        this.upcA = in.readString();
-        this.ean = in.readString();
-        this.country = in.readString();
-        this.manufacture = in.readString();
-        this.model = in.readString();
-        this.name = in.readString();
-        this.quantity = in.readInt();
-    }
-
     @Override
     public String toString() {
         StringBuffer info = new StringBuffer();
@@ -60,24 +48,6 @@ public class Product extends BaseModel implements Parcelable {
                 .append(manufacture).append("\n")
                 .append(model).append("\n");
         return info.toString();
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(this.id);
-        dest.writeString(this.imageUrl);
-        dest.writeString(this.upcA);
-        dest.writeString(this.ean);
-        dest.writeString(this.country);
-        dest.writeString(this.manufacture);
-        dest.writeString(this.model);
-        dest.writeInt(this.quantity);
-        dest.writeString(this.name);
     }
 
     public long getId() {
@@ -150,6 +120,36 @@ public class Product extends BaseModel implements Parcelable {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeString(this.imageUrl);
+        dest.writeString(this.name);
+        dest.writeString(this.upcA);
+        dest.writeString(this.ean);
+        dest.writeString(this.country);
+        dest.writeString(this.manufacture);
+        dest.writeString(this.model);
+        dest.writeInt(this.quantity);
+    }
+
+    protected Product(Parcel in) {
+        this.id = in.readLong();
+        this.imageUrl = in.readString();
+        this.name = in.readString();
+        this.upcA = in.readString();
+        this.ean = in.readString();
+        this.country = in.readString();
+        this.manufacture = in.readString();
+        this.model = in.readString();
+        this.quantity = in.readInt();
     }
 
     public static final Creator<Product> CREATOR = new Creator<Product>() {

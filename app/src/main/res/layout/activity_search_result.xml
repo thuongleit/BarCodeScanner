@@ -27,6 +27,7 @@
                 android:weightSum="2">
 
                 <Button
+                    android:id="@+id/button_toolbar_cancel"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="-5dp"
@@ -41,6 +42,7 @@
                     android:background="@color/black_10" />
 
                 <Button
+                    android:id="@+id/button_toolbar_save"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"

@@ -40,6 +40,7 @@ import timber.log.Timber;
 public class CameraActivity extends ToolbarActivity implements ScanView, Camera.PreviewCallback {
 
     public static final String EXTRA_SERVICE = "CameraActivity.EXTRA_SERVICE";
+    public static final String EXTRA_DATA = "CameraActivity.EXTRA_DATA";
     private static final int REQUEST_RESULT_ACTIVITY = 1;
 
     @Bind(R.id.cameraPreview)
@@ -143,6 +144,23 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_RESULT_ACTIVITY:
+                if (resultCode == Activity.RESULT_OK) {
+                    Intent intent = getIntent();
+                    intent.putParcelableArrayListExtra(EXTRA_DATA, data.getParcelableArrayListExtra(SearchResultActivity.EXTRA_DATA));
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
+                } else {
+                    startScan();
+                }
+                break;
+        }
+    }
+
+    @Override
     public void showProgress(boolean show) {
         if (mProgressDialog == null) {
             mProgressDialog = DialogFactory.createProgressDialog(mContext, "Searching...");
@@ -171,11 +189,6 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
         Intent intent = new Intent(mContext, SearchResultActivity.class);
         intent.putExtra(SearchResultActivity.EXTRA_DATA, parcelable);
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
-
-//        Intent intent = getActivity().getIntent();
-//        intent.putExtra(EXTRA_DATA, product);
-//        getActivity().setResult(Activity.RESULT_OK, intent);
-//        getActivity().finish();
     }
 
     @Override
@@ -216,7 +229,6 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
         mPreview.stopCamera();
         mPreviewing = false;
     }
-
 
     /**
      * A safe way to get an instance of the Camera object.

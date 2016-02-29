@@ -75,7 +75,9 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         }
 
         public void bindView(Product product) {
-            textBarcodeTitle.setText(product.getModel());
+            if (!TextUtils.isEmpty(product.getName())) {
+                textBarcodeTitle.setText(product.getName());
+            }
             textBarcodeManufacture.setText(product.getManufacture());
             textBarcodeCountry.setText(product.getCountry());
 
