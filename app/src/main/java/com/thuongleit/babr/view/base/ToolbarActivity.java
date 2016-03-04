@@ -43,4 +43,12 @@ public abstract class ToolbarActivity extends BaseActivity {
     protected void setTitle(String title) {
         mToolbarTitle.setText(title);
     }
+
+    protected Toolbar getToolbar() {
+        return mToolbar;
+    }
+
+    protected TextView getToolbarTitle() {
+        return mToolbarTitle;
+    }
 }

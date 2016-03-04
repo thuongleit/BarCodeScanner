@@ -4,12 +4,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.di.ActivityScope;
@@ -28,9 +27,14 @@ public class SignUpActivity extends BaseActivity implements SignUpView {
     @Bind(R.id.input_email) EditText mInputEmail;
     @Bind(R.id.input_password) EditText mInputPassword;
     @Bind(R.id.input_confirm_password) EditText mInputConfirmPassword;
+    private Toolbar toolbar;
 
-    @Inject SignUpPresenter mSignUpPresenter;
-    @Inject @ActivityScope Context mContext;
+
+
+    @Inject
+    SignUpPresenter mSignUpPresenter;
+    @Inject @ActivityScope
+    Context mContext;
 
     private ProgressDialog mProgressDialog;
 
@@ -41,6 +45,12 @@ public class SignUpActivity extends BaseActivity implements SignUpView {
         ButterKnife.bind(this);
         getComponent().inject(this);
         mSignUpPresenter.attachView(this);
+
+        toolbar= (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar!=null){
+            setSupportActionBar(toolbar);
+        }
+
 
         mInputConfirmPassword.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == R.id.button_sign_up || id == EditorInfo.IME_NULL) {
@@ -91,11 +101,15 @@ public class SignUpActivity extends BaseActivity implements SignUpView {
     }
 
 
-    @OnClick(R.id.button_sign_in)
+    @OnClick(R.id.iv_backSignIn)
     public void backToSignIn(View view) {
         setResult(RESULT_CANCELED);
         this.finish();
     }
+
+
+
+
 
     /**
      * Attempts to sign in or register the account specified by the login form.

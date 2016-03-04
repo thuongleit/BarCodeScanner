@@ -14,6 +14,7 @@ import com.thuongleit.babr.vo.Product;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -25,10 +26,12 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
 
     private final Context context;
     private final List<Product> values;
+    private List<Product> listSearch;
 
     public ProductRecyclerAdapter(Context context, List<Product> values) {
         this.context = context;
         this.values = values;
+        this.listSearch.addAll(values);
     }
 
     @Override
@@ -85,5 +88,21 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
                 Picasso.with(context).load(product.getImageUrl()).fit().into(imageBarView);
             }
         }
+    }
+
+    public void filter(String textSearch) {
+        textSearch = textSearch.toLowerCase(Locale.getDefault());
+        values.clear();
+        if (textSearch.length() == 0) {
+            values.addAll(listSearch);
+        } else {
+            for (Product product : listSearch) {
+                if (product.getName().toLowerCase(Locale.getDefault()).contains(textSearch)) {
+                    values.add(product);
+                }
+            }
+        }
+        notifyDataSetChanged();
+
     }
 }

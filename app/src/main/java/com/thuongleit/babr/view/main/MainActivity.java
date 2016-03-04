@@ -1,21 +1,17 @@
 package com.thuongleit.babr.view.main;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,10 +25,11 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.parse.ParseUser;
 import com.pnikosis.materialishprogress.ProgressWheel;
+import com.quinny898.library.persistentsearch.SearchBox;
+import com.quinny898.library.persistentsearch.SearchResult;
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.config.Config;
 import com.thuongleit.babr.config.Constant;
-import com.thuongleit.babr.data.remote.amazon.model.AmazonProductResponse;
 import com.thuongleit.babr.di.ActivityScope;
 import com.thuongleit.babr.util.AppUtils;
 import com.thuongleit.babr.util.DialogFactory;
@@ -46,12 +43,15 @@ import com.thuongleit.babr.view.widget.DividerItemDecoration;
 import com.thuongleit.babr.vo.Product;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends ToolbarActivity implements NavigationView.OnNavigationItemSelectedListener, MainView {
 
@@ -73,6 +73,9 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     FloatingActionButton mFabAmazon;
     @Bind(R.id.fab_upcitemdb_select)
     FloatingActionButton mFabUpcItemDb;
+    @Bind(R.id.searchbox)
+    SearchBox searchBox;
+
 
     @Inject
     Config mConfig;
@@ -108,6 +111,14 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         //try restore login session
         tryRestoreLoginSession();
         mMainPresenter.getProducts();
+
+        getToolbar().setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                openSearch();
+                return false;
+            }
+        });
     }
 
     @Override
@@ -121,36 +132,36 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         //implement search view
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-            MenuItem menuItem = menu.findItem(R.id.action_search);
-            final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(final String query) {
-//                    new GetBarCodeAsyncTask(new GetBarCodeAsyncTask.OnUpdateUICallback() {
-//                        @Override
-//                        public void onUpdateUI(Observable<Product> product) {
-//                            if (product != null) {
-//                                Intent intent = new Intent(MainActivity.this, BarViewActivity.class);
-//                                intent.putExtra("data", Parcels.wrap(product));
-//                                startActivityForResult(intent, REQUEST_CAMERA);
-//                            } else {
-//                                buildFailedDialog(String.format("Number %s was incorrect or invalid, either the length or the the check digit may have been incorrect.", query)).show();
-//                            }
-//                        }
-//                    }).execute("http://www.upcitemdb.com/upc/" + query);
-//                    searchView.onActionViewCollapsed();
-                    return false;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    return false;
-                }
-            });
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//            MenuItem menuItem = menu.findItem(R.id.action_search);
+//            final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+//            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//                @Override
+//                public boolean onQueryTextSubmit(final String query) {
+////                    new GetBarCodeAsyncTask(new GetBarCodeAsyncTask.OnUpdateUICallback() {
+////                        @Override
+////                        public void onUpdateUI(Observable<Product> product) {
+////                            if (product != null) {
+////                                Intent intent = new Intent(MainActivity.this, BarViewActivity.class);
+////                                intent.putExtra("data", Parcels.wrap(product));
+////                                startActivityForResult(intent, REQUEST_CAMERA);
+////                            } else {
+////                                buildFailedDialog(String.format("Number %s was incorrect or invalid, either the length or the the check digit may have been incorrect.", query)).show();
+////                            }
+////                        }
+////                    }).execute("http://www.upcitemdb.com/upc/" + query);
+////                    searchView.onActionViewCollapsed();
+//                    return false;
+//                }
+//
+//                @Override
+//                public boolean onQueryTextChange(String newText) {
+//                    return false;
+//                }
+//            });
+//        }
         return true;
     }
 
@@ -163,12 +174,79 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
-
+            //     openSearch();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void openSearch() {
+        getToolbar().setTitle("");
+        getToolbarTitle().setVisibility(View.GONE);
+        searchBox.revealFromMenuItem(R.id.action_search, this);
+        searchBox.setMenuListener(new SearchBox.MenuListener() {
+
+            @Override
+            public void onMenuClick() {
+
+            }
+
+        });
+        searchBox.setSearchListener(new SearchBox.SearchListener() {
+
+            @Override
+            public void onSearchOpened() {
+
+            }
+
+            @Override
+            public void onSearchClosed() {
+                closeSearch();
+                getToolbarTitle().setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onSearchTermChanged(String term) {
+
+                Observable.just(term)
+                        .debounce(200, TimeUnit.SECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(s -> {
+                            if (mRecyclerView.getAdapter() != null) {
+                                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).filter(s);
+                            }
+                        });
+
+            }
+
+            @Override
+            public void onSearch(String searchTerm) {
+                Toast.makeText(MainActivity.this, searchTerm + " Searched",
+                        Toast.LENGTH_LONG).show();
+                getToolbar().setTitle(searchTerm);
+
+            }
+
+            @Override
+            public void onResultClick(SearchResult result) {
+            }
+
+            @Override
+            public void onSearchCleared() {
+
+            }
+
+        });
+
+    }
+
+    protected void closeSearch() {
+        searchBox.hideCircularly(this);
+        if (searchBox.getSearchText().isEmpty()) getToolbar().setTitle("");
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -176,11 +254,13 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
             ArrayList<Product> products = data.getParcelableArrayListExtra(CameraActivity.EXTRA_DATA);
             removeAdditionalViews();
-            if (mRecyclerView.getAdapter() == null) {
-                RecyclerView.Adapter adapter = new ProductRecyclerAdapter(mContext, products);
-                mRecyclerView.setAdapter(adapter);
-            } else {
-                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
+            if (products.size()>1) {
+                if (mRecyclerView.getAdapter() == null) {
+                    RecyclerView.Adapter adapter = new ProductRecyclerAdapter(mContext, products);
+                    mRecyclerView.setAdapter(adapter);
+                } else {
+                    ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
+                }
             }
         }
     }
@@ -361,5 +441,9 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         if (mViewNetworkError != null) {
             ((ViewGroup) getWindow().getDecorView().getRootView()).removeView(mViewNetworkError);
         }
+    }
+
+    private void showToast(String message){
+        Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
     }
 }

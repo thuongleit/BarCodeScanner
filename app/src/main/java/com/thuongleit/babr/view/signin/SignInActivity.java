@@ -4,6 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -12,11 +15,13 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.parse.ParseUser;
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.di.ActivityScope;
+import com.thuongleit.babr.util.BlurBitmap;
 import com.thuongleit.babr.util.DialogFactory;
 import com.thuongleit.babr.view.main.MainActivity;
 import com.thuongleit.babr.view.base.BaseActivity;
@@ -43,6 +48,7 @@ public class SignInActivity extends BaseActivity implements SignInView {
 
     @Bind(R.id.input_username) EditText mInputUsername;
     @Bind(R.id.input_password) EditText mInputPassword;
+    @Bind(R.id.linear_SignIn) LinearLayout linearSignIn;
 
     @Inject SignInPresenter mSignInPresenter;
     @Inject @ActivityScope Context mContext;
@@ -56,6 +62,9 @@ public class SignInActivity extends BaseActivity implements SignInView {
         setContentView(R.layout.activity_sign_in);
         ButterKnife.bind(this);
         getComponent().inject(this);
+
+        blurImageBackground();
+
 
         mSignInPresenter.attachView(this);
 
@@ -102,6 +111,12 @@ public class SignInActivity extends BaseActivity implements SignInView {
 
             }
         });
+    }
+
+    private void blurImageBackground() {
+        Bitmap originalBitmap= BitmapFactory.decodeResource(getResources(),R.drawable.ima);
+        Bitmap blurredBitmap = BlurBitmap.blur(this, originalBitmap );
+        linearSignIn.setBackgroundDrawable( new BitmapDrawable( getResources(), blurredBitmap ) );
     }
 
     @Override
