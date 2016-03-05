@@ -13,6 +13,7 @@ import com.thuongleit.babr.R;
 import com.thuongleit.babr.vo.Product;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,7 +27,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
 
     private final Context context;
     private final List<Product> values;
-    private List<Product> listSearch;
+    private List<Product> listSearch = new ArrayList<>();
 
     public ProductRecyclerAdapter(Context context, List<Product> values) {
         this.context = context;
