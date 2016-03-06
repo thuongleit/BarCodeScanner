@@ -66,6 +66,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.AppIntroActivity" />
+        <activity android:name=".view.qrgenerate.GenerateQR"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"

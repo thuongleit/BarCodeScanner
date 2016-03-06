@@ -82,6 +82,28 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                                     }
                                 }, () -> mView.showProgress(false));
                 break;
+
+            case Constant.KEY_BABR:
+                mSubscription =
+                        mDataManager.getProductsBABR(code)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                products -> {
+                                    if (products == null || products.size()==0) {
+                                        mView.onEmptyProductReturn();
+                                    } else {
+                                        mView.onRequestSuccessList(products);
+                                    }
+                                }, e -> {
+                                    if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                        mView.showNetworkError();
+                                    } else {
+                                        mView.showGeneralError(e.getMessage());
+                                    }
+                                },
+                                () -> mView.showProgress(false));
+                break;
         }
     }
 }

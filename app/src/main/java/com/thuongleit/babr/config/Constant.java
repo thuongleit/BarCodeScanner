@@ -10,4 +10,5 @@ public interface Constant {
 
     String KEY_UPC_SERVICE = "upc";
     String KEY_AMAZON_SERVICE = "amazon";
+    String KEY_BABR = "babr";
 }

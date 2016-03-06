@@ -118,6 +118,7 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_marginLeft="7dp"
+                    android:layout_marginRight="7dp"
                     android:background="@drawable/ring"
                     android:src="@drawable/ico_gplus" />
             </LinearLayout>

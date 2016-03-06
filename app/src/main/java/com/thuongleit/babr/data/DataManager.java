@@ -63,6 +63,8 @@ public class DataManager {
                 });
     }
 
+
+
     public Observable<List<Product>> getProducts() {
         if (mConfig.isUserLogin()) {
             return Observable.create(subscriber -> {
@@ -84,6 +86,21 @@ public class DataManager {
                 }
             });
         }
+    }
+
+
+
+    public Observable<List<Product>> getProductsBABR(String id){
+
+            return Observable.create(subscriber -> {
+               List<Product> products=new ArrayList<>();
+                mParseService.getProductBABR(id).doOnNext(product -> {
+                    products.add(product);
+                    subscriber.onNext(products);
+                }).doOnCompleted(()->subscriber.onCompleted())
+                        .subscribeOn(Schedulers.newThread())
+                .subscribe();
+            });
     }
 
     public Observable<AmazonProductResponse> searchProductsInAmazon(String keyword) {

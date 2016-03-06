@@ -98,7 +98,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
             values.addAll(listSearch);
         } else {
             for (Product product : listSearch) {
-                if (product.getName().toLowerCase(Locale.getDefault()).contains(textSearch)) {
+                if (!product.getName().isEmpty()&&product.getName().toLowerCase(Locale.getDefault()).contains(textSearch)) {
                     values.add(product);
                 }
             }

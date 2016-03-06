@@ -25,12 +25,16 @@ import com.thuongleit.babr.util.AppUtils;
 import com.thuongleit.babr.util.DialogFactory;
 import com.thuongleit.babr.view.base.ToolbarActivity;
 import com.thuongleit.babr.view.widget.CameraPreview;
+import com.thuongleit.babr.vo.Product;
 
 import net.sourceforge.zbar.Config;
 import net.sourceforge.zbar.Image;
 import net.sourceforge.zbar.ImageScanner;
 import net.sourceforge.zbar.Symbol;
 import net.sourceforge.zbar.SymbolSet;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -41,6 +45,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
 
     public static final String EXTRA_SERVICE = "CameraActivity.EXTRA_SERVICE";
     public static final String EXTRA_DATA = "CameraActivity.EXTRA_DATA";
+    public static final String EXTRA_LOAD_USER_ID="load_user_id";
     private static final int REQUEST_RESULT_ACTIVITY = 1;
 
     @Bind(R.id.cameraPreview)
@@ -66,6 +71,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     protected int getLayoutId() {
         return R.layout.activity_camera;
     }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -188,6 +194,14 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     public void onRequestSuccess(Parcelable parcelable) {
         Intent intent = new Intent(mContext, SearchResultActivity.class);
         intent.putExtra(SearchResultActivity.EXTRA_DATA, parcelable);
+        startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
+    }
+
+    @Override
+    public void onRequestSuccessList(List<Product> parcelables) {
+        Intent intent = new Intent(mContext, SearchResultActivity.class);
+        intent.putParcelableArrayListExtra(SearchResultActivity.EXTRA_DATA, (ArrayList<? extends Parcelable>) parcelables);
+        intent.putExtra(EXTRA_LOAD_USER_ID,true);
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
     }
 

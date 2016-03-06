@@ -48,6 +48,7 @@ public abstract class ToolbarActivity extends BaseActivity {
         return mToolbar;
     }
 
+
     protected TextView getToolbarTitle() {
         return mToolbarTitle;
     }

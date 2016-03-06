@@ -30,12 +30,14 @@ import com.quinny898.library.persistentsearch.SearchResult;
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.config.Config;
 import com.thuongleit.babr.config.Constant;
+import com.thuongleit.babr.data.remote.ParseService;
 import com.thuongleit.babr.di.ActivityScope;
 import com.thuongleit.babr.util.AppUtils;
 import com.thuongleit.babr.util.DialogFactory;
 import com.thuongleit.babr.view.AppIntroActivity;
 import com.thuongleit.babr.view.base.ToolbarActivity;
 import com.thuongleit.babr.view.product.ProductRecyclerAdapter;
+import com.thuongleit.babr.view.qrgenerate.GenerateQR;
 import com.thuongleit.babr.view.scan.CameraActivity;
 import com.thuongleit.babr.view.signin.SignInActivity;
 import com.thuongleit.babr.view.widget.DancingScriptTextView;
@@ -56,6 +58,8 @@ import rx.schedulers.Schedulers;
 public class MainActivity extends ToolbarActivity implements NavigationView.OnNavigationItemSelectedListener, MainView {
 
     private static final int REQUEST_CAMERA = 1;
+    private String userId;
+    public static final String USER_ID_EXTRA = "user_id_extra";
 
     @Bind(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -73,6 +77,8 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     FloatingActionButton mFabAmazon;
     @Bind(R.id.fab_upcitemdb_select)
     FloatingActionButton mFabUpcItemDb;
+    @Bind(R.id.fab_babr_select)
+    FloatingActionButton mFabBABR;
     @Bind(R.id.searchbox)
     SearchBox searchBox;
 
@@ -88,11 +94,13 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     private boolean mDoubleBackToExitPressedOnce = false;
     private View mViewNetworkError;
     private View mViewEmpty;
+    private ParseService parseService;
 
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main;
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +115,8 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         setupReCyclerView();
         setupNavigationView();
         setupFabMenu();
+
+        parseService = new ParseService();
 
         //try restore login session
         tryRestoreLoginSession();
@@ -210,7 +220,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             public void onSearchTermChanged(String term) {
 
                 Observable.just(term)
-                        .debounce(200, TimeUnit.SECONDS)
+                        .debounce(400, TimeUnit.SECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe(s -> {
@@ -225,7 +235,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             public void onSearch(String searchTerm) {
                 Toast.makeText(MainActivity.this, searchTerm + " Searched",
                         Toast.LENGTH_LONG).show();
-                getToolbar().setTitle(searchTerm);
 
             }
 
@@ -254,12 +263,20 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
             ArrayList<Product> products = data.getParcelableArrayListExtra(CameraActivity.EXTRA_DATA);
             removeAdditionalViews();
-            if (products.size()>1) {
+            if (products.size() > 1) {
                 if (mRecyclerView.getAdapter() == null) {
                     RecyclerView.Adapter adapter = new ProductRecyclerAdapter(mContext, products);
                     mRecyclerView.setAdapter(adapter);
+                    if (mConfig.isUserLogin()) {
+                        parseService.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(a -> showToast("products has been saved!"));
+                    }
                 } else {
                     ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
+                    if (mConfig.isUserLogin()) {
+                        parseService.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(a -> showToast("products has been saved!"));
+                    }
                 }
             }
         }
@@ -294,6 +311,16 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                 Intent i = new Intent(this, SignInActivity.class);
                 startActivity(i);
                 this.finish();
+                break;
+            case R.id.nav_generate:
+
+                if (userId != null) {
+                    Intent intentGenerate = new Intent(MainActivity.this, GenerateQR.class);
+                    intentGenerate.putExtra(USER_ID_EXTRA, userId);
+                    startActivity(intentGenerate);
+                } else {
+                    showToast("You must SignIn!");
+                }
                 break;
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -392,6 +419,9 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         final ParseUser currentUser = mConfig.getCurrentUser();
         View headerView = mNavigationView.getHeaderView(0);
 
+        if (mConfig.isUserLogin())
+            userId = currentUser.getObjectId();
+
         headerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, AppUtils.getStatusBarHeight(this) + AppUtils.getToolbarHeight(this)));
         DancingScriptTextView textUsername = (DancingScriptTextView) headerView.findViewById(R.id.text_nav_username);
         if (currentUser == null) {
@@ -432,6 +462,13 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             startActivityForResult(intent, REQUEST_CAMERA);
             mFabMenu.collapse();
         });
+
+        mFabBABR.setOnClickListener(v -> {
+            Intent intent = new Intent(mContext, CameraActivity.class);
+            intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_BABR);
+            startActivityForResult(intent, REQUEST_CAMERA);
+            mFabMenu.collapse();
+        });
     }
 
     private void removeAdditionalViews() {
@@ -443,7 +480,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         }
     }
 
-    private void showToast(String message){
-        Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

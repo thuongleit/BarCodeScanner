@@ -43,6 +43,8 @@ public class BarViewActivity extends ToolbarActivity {
         return R.layout.activity_bar_view;
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

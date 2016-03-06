@@ -14,6 +14,7 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.data.remote.amazon.model.AmazonProductResponse;
 import com.thuongleit.babr.view.base.BaseActivity;
+import com.thuongleit.babr.view.main.MainActivity;
 import com.thuongleit.babr.view.product.ProductRecyclerAdapter;
 import com.thuongleit.babr.view.widget.DividerItemDecoration;
 import com.thuongleit.babr.vo.Product;
@@ -26,6 +27,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 public class SearchResultActivity extends BaseActivity implements ParsingView {
 
@@ -45,6 +47,7 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
     private int mCurrentParsingIndex = 0;
     private Parcelable mData;
     private ArrayList<Product> mProducts = new ArrayList<>();
+    private List<Product> productListUserId=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,19 +59,25 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(false);
 
+        Timber.d("onCreateSearchResultActivity");
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
         mData = getIntent().getParcelableExtra(EXTRA_DATA);
-
-        //check if the array contains product object
-        if (mData != null) {
-            if (mData instanceof Product) {
-                bindView((Product) mData);
-            } else if (mData instanceof AmazonProductResponse) {
-                mParsingPresenter.attachView(this);
-                AmazonProductResponse amazonProductResponse = (AmazonProductResponse) mData;
-                mParsingPresenter.parse(amazonProductResponse.getProducts().get(mCurrentParsingIndex).getDetailPageURL());
+        if (getIntent().getBooleanExtra(CameraActivity.EXTRA_LOAD_USER_ID, false)) {
+            productListUserId = getIntent().getParcelableArrayListExtra(EXTRA_DATA);
+            bindListView(productListUserId);
+        } else {
+            //check if the array contains product object
+            if (mData != null) {
+                if (mData instanceof Product) {
+                    bindView((Product) mData);
+                } else if (mData instanceof AmazonProductResponse) {
+                    mParsingPresenter.attachView(this);
+                    AmazonProductResponse amazonProductResponse = (AmazonProductResponse) mData;
+                    mParsingPresenter.parse(amazonProductResponse.getProducts().get(mCurrentParsingIndex).getDetailPageURL());
+                }
             }
         }
 
@@ -110,10 +119,31 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
 
     @OnClick(R.id.button_toolbar_save)
     public void save() {
-        Intent intent = getIntent();
-        intent.putParcelableArrayListExtra(EXTRA_DATA, mProducts);
-        setResult(Activity.RESULT_OK, intent);
-        finish();
+        if (!getIntent().getBooleanExtra(CameraActivity.EXTRA_LOAD_USER_ID, false)) {
+            Intent intent = getIntent();
+            intent.putParcelableArrayListExtra(EXTRA_DATA, mProducts);
+            setResult(Activity.RESULT_OK, intent);
+            finish();
+        }else {
+            Intent intent = new Intent(SearchResultActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putParcelableArrayListExtra(EXTRA_DATA, mProducts);
+            setResult(Activity.RESULT_OK, intent);
+            finish();
+        }
+    }
+
+    private void bindListView(List<Product> product) {
+        mProgressWheel.stopSpinning();
+        mProgressWheel.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
+        if (mAdapter == null) {
+            mProducts.addAll(product);
+            mAdapter = new ProductRecyclerAdapter(this, mProducts);
+            mRecyclerView.setAdapter(mAdapter);
+        } else {
+            mAdapter.addItems(product);
+        }
     }
 
     private void bindView(Product product) {

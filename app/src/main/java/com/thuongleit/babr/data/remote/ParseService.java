@@ -6,6 +6,8 @@ import com.parse.ParseUser;
 import com.thuongleit.babr.config.Constant;
 import com.thuongleit.babr.vo.Product;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -44,6 +46,9 @@ public class ParseService {
         if (product.getModel() != null) {
             parseProduct.put("model", product.getModel());
         }
+        if (product.getName() != null) {
+            parseProduct.put("name", product.getName());
+        }
         parseProduct.put("quantity", product.getQuantity());
 
         parseProduct.saveInBackground();
@@ -63,6 +68,7 @@ public class ParseService {
                             String country = object.getString("country");
                             String manufacture = object.getString("manufacture");
                             String model = object.getString("model");
+                            String name = object.getString("name");
                             Number quantity = object.getNumber("quantity");
 
                             Product product = new Product();
@@ -71,13 +77,57 @@ public class ParseService {
                             product.setEan(ean);
                             product.setCountry(country);
                             product.setManufacture(manufacture);
-                            product.setName(model);
+                            product.setName(name);
+                            product.setModel(model);
 
                             subscriber.onNext(product);
                         }
                     subscriber.onCompleted();
                 });
             }
+        });
+    }
+
+    public Observable<Product> getProductBABR(String id){
+        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", id);
+        return Observable.create(new Observable.OnSubscribe<Product>() {
+            @Override
+            public void call(Subscriber<? super Product> subscriber) {
+                query.findInBackground((objects, e) -> {
+                    if (e == null && objects != null)
+                        for (ParseObject object : objects) {
+                            String image = object.getString("image");
+                            String upcA = object.getString("upcA");
+                            String ean = object.getString("ean");
+                            String country = object.getString("country");
+                            String manufacture = object.getString("manufacture");
+                            String model = object.getString("model");
+                            String name = object.getString("name");
+                            Number quantity = object.getNumber("quantity");
+
+                            Product product = new Product();
+                            product.setImageUrl(image);
+                            product.setUpcA(upcA);
+                            product.setEan(ean);
+                            product.setCountry(country);
+                            product.setManufacture(manufacture);
+                            product.setName(name);
+                            product.setModel(model);
+
+                            subscriber.onNext(product);
+                        }
+                    subscriber.onCompleted();
+                });
+            }
+        });
+    }
+
+
+    public Observable<List<Product>> saveListProduct(List<Product> productList){
+        return Observable.just(productList).doOnNext(productList1 -> {
+           for (Product product:productList1){
+             saveProduct(product);
+           }
         });
     }
 }

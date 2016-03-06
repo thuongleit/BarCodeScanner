@@ -34,4 +34,15 @@
         app:fab_stroke_visible="false"
         app:fab_title="Upcitemdb" />
 
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_babr_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fab_colorNormal="@color/colorAccent"
+        app:fab_colorPressed="@color/colorAccentDark"
+        app:fab_icon="@drawable/ic_camera_alt_white_36dp"
+        app:fab_size="mini"
+        app:fab_stroke_visible="false"
+        app:fab_title="BABR" />
+
 </com.getbase.floatingactionbutton.FloatingActionsMenu>
