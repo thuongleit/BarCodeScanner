@@ -11,6 +11,7 @@ import com.thuongleit.babr.view.product.BarViewActivity;
 import com.thuongleit.babr.view.scan.CameraActivity;
 import com.thuongleit.babr.view.scan.SearchResultActivity;
 import com.thuongleit.babr.view.signin.SignInActivity;
+import com.thuongleit.babr.view.signin.SignInWithEmailActivity;
 import com.thuongleit.babr.view.signup.SignUpActivity;
 
 import dagger.Component;
@@ -31,7 +32,6 @@ public interface ActivityComponent {
 
     void inject(SignUpActivity activity);
 
-
     void inject(BarViewActivity activity);
 
     void inject(MainActivity activity);
@@ -39,4 +39,6 @@ public interface ActivityComponent {
     void inject(CameraActivity activity);
 
     void inject(SearchResultActivity activity);
+
+    void inject(SignInWithEmailActivity activity);
 }

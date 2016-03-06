@@ -4,32 +4,33 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorPrimary"
+    android:background="@null"
     android:minHeight="?attr/actionBarSize"
     app:layout_scrollFlags="scroll|enterAlways"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:id="@+id/iv_backSignIn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_back_signin"/>
-        <com.thuongleit.babr.view.widget.DancingScriptTextView
-            android:id="@+id/text_toolbar_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/app_name"
-            android:textColor="@color/white"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_toRightOf="@+id/iv_backSignIn"/>
 
-    </RelativeLayout>
+    <!--<RelativeLayout-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content">-->
 
+        <!--<ImageView-->
+            <!--android:id="@+id/iv_backSignIn"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:src="@drawable/ic_action_back_signin" />-->
+
+        <!--<com.thuongleit.babr.view.widget.DancingScriptTextView-->
+            <!--android:id="@+id/text_toolbar_title"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center_horizontal"-->
+            <!--android:layout_toRightOf="@+id/iv_backSignIn"-->
+            <!--android:text="Back"-->
+            <!--android:textColor="@color/white"-->
+            <!--android:textSize="22sp"-->
+            <!--android:textStyle="bold" />-->
+    <!--</RelativeLayout>-->
 
 </android.support.v7.widget.Toolbar>
 

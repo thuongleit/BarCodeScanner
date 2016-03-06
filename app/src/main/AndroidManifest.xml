@@ -50,12 +50,15 @@
         </activity>
         <activity
             android:name=".view.signin.SignInActivity"
-            android:configChanges="keyboardHidden|orientation"
-            android:theme="@style/AppTheme.FullScreen" />
+            android:configChanges="keyboardHidden|orientation" />
         <activity
             android:name=".view.signup.SignUpActivity"
             android:configChanges="keyboardHidden|orientation"
-            android:theme="@style/AppTheme.FullScreen" />
+            android:parentActivityName=".view.signin.SignInWithEmailActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.signin.SignInWithEmailActivity" />
+        </activity>
         <activity
             android:name=".view.SplashActivity"
             android:theme="@style/AppTheme.SplashTheme">
@@ -78,6 +81,14 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".view.scan.CameraActivity" />
+        </activity>
+
+        <activity
+            android:name=".view.signin.SignInWithEmailActivity"
+            android:parentActivityName=".view.signin.SignInActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.signin.SignInActivity" />
         </activity>
     </application>
 

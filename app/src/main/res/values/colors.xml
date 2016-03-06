@@ -9,7 +9,14 @@
     <color name="colorPrimaryDark">#FF131313</color>
     <color name="colorPrimaryDarker">#FF050505</color>
     <color name="colorAccent">#F57C00</color>
+    <color name="colorAccentLight">#FFA726</color>
     <color name="colorAccentDark">#EF6C00</color>
+    <color name="msgr_material_item_hover">#33999999</color>
+    <color name="msgr_material_item_pressed">#66999999</color>
+    <color name="msgr_material_item_hover_dark">#26ffffff</color>
+    <color name="msgr_material_item_pressed_dark">#4dffffff</color>
+    <color name="msgr_material_ripple_mask">#ffffffff</color>
+    <color name="msgr_material_edge_effect">@color/colorPrimaryDark</color>
 
     <color name="colorPrimaryDarkTheme">#4a4959</color>
     <color name="colorPrimaryDarkDarkTheme">#525065</color>
@@ -40,6 +47,23 @@
 
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="black_alpha_12">#1f000000</color>
+    <color name="black_alpha_20">#33000000</color>
+    <color name="black_alpha_25">#40000000</color>
+    <color name="black_alpha_30">#4d000000</color>
+    <color name="black_alpha_34">#57000000</color>
+    <color name="black_alpha_38">#61000000</color>
+    <color name="black_alpha_40">#66000000</color>
+    <color name="black_alpha_48">#78000000</color>
+    <color name="black_alpha_54">#8a000000</color>
+    <color name="black_alpha_67">#aa000000</color>
+    <color name="black_alpha_60">#99000000</color>
+    <color name="black_alpha_87">#de000000</color>
+    <color name="white_alpha_20">#33ffffff</color>
+    <color name="white_alpha_30">#4dffffff</color>
+    <color name="white_alpha_54">#8affffff</color>
+    <color name="white_alpha_60">#99ffffff</color>
+    <color name="white_alpha_70">#b2ffffff</color>
     <color name="black_87">#212121</color> <!-- Text -->
     <color name="black_54">#545454</color> <!-- Secondary Text -->
     <color name="black_38">#9B9B9B</color> <!-- Hint Text -->
@@ -47,5 +71,5 @@
     <color name="black_10">#C5c5c5</color>
     <color name="transparent">#00000000</color>
     <color name="black_overlay">#81000000</color>
-    <color name="white_overlay">#b8d2cfcf</color>
+    <color name="white_overlay">#8efff2f2</color>
 </resources>

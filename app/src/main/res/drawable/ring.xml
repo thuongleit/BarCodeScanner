@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<selector xmlns:android="http://schemas.android.com/apk/res/android" android:enterFadeDuration="200" android:exitFadeDuration="200">
-    <item android:state_pressed="false">
-        <shape android:shape="oval">
-            <stroke android:width="1dp" android:color="@color/black_12" />
-        </shape>
-    </item>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
         <shape android:shape="oval">
-            <solid android:color="#6621425d" />
+            <solid android:color="@color/white_alpha_70" />
+        </shape>
+    </item>
+    <item android:state_focused="true">
+        <shape android:shape="oval">
+            <solid android:color="@color/white_alpha_70" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/white_overlay" />
         </shape>
     </item>
 </selector>
