@@ -62,7 +62,7 @@ android {
 }
 
 dependencies {
-    final SUPPORT_LIBRARY_VERSION = '23.1.1'
+    final SUPPORT_LIBRARY_VERSION = '23.2.0'
     final DAGGER_VERSION = '2.0.2'
     final RETROFIT_VERSION = '2.0.0-beta2'
     final RX_VERSION = '1.1.0'

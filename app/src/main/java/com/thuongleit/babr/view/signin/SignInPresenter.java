@@ -2,6 +2,7 @@ package com.thuongleit.babr.view.signin;
 
 import com.parse.ParseUser;
 import com.thuongleit.babr.data.DataManager;
+import com.thuongleit.babr.di.PerActivity;
 import com.thuongleit.babr.view.base.BasePresenter;
 
 import org.brickred.socialauth.Profile;
@@ -13,6 +14,7 @@ import timber.log.Timber;
 /**
  * Created by thuongle on 12/30/15.
  */
+@PerActivity
 public class SignInPresenter extends BasePresenter<SignInView> {
 
     private final DataManager mDataManager;

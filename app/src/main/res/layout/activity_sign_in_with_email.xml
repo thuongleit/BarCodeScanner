@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.signup.SignUpActivity">
-
+    tools:context=".view.signin.SignInActivity">
 
     <ImageView
         android:layout_width="match_parent"
@@ -20,11 +19,10 @@
     <include layout="@layout/view_toolbar_signup" />
 
     <LinearLayout
+        android:id="@+id/layout_sign_in"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
-        android:layout_marginBottom="10dp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
         android:orientation="vertical">
@@ -32,6 +30,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp">
 
             <EditText
@@ -53,28 +52,9 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
-
-            <EditText
-                android:id="@+id/input_email"
-                style="@style/Login.InputEditTextStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="email"
-                android:inputType="textEmailAddress" />
-
-            <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_gravity="left|center_vertical"
-                android:src="@drawable/ic_email" />
-
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless">
 
             <EditText
                 android:id="@+id/input_password"
@@ -82,6 +62,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="password"
+                android:imeOptions="actionDone"
                 android:inputType="textPassword" />
 
             <ImageView
@@ -91,53 +72,29 @@
                 android:src="@drawable/ic_lock" />
         </FrameLayout>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
-
-            <EditText
-                android:id="@+id/input_confirm_password"
-                style="@style/Login.InputEditTextStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="confirm password"
-                android:inputType="textPassword"
-                android:imeOptions="actionDone"/>
-
-            <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_gravity="left|center_vertical"
-                android:src="@drawable/ic_lock" />
-        </FrameLayout>
-
-        <Button
-            android:id="@+id/button_sign_up"
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/button_sign_in"
             android:layout_width="match_parent"
             android:layout_height="45dp"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
             android:background="@drawable/button_background"
             android:padding="12dp"
-            android:text="CREATE ACCOUNT"
+            android:text="SIGN IN"
             android:textColor="@android:color/white"
             android:textStyle="bold" />
 
-        <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_margin="10dp"-->
-        <!--android:text="or"-->
-        <!--android:textColor="@android:color/white" />-->
-
-        <!--<Button-->
-        <!--android:id="@+id/button_sign_in"-->
-        <!--android:layout_width="300dp"-->
-        <!--android:layout_height="40dp"-->
-        <!--android:layout_marginBottom="20dp"-->
-        <!--android:background="@drawable/rect_side_white"-->
-        <!--android:padding="12dp"-->
-        <!--android:text="SIGN IN"-->
-        <!--android:textColor="@android:color/white" />-->
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_link_sign_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/layout_sign_in"
+        android:layout_alignRight="@+id/layout_sign_in"
+        android:layout_below="@+id/layout_sign_in"
+        android:layout_marginTop="15dp"
+        android:text="No account yet? Sign up"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/white" />
 </RelativeLayout>
