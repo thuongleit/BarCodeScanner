@@ -62,6 +62,11 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         notifyDataSetChanged();
     }
 
+    public void deleteItem(int position){
+        this.values.remove(position);
+        notifyItemRemoved(position);
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.image_bar_view)
@@ -98,7 +103,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
             values.addAll(listSearch);
         } else {
             for (Product product : listSearch) {
-                if (!product.getName().isEmpty()&&product.getName().toLowerCase(Locale.getDefault()).contains(textSearch)) {
+                if (product.getName()!=null&&product.getName().toLowerCase(Locale.getDefault()).contains(textSearch)) {
                     values.add(product);
                 }
             }

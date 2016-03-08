@@ -2,6 +2,7 @@ package com.thuongleit.babr.data.local;
 
 import android.app.Application;
 
+import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Insert;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.thuongleit.babr.vo.Product;
@@ -37,6 +38,7 @@ public class ProductModel extends BaseModel {
                         Product_Table.model.eq(product.getModel()),
                         Product_Table.quantity.eq(product.getQuantity()),
                         Product_Table.upcA.eq(product.getUpcA()));
+                        Product_Table.objectId.eq(product.getObjectId());
         Timber.i(insertQuery.getQuery());
         insertQuery.execute();
     }
@@ -46,5 +48,9 @@ public class ProductModel extends BaseModel {
                 .select()
                 .from(Product.class)
                 .queryList();
+    }
+
+    public void deleteProduct(Product product){
+        product.delete();
     }
 }

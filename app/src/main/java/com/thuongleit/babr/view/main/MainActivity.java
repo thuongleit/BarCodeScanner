@@ -1,5 +1,6 @@
 package com.thuongleit.babr.view.main;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,9 +13,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -23,6 +26,8 @@ import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.quinny898.library.persistentsearch.SearchBox;
@@ -30,6 +35,8 @@ import com.quinny898.library.persistentsearch.SearchResult;
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.config.Config;
 import com.thuongleit.babr.config.Constant;
+import com.thuongleit.babr.data.DataManager;
+import com.thuongleit.babr.data.local.ProductModel;
 import com.thuongleit.babr.data.remote.ParseService;
 import com.thuongleit.babr.di.ActivityScope;
 import com.thuongleit.babr.util.AppUtils;
@@ -52,6 +59,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -90,11 +98,15 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     @Inject
     @ActivityScope
     Context mContext;
-
+    @Inject
+    ProductModel mProductModel;
+    @Inject
+    DataManager mDataManager;
     private boolean mDoubleBackToExitPressedOnce = false;
     private View mViewNetworkError;
     private View mViewEmpty;
     private ParseService parseService;
+    private List<Product> productList = new ArrayList<>();
 
     @Override
     protected int getLayoutId() {
@@ -122,13 +134,29 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         tryRestoreLoginSession();
         mMainPresenter.getProducts();
 
-        getToolbar().setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+        mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(this, mRecyclerView, new ClickListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                openSearch();
-                return false;
+            public void onClick(View iew, int position) {
+
+
             }
-        });
+
+            @Override
+            public void onLongClick(View view, int n) {
+
+                if (mConfig.isUserLogin()) {
+                    parseService.deleteProduct(productList.get(n).getObjectId());
+                    productList.remove(n);
+                } else {
+                    mProductModel.deleteProduct(productList.get(n));
+                    productList.remove(n);
+                }
+                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteItem(n);
+
+
+            }
+        }));
+
     }
 
     @Override
@@ -184,7 +212,13 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
-            //     openSearch();
+            openSearch();
+            return true;
+        }
+        if (id == R.id.action_camera) {
+            Intent intent = new Intent(mContext, CameraActivity.class);
+            intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_UPC_SERVICE);
+            startActivityForResult(intent, REQUEST_CAMERA);
             return true;
         }
 
@@ -263,19 +297,32 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
             ArrayList<Product> products = data.getParcelableArrayListExtra(CameraActivity.EXTRA_DATA);
             removeAdditionalViews();
-            if (products.size() > 1) {
+            if (products.size() >= 1) {
+                productList.addAll(products);
                 if (mRecyclerView.getAdapter() == null) {
                     RecyclerView.Adapter adapter = new ProductRecyclerAdapter(mContext, products);
                     mRecyclerView.setAdapter(adapter);
                     if (mConfig.isUserLogin()) {
                         parseService.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(a -> showToast("products has been saved!"));
+
+                        recreate();
+
+                    } else {
+                        for (Product product : products) {
+                            mProductModel.saveProduct(product);
+                        }
                     }
                 } else {
                     ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
                     if (mConfig.isUserLogin()) {
                         parseService.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(a -> showToast("products has been saved!"));
+
+                    } else {
+                        for (Product product : products) {
+                            mProductModel.saveProduct(product);
+                        }
                     }
                 }
             }
@@ -361,6 +408,10 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
     @Override
     public void showProducts(List<Product> products) {
+
+        productList.addAll(products);
+
+
         removeAdditionalViews();
         if (mRecyclerView.getAdapter() == null) {
             RecyclerView.Adapter adapter = new ProductRecyclerAdapter(MainActivity.this, products);
@@ -483,4 +534,56 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
+
+    public interface ClickListener {
+        void onClick(View iew, int position);
+
+        void onLongClick(View view, int resource);
+    }
+
+    static class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
+
+        private GestureDetector gestureDetector;
+        private MainActivity.ClickListener clickListener;
+
+        public RecyclerTouchListener(Context context, final RecyclerView recyclerView, final ClickListener clickListener) {
+            this.clickListener = clickListener;
+            this.gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
+                    if (view != null && clickListener != null) {
+                        clickListener.onLongClick(view, recyclerView.getChildAdapterPosition(view));
+                    }
+                }
+
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return true;
+                }
+            });
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+            View view = rv.findChildViewUnder(e.getX(), e.getY());
+            if (view != null && clickListener != null && gestureDetector.onTouchEvent(e)) {
+                clickListener.onClick(view, rv.getChildAdapterPosition(view));
+            }
+
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+        }
+    }
+
+
 }

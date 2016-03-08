@@ -45,6 +45,7 @@ public class DataManager {
     @Inject
     AmazonService mAmazonService;
 
+
     @Inject
     public DataManager(Application app) {
         ((BarApplication) app).getAppComponent().inject(this);
@@ -64,15 +65,17 @@ public class DataManager {
     }
 
 
-
     public Observable<List<Product>> getProducts() {
         if (mConfig.isUserLogin()) {
             return Observable.create(subscriber -> {
                 List<Product> products = new ArrayList<>();
                 mParseService.getProducts().doOnNext(product -> {
                     products.add(product);
+
+                }).doOnCompleted(() -> {
                     subscriber.onNext(products);
-                }).doOnCompleted(() -> subscriber.onCompleted())
+                    subscriber.onCompleted();
+                })
                         .subscribeOn(Schedulers.newThread())
                         .subscribe();
             });
@@ -89,18 +92,19 @@ public class DataManager {
     }
 
 
+    public Observable<List<Product>> getProductsBABR(String id) {
 
-    public Observable<List<Product>> getProductsBABR(String id){
-
-            return Observable.create(subscriber -> {
-               List<Product> products=new ArrayList<>();
-                mParseService.getProductBABR(id).doOnNext(product -> {
-                    products.add(product);
-                    subscriber.onNext(products);
-                }).doOnCompleted(()->subscriber.onCompleted())
-                        .subscribeOn(Schedulers.newThread())
-                .subscribe();
-            });
+        return Observable.create(subscriber -> {
+            List<Product> products = new ArrayList<>();
+            mParseService.getProductBABR(id).doOnNext(product -> {
+                products.add(product);
+            }).doOnCompleted(() ->{
+                subscriber.onNext(products);
+                subscriber.onCompleted();
+            })
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribe();
+        });
     }
 
     public Observable<AmazonProductResponse> searchProductsInAmazon(String keyword) {
@@ -125,4 +129,5 @@ public class DataManager {
     public Observable<Product> parseProductFromAmazon(String detailPageURL) {
         return mAmazonParseService.parse(detailPageURL);
     }
+
 }

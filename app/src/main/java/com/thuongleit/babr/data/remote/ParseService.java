@@ -1,5 +1,7 @@
 package com.thuongleit.babr.data.remote;
 
+import com.parse.GetCallback;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -54,6 +56,22 @@ public class ParseService {
         parseProduct.saveInBackground();
     }
 
+    public void deleteProduct(String query) {
+        ParseQuery<ParseObject> queryStm = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId())
+                .whereEqualTo("objectId",query);
+        queryStm.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                try {
+                    object.delete();
+                    object.saveInBackground();
+                } catch (ParseException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+    }
+
     public Observable<Product> getProducts() {
         ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
         return Observable.create(new Observable.OnSubscribe<Product>() {
@@ -69,6 +87,7 @@ public class ParseService {
                             String manufacture = object.getString("manufacture");
                             String model = object.getString("model");
                             String name = object.getString("name");
+                            String objectId = object.getObjectId();
                             Number quantity = object.getNumber("quantity");
 
                             Product product = new Product();
@@ -78,6 +97,7 @@ public class ParseService {
                             product.setCountry(country);
                             product.setManufacture(manufacture);
                             product.setName(name);
+                            product.setObjectId(objectId);
                             product.setModel(model);
 
                             subscriber.onNext(product);
@@ -87,6 +107,8 @@ public class ParseService {
             }
         });
     }
+
+
 
     public Observable<Product> getProductBABR(String id){
         ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", id);
@@ -103,6 +125,7 @@ public class ParseService {
                             String manufacture = object.getString("manufacture");
                             String model = object.getString("model");
                             String name = object.getString("name");
+                            String objectId = object.getObjectId();
                             Number quantity = object.getNumber("quantity");
 
                             Product product = new Product();
@@ -112,6 +135,7 @@ public class ParseService {
                             product.setCountry(country);
                             product.setManufacture(manufacture);
                             product.setName(name);
+                            product.setObjectId(objectId);
                             product.setModel(model);
 
                             subscriber.onNext(product);

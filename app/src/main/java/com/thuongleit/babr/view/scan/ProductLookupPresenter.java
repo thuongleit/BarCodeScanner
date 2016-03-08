@@ -13,6 +13,7 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
+import timber.log.Timber;
 
 /**
  * Created by thuongle on 1/3/16.
@@ -42,6 +43,7 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
 
         switch (service) {
             case Constant.KEY_AMAZON_SERVICE:
+                Timber.d("KEY_AMAZON_SERVICE"+ code);
                 mSubscription = mDataManager
                         .searchProductsInAmazon(code)
                         .subscribeOn(Schedulers.newThread())
@@ -63,12 +65,13 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                                 () -> mView.showProgress(false));
                 break;
             case Constant.KEY_UPC_SERVICE:
+                Timber.d("KEY_UPC_SERVICE"+ code);
                 mSubscription = mDataManager
                         .getProduct(code)
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(product -> {
-                                    if (product == null) {
+                                    if (product.getImageUrl().isEmpty()||product == null) {
                                         mView.onEmptyProductReturn();
                                     } else {
                                         mView.onRequestSuccess(product);
@@ -84,6 +87,7 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                 break;
 
             case Constant.KEY_BABR:
+                Timber.d("KEY_BABR: " + code);
                 mSubscription =
                         mDataManager.getProductsBABR(code)
                         .subscribeOn(Schedulers.newThread())

@@ -20,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.thuongleit.babr.R;
+import com.thuongleit.babr.config.Constant;
 import com.thuongleit.babr.di.ActivityScope;
 import com.thuongleit.babr.util.AppUtils;
 import com.thuongleit.babr.util.DialogFactory;
@@ -66,6 +67,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     private boolean mFlash = false;
     private ProgressDialog mProgressDialog;
     private String mService;
+    private int order=0;
 
     @Override
     protected int getLayoutId() {
@@ -187,6 +189,12 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     @Override
     public void onEmptyProductReturn() {
         Toast.makeText(mContext, "No Item Found", Toast.LENGTH_SHORT).show();
+        order++;
+        if (order==1){
+            mService= Constant.KEY_AMAZON_SERVICE;
+        }else if(order==2){
+            mService=Constant.KEY_BABR;
+        }
         startScan();
     }
 
@@ -212,7 +220,14 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
 
     @Override
     public void showGeneralError(String message) {
-        buildFailedDialog(message).show();
+        order++;
+        if (order==1){
+            mService= Constant.KEY_AMAZON_SERVICE;
+        }else if(order==2){
+            mService=Constant.KEY_BABR;
+        }
+        startScan();
+       // buildFailedDialog(message).show();
     }
 
     private void setupScanner() {
