@@ -142,16 +142,16 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             }
 
             @Override
-            public void onLongClick(View view, int n) {
+            public void onLongClick(View view, int position) {
 
                 if (mConfig.isUserLogin()) {
-                    parseService.deleteProduct(productList.get(n).getObjectId());
-                    productList.remove(n);
+                    parseService.deleteProduct(productList.get(position).getObjectId());
+                    productList.remove(position);
                 } else {
-                    mProductModel.deleteProduct(productList.get(n));
-                    productList.remove(n);
+                    mProductModel.deleteProduct(productList.get(position));
+                    productList.remove(position);
                 }
-                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteItem(n);
+                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteItem(position);
 
 
             }
@@ -169,37 +169,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        //implement search view
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-//            MenuItem menuItem = menu.findItem(R.id.action_search);
-//            final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-//            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-//            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//                @Override
-//                public boolean onQueryTextSubmit(final String query) {
-////                    new GetBarCodeAsyncTask(new GetBarCodeAsyncTask.OnUpdateUICallback() {
-////                        @Override
-////                        public void onUpdateUI(Observable<Product> product) {
-////                            if (product != null) {
-////                                Intent intent = new Intent(MainActivity.this, BarViewActivity.class);
-////                                intent.putExtra("data", Parcels.wrap(product));
-////                                startActivityForResult(intent, REQUEST_CAMERA);
-////                            } else {
-////                                buildFailedDialog(String.format("Number %s was incorrect or invalid, either the length or the the check digit may have been incorrect.", query)).show();
-////                            }
-////                        }
-////                    }).execute("http://www.upcitemdb.com/upc/" + query);
-////                    searchView.onActionViewCollapsed();
-//                    return false;
-//                }
-//
-//                @Override
-//                public boolean onQueryTextChange(String newText) {
-//                    return false;
-//                }
-//            });
-//        }
+
         return true;
     }
 
@@ -304,9 +274,12 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                     mRecyclerView.setAdapter(adapter);
                     if (mConfig.isUserLogin()) {
                         parseService.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(a -> showToast("products has been saved!"));
+                                .subscribe(a -> {
+                                    showToast("products has been saved!");
+                                    reloadActivity();
+                                });
 
-                        recreate();
+
 
                     } else {
                         for (Product product : products) {
@@ -538,7 +511,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     public interface ClickListener {
         void onClick(View iew, int position);
 
-        void onLongClick(View view, int resource);
+        void onLongClick(View view, int position);
     }
 
     static class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
