@@ -171,6 +171,31 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                                         },
                                         () -> mView.showProgress(false));
                 break;
+            case Constant.KEY_WALMARTLABS:
+                Timber.d("KEY_WALMARTLABS: " + code);
+                mSubscription =
+                        mDataManager.getProductWalmartlabs(code)
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        products -> {
+                                            if (products == null || products.size()==0) {
+                                                mView.onEmptyProductReturn();
+                                            } else {
+                                                Toast.makeText(mContext, "UPCDATABASE", Toast.LENGTH_SHORT).show();
+
+                                                mView.onRequestSuccessList(products);
+                                            }
+                                        }, e -> {
+                                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                                mView.showNetworkError();
+                                            } else {
+                                                mView.showGeneralError(e.getMessage());
+                                            }
+                                        },
+                                        () -> mView.showProgress(false));
+                break;
+
         }
     }
 }

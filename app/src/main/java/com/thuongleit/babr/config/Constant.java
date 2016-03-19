@@ -16,5 +16,6 @@ public interface Constant {
     String KEY_BABR = "babr";
     String KEY_SEACHUPC="searchupc";
     String KEY_UPCDATABASE="upcdatabase";
+    String KEY_WALMARTLABS="walmartlabs";
 
 }

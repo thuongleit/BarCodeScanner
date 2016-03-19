@@ -14,6 +14,7 @@ import com.thuongleit.babr.data.remote.amazon.util.AmazonSignedRequestsHelper;
 import com.thuongleit.babr.data.remote.searchupc.SearchUpcParseService;
 import com.thuongleit.babr.data.remote.upc.UpcParseService;
 import com.thuongleit.babr.data.remote.upcdatabase.UpcDatabaseParseService;
+import com.thuongleit.babr.data.remote.walmartlabs.WalmartlabsParseService;
 import com.thuongleit.babr.vo.Product;
 
 import java.io.UnsupportedEncodingException;
@@ -50,7 +51,8 @@ public class DataManager {
     SearchUpcParseService searchUpcParseService;
     @Inject
     UpcDatabaseParseService upcDatabaseParseService;
-
+    @Inject
+    WalmartlabsParseService walmartlabsParseService;
 
 
     @Inject
@@ -74,17 +76,17 @@ public class DataManager {
     //missing check login
     public Observable<List<Product>> getProductSearchUpc(String code) {
 
-            return Observable.create(subscriber -> {
-                List<Product> products = new ArrayList<Product>();
-                searchUpcParseService.getProductSearchUpc(code).doOnNext(product -> {
-                    products.add(product);
-                }).doOnCompleted(() -> {
-                    subscriber.onNext(products);
-                    subscriber.onCompleted();
-                })
-                        .subscribeOn(Schedulers.newThread())
-                        .subscribe();
-            });
+        return Observable.create(subscriber -> {
+            List<Product> products = new ArrayList<Product>();
+            searchUpcParseService.getProductSearchUpc(code).doOnNext(product -> {
+                products.add(product);
+            }).doOnCompleted(() -> {
+                subscriber.onNext(products);
+                subscriber.onCompleted();
+            })
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribe();
+        });
     }
 
     //missing check login
@@ -99,6 +101,19 @@ public class DataManager {
                 subscriber.onCompleted();
             })
                     .subscribeOn(Schedulers.newThread())
+                    .subscribe();
+        });
+    }
+
+    public Observable<List<Product>> getProductWalmartlabs(String code) {
+        return Observable.create(subscriber -> {
+            List<Product> products = new ArrayList<Product>();
+            walmartlabsParseService.getProductWalmart(code).doOnNext(product -> {
+                products.add(product);
+            }).doOnCompleted(() -> {
+                subscriber.onNext(products);
+                subscriber.onCompleted();
+            }).subscribeOn(Schedulers.newThread())
                     .subscribe();
         });
     }
@@ -137,7 +152,7 @@ public class DataManager {
             List<Product> products = new ArrayList<>();
             mParseService.getProductBABR(id).doOnNext(product -> {
                 products.add(product);
-            }).doOnCompleted(() ->{
+            }).doOnCompleted(() -> {
                 subscriber.onNext(products);
                 subscriber.onCompleted();
             })
