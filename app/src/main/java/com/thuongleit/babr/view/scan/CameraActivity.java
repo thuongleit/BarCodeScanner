@@ -69,6 +69,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     private ProgressDialog mProgressDialog;
     private String mService;
     private int order = 0;
+    private String mCode;
 
     @Override
     protected int getLayoutId() {
@@ -201,8 +202,11 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
             mService = Constant.KEY_AMAZON_SERVICE;
         } else if (order == 5) {
             mService = Constant.KEY_BABR;
+        } else {
+            buildFailedDialog("No items found on all services").show();
+            return;
         }
-        startScan();
+        mProductLookupPresenter.execute(mCode, mService);
     }
 
     @Override
@@ -230,18 +234,20 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     public void showGeneralError(String message) {
         order++;
         if (order == 1) {
-            mService = Constant.KEY_UPCDATABASE;
-        } else if (order == 2) {
             mService = Constant.KEY_SEACHUPC;
+        } else if (order == 2) {
+            mService = Constant.KEY_UPCDATABASE;
         } else if (order == 3) {
             mService = Constant.KEY_WALMARTLABS;
         } else if (order == 4) {
             mService = Constant.KEY_AMAZON_SERVICE;
         } else if (order == 5) {
             mService = Constant.KEY_BABR;
+        } else {
+            buildFailedDialog(message).show();
+            return;
         }
-        startScan();
-        // buildFailedDialog(message).show();
+        mProductLookupPresenter.execute(mCode, mService);
     }
 
     private void setupScanner() {
@@ -312,6 +318,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
 
                         String scanResult = sym.getData().trim();
 
+                        mCode = scanResult;
                         //Use Below function to make a server call and complete request.
                         mProductLookupPresenter.execute(scanResult, mService);
                         break;
