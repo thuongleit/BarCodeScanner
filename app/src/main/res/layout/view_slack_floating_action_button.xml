@@ -21,7 +21,8 @@
         app:fab_icon="@drawable/ic_amazon"
         app:fab_size="mini"
         app:fab_stroke_visible="false"
-        app:fab_title="Amazon" />
+        app:fab_title="Amazon"
+        android:visibility="gone"/>
 
     <com.getbase.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_upcitemdb_select"
@@ -32,7 +33,8 @@
         app:fab_icon="@drawable/ic_camera_alt_white_36dp"
         app:fab_size="mini"
         app:fab_stroke_visible="false"
-        app:fab_title="Upcitemdb" />
+        app:fab_title="Upcitemdb"
+        android:visibility="gone"/>
 
     <com.getbase.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_babr_select"
@@ -43,6 +45,7 @@
         app:fab_icon="@drawable/ic_camera_alt_white_36dp"
         app:fab_size="mini"
         app:fab_stroke_visible="false"
-        app:fab_title="BABR" />
+        app:fab_title="BABR"
+        android:visibility="gone"/>
 
 </com.getbase.floatingactionbutton.FloatingActionsMenu>

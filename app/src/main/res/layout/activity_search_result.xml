@@ -20,37 +20,37 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:weightSum="2">
+                android:layout_height="match_parent">
 
-                <Button
+                <ImageButton
                     android:id="@+id/button_toolbar_cancel"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="-5dp"
-                    android:layout_weight="1"
-                    android:background="?attr/selectableItemBackground"
-                    android:text="Cancel"
-                    android:textAllCaps="true" />
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/ic_action_back_signin"
+                    android:textAllCaps="true"
+                    android:visibility="gone"/>
 
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="?attr/actionBarSize"
-                    android:background="@color/black_10" />
+                <!--<View-->
+                    <!--android:layout_width="1dp"-->
+                    <!--android:layout_height="?attr/actionBarSize"-->
+                    <!--android:background="@color/black_10" />-->
 
                 <Button
                     android:id="@+id/button_toolbar_save"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackground"
                     android:text="Save"
+                    android:textColor="#FFFFFF"
+                    android:layout_alignParentRight="true"
                     android:textAllCaps="true" />
 
-            </LinearLayout>
+            </RelativeLayout>
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>

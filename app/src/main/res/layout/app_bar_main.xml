@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
     tools:context=".view.main.MainActivity">
 
@@ -17,19 +18,25 @@
 
     <include layout="@layout/view_content_with_recycler" />
 
-    <FrameLayout
-        android:id="@+id/layout_fab_container"
-        android:layout_width="match_parent"
-        android:background="@color/white_overlay"
-        android:layout_height="match_parent"
-        android:visibility="gone">
+    <!--<FrameLayout-->
+        <!--android:id="@+id/layout_fab_container"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:background="@color/white_overlay"-->
+        <!--android:layout_height="match_parent"-->
+       <!--&gt;-->
 
-        <include
-            layout="@layout/view_slack_floating_action_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin" />
-    </FrameLayout>
+        <!--<include-->
+            <!--layout="@layout/view_slack_floating_action_button"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="bottom|end"-->
+            <!--android:layout_margin="@dimen/fab_margin"-->
+            <!--/>-->
+
+    <!--</FrameLayout>-->
+
+
+
+
 
 </android.support.design.widget.CoordinatorLayout>

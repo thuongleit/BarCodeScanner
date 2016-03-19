@@ -4,10 +4,15 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorListener;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,11 +24,12 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
+
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.parse.ParseUser;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -39,6 +45,7 @@ import com.thuongleit.babr.data.remote.ParseService;
 import com.thuongleit.babr.di.ActivityScope;
 import com.thuongleit.babr.util.AppUtils;
 import com.thuongleit.babr.util.DialogFactory;
+import com.thuongleit.babr.util.ScrollingFABBehavior;
 import com.thuongleit.babr.view.AppIntroActivity;
 import com.thuongleit.babr.view.base.ToolbarActivity;
 import com.thuongleit.babr.view.product.ProductRecyclerAdapter;
@@ -56,9 +63,11 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import butterknife.Bind;
+
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class MainActivity extends ToolbarActivity implements NavigationView.OnNavigationItemSelectedListener, MainView {
 
@@ -74,19 +83,11 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     NavigationView mNavigationView;
     @Bind(R.id.progress_wheel)
     ProgressWheel mProgressWheel;
-    @Bind(R.id.layout_fab_container)
-    FrameLayout mLayoutFabContainer;
-    @Bind(R.id.fab_menu)
-    FloatingActionsMenu mFabMenu;
-    @Bind(R.id.fab_amazon_select)
-    FloatingActionButton mFabAmazon;
-    @Bind(R.id.fab_upcitemdb_select)
-    FloatingActionButton mFabUpcItemDb;
-    @Bind(R.id.fab_babr_select)
-    FloatingActionButton mFabBABR;
+
     @Bind(R.id.searchbox)
     SearchBox searchBox;
-
+    @Bind(R.id.fab_scan)
+    FloatingActionButton fabScan;
 
     @Inject
     Config mConfig;
@@ -105,6 +106,9 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     private ParseService parseService;
     private List<Product> productList = new ArrayList<>();
 
+    private static final android.view.animation.Interpolator INTERPOLATOR = new FastOutSlowInInterpolator();
+    private boolean mIsAnimatingOut = false;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -121,15 +125,28 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             startActivity(new Intent(this, AppIntroActivity.class));
             mConfig.putIsFirstRun(false);
         }
+
+
         setupReCyclerView();
         setupNavigationView();
-        setupFabMenu();
+
 
         parseService = new ParseService();
 
         //try restore login session
         tryRestoreLoginSession();
         mMainPresenter.getProducts();
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                Timber.d("onScrolled");
+                if (dy > 0 && fabScan.isShown() && !mIsAnimatingOut)
+                    animateOut(fabScan);
+                else if (dy < 0 && !fabScan.isShown())
+                    animateIn(fabScan);
+            }
+        });
 
         mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(this, mRecyclerView, new ClickListener() {
             @Override
@@ -154,6 +171,21 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             }
         }));
 
+        fabScan.setOnClickListener(v -> {
+            // Must be done during an initialization phase like onCreate
+            RxPermissions.getInstance(this)
+                    .request(Manifest.permission.CAMERA)
+                    .subscribe(granted -> {
+                        if (granted) { // Always true pre-M
+                            Intent intent = new Intent(mContext, CameraActivity.class);
+                            intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_UPC_SERVICE);
+                            startActivityForResult(intent, REQUEST_CAMERA);
+                        } else {
+                            showToast("You must allow to use camera to access this function");
+                        }
+                    });
+
+        });
     }
 
     @Override
@@ -182,24 +214,10 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             openSearch();
             return true;
         }
-        if (id == R.id.action_camera) {
-            // Must be done during an initialization phase like onCreate
-            RxPermissions.getInstance(this)
-                    .request(Manifest.permission.CAMERA)
-                    .subscribe(granted -> {
-                        if (granted) { // Always true pre-M
-                            Intent intent = new Intent(mContext, CameraActivity.class);
-                            intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_UPC_SERVICE);
-                            startActivityForResult(intent, REQUEST_CAMERA);
-                        } else {
-                            showToast("You must allow to use camera to access this function");
-                        }
-                    });
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
+
 
     public void openSearch() {
         getToolbar().setTitle("");
@@ -311,8 +329,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
-        } else if (mFabMenu.isExpanded()) {
-            mFabMenu.collapse();
         } else {
             if (!mDoubleBackToExitPressedOnce) {
                 this.mDoubleBackToExitPressedOnce = true;
@@ -423,7 +439,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 float moveFactor = (drawerView.getWidth() * slideOffset);
                 mRecyclerView.setTranslationX(moveFactor);
-                mLayoutFabContainer.setTranslationX(moveFactor);
+//                mLayoutFabContainer.setTranslationX(moveFactor);
                 if (mViewEmpty != null) {
                     mViewEmpty.setTranslationX(moveFactor);
                 }
@@ -462,45 +478,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         }
     }
 
-    private void setupFabMenu() {
-        mLayoutFabContainer.getBackground().setAlpha(0);
-        mFabMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
-            @Override
-            public void onMenuExpanded() {
-                mLayoutFabContainer.getBackground().setAlpha(240);
-                mLayoutFabContainer.setOnTouchListener((v, event) -> {
-                    mFabMenu.collapse();
-                    return true;
-                });
-            }
-
-            @Override
-            public void onMenuCollapsed() {
-                mLayoutFabContainer.getBackground().setAlpha(0);
-                mLayoutFabContainer.setOnTouchListener(null);
-            }
-        });
-        mFabAmazon.setOnClickListener(v -> {
-            Intent intent = new Intent(mContext, CameraActivity.class);
-            intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_AMAZON_SERVICE);
-            startActivityForResult(intent, REQUEST_CAMERA);
-            mFabMenu.collapse();
-
-        });
-        mFabUpcItemDb.setOnClickListener(v -> {
-            Intent intent = new Intent(mContext, CameraActivity.class);
-            intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_UPC_SERVICE);
-            startActivityForResult(intent, REQUEST_CAMERA);
-            mFabMenu.collapse();
-        });
-
-        mFabBABR.setOnClickListener(v -> {
-            Intent intent = new Intent(mContext, CameraActivity.class);
-            intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_BABR);
-            startActivityForResult(intent, REQUEST_CAMERA);
-            mFabMenu.collapse();
-        });
-    }
 
     private void removeAdditionalViews() {
         if (mViewEmpty != null) {
@@ -511,9 +488,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         }
     }
 
-    private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
 
     public interface ClickListener {
         void onClick(View iew, int position);
@@ -565,5 +539,61 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         }
     }
 
+    private void animateOut(final FloatingActionButton button) {
+        if (Build.VERSION.SDK_INT >= 14) {
+            ViewCompat.animate(button).scaleX(0.0F).scaleY(0.0F).alpha(0.0F)
+                    .setInterpolator(INTERPOLATOR).withLayer()
+                    .setListener(new ViewPropertyAnimatorListener() {
+                        @Override
+                        public void onAnimationStart(View view) {
+                            MainActivity.this.mIsAnimatingOut = true;
+                        }
+
+                        @Override
+                        public void onAnimationEnd(View view) {
+                            MainActivity.this.mIsAnimatingOut = false;
+                            view.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(View view) {
+                            MainActivity.this.mIsAnimatingOut = false;
+                        }
+                    }).start();
+        } else {
+            Animation anim = AnimationUtils.loadAnimation(button.getContext(), android.support.design.R.anim.design_fab_in);
+            anim.setInterpolator(INTERPOLATOR);
+            anim.setDuration(200L);
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                public void onAnimationStart(Animation animation) {
+                    mIsAnimatingOut = true;
+                }
+
+                public void onAnimationEnd(Animation animation) {
+                    mIsAnimatingOut = false;
+                    button.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(final Animation animation) {
+                }
+            });
+            button.startAnimation(anim);
+        }
+    }
+
+    private void animateIn(FloatingActionButton button) {
+        button.setVisibility(View.VISIBLE);
+        if (Build.VERSION.SDK_INT >= 14) {
+            ViewCompat.animate(button).scaleX(1.0F).scaleY(1.0F).alpha(1.0F)
+                    .setInterpolator(INTERPOLATOR).withLayer().setListener(null)
+                    .start();
+        } else {
+            Animation anim = AnimationUtils.loadAnimation(button.getContext(), android.support.design.R.anim.design_fab_out);
+            anim.setDuration(200L);
+            anim.setInterpolator(INTERPOLATOR);
+            button.startAnimation(anim);
+        }
+    }
 
 }
