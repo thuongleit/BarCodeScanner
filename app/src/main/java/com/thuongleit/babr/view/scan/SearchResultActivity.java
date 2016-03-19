@@ -56,8 +56,8 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
         ButterKnife.bind(this);
         getComponent().inject(this);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setHomeButtonEnabled(false);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Timber.d("onCreateSearchResultActivity");
 

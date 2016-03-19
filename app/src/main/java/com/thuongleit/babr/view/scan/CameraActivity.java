@@ -62,6 +62,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     private Camera mCamera;
     private ImageScanner mScanner;
 
+
     private Handler mAutoFocusHandler;
     private boolean mPreviewing = true;
     private boolean mFlash = false;
@@ -188,11 +189,15 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
 
     @Override
     public void onEmptyProductReturn() {
-        Toast.makeText(mContext, "No Item Found", Toast.LENGTH_SHORT).show();
+      //  Toast.makeText(mContext, "No Item Found", Toast.LENGTH_SHORT).show();
         order++;
         if (order==1){
-            mService= Constant.KEY_AMAZON_SERVICE;
+            mService= Constant.KEY_SEACHUPC;
         }else if(order==2){
+            mService=Constant.KEY_UPCDATABASE;
+        }else if(order==3){
+            mService=Constant.KEY_AMAZON_SERVICE;
+        }else if(order==4){
             mService=Constant.KEY_BABR;
         }
         startScan();
@@ -204,6 +209,8 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
         intent.putExtra(SearchResultActivity.EXTRA_DATA, parcelable);
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
     }
+
+
 
     @Override
     public void onRequestSuccessList(List<Product> parcelables) {
@@ -222,8 +229,12 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     public void showGeneralError(String message) {
         order++;
         if (order==1){
-            mService= Constant.KEY_AMAZON_SERVICE;
+            mService= Constant.KEY_UPCDATABASE;
         }else if(order==2){
+            mService=Constant.KEY_SEACHUPC;
+        }else if(order==3){
+            mService=Constant.KEY_AMAZON_SERVICE;
+        }else if(order==4){
             mService=Constant.KEY_BABR;
         }
         startScan();

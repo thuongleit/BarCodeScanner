@@ -11,7 +11,9 @@ import com.thuongleit.babr.data.remote.amazon.AmazonParseService;
 import com.thuongleit.babr.data.remote.amazon.AmazonService;
 import com.thuongleit.babr.data.remote.amazon.model.AmazonProductResponse;
 import com.thuongleit.babr.data.remote.amazon.util.AmazonSignedRequestsHelper;
+import com.thuongleit.babr.data.remote.searchupc.SearchUpcParseService;
 import com.thuongleit.babr.data.remote.upc.UpcParseService;
+import com.thuongleit.babr.data.remote.upcdatabase.UpcDatabaseParseService;
 import com.thuongleit.babr.vo.Product;
 
 import java.io.UnsupportedEncodingException;
@@ -44,6 +46,11 @@ public class DataManager {
     Config mConfig;
     @Inject
     AmazonService mAmazonService;
+    @Inject
+    SearchUpcParseService searchUpcParseService;
+    @Inject
+    UpcDatabaseParseService upcDatabaseParseService;
+
 
 
     @Inject
@@ -62,6 +69,38 @@ public class DataManager {
                         mParseService.saveProduct(product);
                     }
                 });
+    }
+
+    //missing check login
+    public Observable<List<Product>> getProductSearchUpc(String code) {
+
+            return Observable.create(subscriber -> {
+                List<Product> products = new ArrayList<Product>();
+                searchUpcParseService.getProductSearchUpc(code).doOnNext(product -> {
+                    products.add(product);
+                }).doOnCompleted(() -> {
+                    subscriber.onNext(products);
+                    subscriber.onCompleted();
+                })
+                        .subscribeOn(Schedulers.newThread())
+                        .subscribe();
+            });
+    }
+
+    //missing check login
+    public Observable<List<Product>> getProductUpcDatabase(String code) {
+
+        return Observable.create(subscriber -> {
+            List<Product> products = new ArrayList<Product>();
+            upcDatabaseParseService.getProductUpcDatabase(code).doOnNext(product -> {
+                products.add(product);
+            }).doOnCompleted(() -> {
+                subscriber.onNext(products);
+                subscriber.onCompleted();
+            })
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribe();
+        });
     }
 
 

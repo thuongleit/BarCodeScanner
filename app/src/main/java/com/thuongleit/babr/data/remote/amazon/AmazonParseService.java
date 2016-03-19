@@ -66,6 +66,7 @@ public class AmazonParseService {
                                             if (url.matches(IMAGE_URL_PATTERN)) {
                                                 product.setImageUrl(url);
                                             }
+
                                         }
                                     }
                                     break;

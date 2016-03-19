@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thuongleit.babr.R;
 
@@ -51,5 +52,9 @@ public abstract class ToolbarActivity extends BaseActivity {
 
     protected TextView getToolbarTitle() {
         return mToolbarTitle;
+    }
+    
+    protected void showToast(String message){
+        Toast.makeText(ToolbarActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 }
