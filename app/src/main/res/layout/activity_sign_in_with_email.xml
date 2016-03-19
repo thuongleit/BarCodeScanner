@@ -4,17 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.signin.SignInActivity">
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/bgr_tiger"
-        android:scaleType="center" />
+    <!--
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/login_background"
+            android:scaleType="center" />-->
 
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black_overlay" />
+        android:background="@drawable/login_background" />
 
     <include layout="@layout/view_toolbar_signup" />
 

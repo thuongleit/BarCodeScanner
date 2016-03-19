@@ -56,8 +56,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             if (mCamera != null) {
                 mCamera.setPreviewDisplay(holder);
             }
-        } catch (IOException exception) {
-            Log.e(TAG, "IOException caused by setPreviewDisplay()", exception);
+        } catch (IOException ex) {
+            Log.e(TAG, "IOException caused by setPreviewDisplay()", ex);
         }
     }
 
@@ -84,6 +84,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
 
         startCamera();
+        try {
+            //#36: wait for surface created then set auto-focus later after 1 second
+            mCamera.autoFocus(mAutoFocusCallback);
+        } catch (Exception e) {
+            Log.e("Camera", "Cannot start autofocus");
+        }
     }
 
     public void startCamera() {
@@ -95,8 +101,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 mCamera.setPreviewDisplay(mHolder);
                 mCamera.setPreviewCallback(mPreviewCallback);
                 mCamera.startPreview();
-                mCamera.autoFocus(mAutoFocusCallback);
             }
+
         } catch (IOException e) {
 
         }
@@ -111,16 +117,16 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void setFlash(boolean flag) {
-        if(this.mCamera != null && CameraUtils.isFlashSupported(this.mCamera)) {
+        if (this.mCamera != null && CameraUtils.isFlashSupported(this.mCamera)) {
             Camera.Parameters parameters = this.mCamera.getParameters();
-            if(flag) {
-                if(parameters.getFlashMode().equals("torch")) {
+            if (flag) {
+                if (parameters.getFlashMode().equals("torch")) {
                     return;
                 }
 
                 parameters.setFlashMode("torch");
             } else {
-                if(parameters.getFlashMode().equals("off")) {
+                if (parameters.getFlashMode().equals("off")) {
                     return;
                 }
 

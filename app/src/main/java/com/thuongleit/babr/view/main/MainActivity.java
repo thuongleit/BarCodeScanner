@@ -1,6 +1,6 @@
 package com.thuongleit.babr.view.main;
 
-import android.app.Activity;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -31,12 +31,11 @@ import android.widget.Toast;
 
 
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.config.Config;
 import com.thuongleit.babr.config.Constant;
@@ -206,7 +205,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             return true;
         }
 
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -348,9 +346,11 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             case R.id.nav_generate:
 
                 if (userId != null) {
+
                     Intent intentGenerate = new Intent(MainActivity.this, GenerateQR.class);
                     intentGenerate.putExtra(USER_ID_EXTRA, userId);
                     startActivity(intentGenerate);
+
                 } else {
                     showToast("You must SignIn!");
                 }
