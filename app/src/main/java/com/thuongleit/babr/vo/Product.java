@@ -34,9 +34,9 @@ public class Product extends BaseModel implements Parcelable {
     @Column
     String objectId;
     @Column
-    String source;
-    @Column
     int quantity = 0;
+    @Column
+    String source;
 
     public Product() {
     }
@@ -147,6 +147,7 @@ public class Product extends BaseModel implements Parcelable {
         return 0;
     }
 
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.id);
@@ -160,7 +161,10 @@ public class Product extends BaseModel implements Parcelable {
         dest.writeString(this.objectId);
         dest.writeString(this.source);
         dest.writeInt(this.quantity);
+
     }
+
+
 
     protected Product(Parcel in) {
         this.id = in.readLong();

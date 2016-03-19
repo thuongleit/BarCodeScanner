@@ -40,6 +40,8 @@ public class AmazonParseService {
                     if ("productTitle".equals(idElement)) {
                         String productTitle = element.text();
                         product.setName(productTitle);
+                        product.setSource("amazon.com");
+
                     }
                 }
 

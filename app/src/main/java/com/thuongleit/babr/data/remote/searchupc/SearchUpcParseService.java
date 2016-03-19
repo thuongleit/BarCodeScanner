@@ -50,6 +50,7 @@ public class SearchUpcParseService {
                     public void onResponse(Response<SearchUpc> response, Retrofit retrofit) {
 
                         SearchUpc searchUpc = response.body();
+                        product.setSource("searchupc.com");
 
                         if (searchUpc.get0().getImageurl()!=null) {
                             product.setImageUrl(searchUpc.get0().getImageurl());

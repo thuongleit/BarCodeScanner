@@ -14,6 +14,7 @@ import com.thuongleit.babr.data.remote.amazon.util.AmazonSignedRequestsHelper;
 import com.thuongleit.babr.data.remote.searchupc.SearchUpcParseService;
 import com.thuongleit.babr.data.remote.upc.UpcParseService;
 import com.thuongleit.babr.data.remote.upcdatabase.UpcDatabaseParseService;
+import com.thuongleit.babr.data.remote.upcitemdb.UpcItemDbParseService;
 import com.thuongleit.babr.data.remote.walmartlabs.WalmartlabsParseService;
 import com.thuongleit.babr.vo.Product;
 
@@ -53,6 +54,8 @@ public class DataManager {
     UpcDatabaseParseService upcDatabaseParseService;
     @Inject
     WalmartlabsParseService walmartlabsParseService;
+    @Inject
+    UpcItemDbParseService upcItemDbParseService;
 
 
     @Inject
@@ -108,12 +111,33 @@ public class DataManager {
     public Observable<List<Product>> getProductWalmartlabs(String code) {
         return Observable.create(subscriber -> {
             List<Product> products = new ArrayList<Product>();
-            walmartlabsParseService.getProductWalmart(code).doOnNext(product -> {
-                products.add(product);
-            }).doOnCompleted(() -> {
-                subscriber.onNext(products);
-                subscriber.onCompleted();
-            }).subscribeOn(Schedulers.newThread())
+            walmartlabsParseService
+                    .getProductWalmart(code)
+                    .doOnNext(product -> {
+                        products.add(product);
+                    })
+                    .doOnCompleted(() -> {
+                        subscriber.onNext(products);
+                        subscriber.onCompleted();
+                    })
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribe();
+        });
+    }
+
+    //missing check login
+    public Observable<List<Product>> getProductUpcItemDb(String code) {
+
+        return Observable.create(subscriber -> {
+            List<Product> products = new ArrayList<Product>();
+            upcItemDbParseService
+                    .getUpcItemDbParseService(code)
+                    .doOnNext(product -> products.add(product))
+                    .doOnCompleted(() -> {
+                        subscriber.onNext(products);
+                        subscriber.onCompleted();
+                    })
+                    .subscribeOn(Schedulers.newThread())
                     .subscribe();
         });
     }

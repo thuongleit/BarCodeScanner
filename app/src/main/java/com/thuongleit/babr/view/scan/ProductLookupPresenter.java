@@ -76,26 +76,27 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                 break;
             case Constant.KEY_UPC_SERVICE:
                 Timber.d("KEY_UPC_SERVICE"+ code);
-                mSubscription = mDataManager
-                        .getProduct(code)
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(product -> {
-                                    if (product.getImageUrl().isEmpty()||product == null) {
-                                        mView.onEmptyProductReturn();
-                                    } else {
-                                        Toast.makeText(mContext, "UPC_SERVICE", Toast.LENGTH_SHORT).show();
+                mSubscription =
+                        mDataManager.getProductUpcItemDb("14891901582")
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        products -> {
+                                            if (products == null || products.size()==0) {
+                                                mView.onEmptyProductReturn();
+                                            } else {
+                                                Toast.makeText(mContext, "UPC_SERVICE", Toast.LENGTH_SHORT).show();
 
-                                        mView.onRequestSuccess(product);
-                                    }
-                                },
-                                e -> {
-                                    if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                        mView.showNetworkError();
-                                    } else {
-                                        mView.showGeneralError(e.getMessage());
-                                    }
-                                }, () -> mView.showProgress(false));
+                                                mView.onRequestSuccessList(products);
+                                            }
+                                        }, e -> {
+                                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                                mView.showNetworkError();
+                                            } else {
+                                                mView.showGeneralError(e.getMessage());
+                                            }
+                                        },
+                                        () -> mView.showProgress(false));
                 break;
 
             case Constant.KEY_BABR:

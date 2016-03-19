@@ -52,8 +52,9 @@ public class ParseService {
             parseProduct.put("name", product.getName());
         }
         if (product.getSource() != null) {
-            parseProduct.put("source", product.getName());
+            parseProduct.put("source", product.getSource());
         }
+
         parseProduct.put("quantity", product.getQuantity());
 
         parseProduct.saveInBackground();
@@ -61,7 +62,7 @@ public class ParseService {
 
     public void deleteProduct(String query) {
         ParseQuery<ParseObject> queryStm = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId())
-                .whereEqualTo("objectId",query);
+                .whereEqualTo("objectId", query);
         queryStm.getFirstInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
@@ -103,6 +104,7 @@ public class ParseService {
                             product.setName(name);
                             product.setObjectId(objectId);
                             product.setModel(model);
+                            product.setModel(source);
 
                             subscriber.onNext(product);
                         }
@@ -113,8 +115,7 @@ public class ParseService {
     }
 
 
-
-    public Observable<Product> getProductBABR(String id){
+    public Observable<Product> getProductBABR(String id) {
         ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", id);
         return Observable.create(new Observable.OnSubscribe<Product>() {
             @Override
@@ -142,6 +143,7 @@ public class ParseService {
                             product.setName(name);
                             product.setObjectId(objectId);
                             product.setModel(model);
+                            product.setSource(source);
 
                             subscriber.onNext(product);
                         }
@@ -152,11 +154,11 @@ public class ParseService {
     }
 
 
-    public Observable<List<Product>> saveListProduct(List<Product> productList){
+    public Observable<List<Product>> saveListProduct(List<Product> productList) {
         return Observable.just(productList).doOnNext(productList1 -> {
-           for (Product product:productList1){
-             saveProduct(product);
-           }
+            for (Product product : productList1) {
+                saveProduct(product);
+            }
         });
     }
 }
