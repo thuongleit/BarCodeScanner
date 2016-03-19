@@ -51,6 +51,10 @@ public class ParseService {
         if (product.getName() != null) {
             parseProduct.put("name", product.getName());
         }
+        if (product.getSource() != null) {
+            parseProduct.put("source", product.getSource());
+        }
+
         parseProduct.put("quantity", product.getQuantity());
 
         parseProduct.saveInBackground();
@@ -88,6 +92,7 @@ public class ParseService {
                             String model = object.getString("model");
                             String name = object.getString("name");
                             String objectId = object.getObjectId();
+                            String source=object.getString("source");
                             Number quantity = object.getNumber("quantity");
 
                             Product product = new Product();
@@ -99,6 +104,7 @@ public class ParseService {
                             product.setName(name);
                             product.setObjectId(objectId);
                             product.setModel(model);
+                            product.setModel(source);
 
                             subscriber.onNext(product);
                         }
@@ -125,6 +131,7 @@ public class ParseService {
                             String manufacture = object.getString("manufacture");
                             String model = object.getString("model");
                             String name = object.getString("name");
+                            String source = object.getString("source");
                             String objectId = object.getObjectId();
                             Number quantity = object.getNumber("quantity");
 
@@ -137,6 +144,7 @@ public class ParseService {
                             product.setName(name);
                             product.setObjectId(objectId);
                             product.setModel(model);
+                            product.setSource(source);
 
                             subscriber.onNext(product);
                         }

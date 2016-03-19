@@ -37,6 +37,7 @@ public class ProductModel extends BaseModel {
                         Product_Table.manufacture.eq(product.getManufacture()),
                         Product_Table.model.eq(product.getModel()),
                         Product_Table.quantity.eq(product.getQuantity()),
+                        Product_Table.source.eq(product.getSource()),
                         Product_Table.upcA.eq(product.getUpcA()));
                         Product_Table.objectId.eq(product.getObjectId());
         Timber.i(insertQuery.getQuery());
