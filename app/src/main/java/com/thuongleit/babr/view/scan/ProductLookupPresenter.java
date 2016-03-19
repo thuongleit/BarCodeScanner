@@ -5,7 +5,6 @@ import android.widget.Toast;
 
 import com.thuongleit.babr.config.Constant;
 import com.thuongleit.babr.data.DataManager;
-import com.thuongleit.babr.di.ActivityScope;
 import com.thuongleit.babr.di.ApplicationScope;
 import com.thuongleit.babr.view.base.BasePresenter;
 
@@ -77,7 +76,7 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
             case Constant.KEY_UPC_SERVICE:
                 Timber.d("KEY_UPC_SERVICE"+ code);
                 mSubscription =
-                        mDataManager.getProductUpcItemDb("14891901582")
+                        mDataManager.getProductUpcItemDb(code)
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(

@@ -1,8 +1,5 @@
 package com.thuongleit.babr.data.remote.upcitemdb;
 
-import com.thuongleit.babr.data.remote.upcdatabase.UpcDatabase;
-import com.thuongleit.babr.data.remote.upcdatabase.UpcDatabaseParseService;
-import com.thuongleit.babr.data.remote.upcdatabase.UpcDatabaseService;
 import com.thuongleit.babr.data.remote.upcitemdb.model.Item;
 import com.thuongleit.babr.data.remote.upcitemdb.model.UpcItemDb;
 import com.thuongleit.babr.vo.Product;
@@ -26,8 +23,9 @@ import timber.log.Timber;
 @Singleton
 public class UpcItemDbParseService {
 
-   @Inject
-    public UpcItemDbParseService(){}
+    @Inject
+    public UpcItemDbParseService() {
+    }
 
     public Observable<Product> getUpcItemDbParseService(final String code) {
         return Observable.create(new Observable.OnSubscribe<Product>() {
@@ -49,30 +47,32 @@ public class UpcItemDbParseService {
                     @Override
                     public void onResponse(Response<UpcItemDb> response, Retrofit retrofit) {
                         UpcItemDb upcItemDb = response.body();
-                        Item item=upcItemDb.getItems().get(0);
-                        if (upcItemDb.getCode().equals("OK")) {
-                            product.setSource("upcitemdb.com");
-                            product.setName(item.getTitle());
-                            product.setImageUrl(item.getImages().get(0));
-                            product.setEan(item.getEan());
-                            product.setManufacture(item.getBrand());
-                            product.setModel(item.getModel());
-                            product.setUpcA(item.getUpc());
-                            subscriber.onNext(product);
-                            subscriber.onCompleted();
+                        if (upcItemDb != null && upcItemDb.getItems() != null && !upcItemDb.getItems().isEmpty()) {
+                            Item item = upcItemDb.getItems().get(0);
+                            if (upcItemDb.getCode().equals("OK")) {
+                                product.setSource("upcitemdb.com");
+                                product.setName(item.getTitle());
+                                product.setImageUrl(item.getImages().get(0));
+                                product.setEan(item.getEan());
+                                product.setManufacture(item.getBrand());
+                                product.setModel(item.getModel());
+                                product.setUpcA(item.getUpc());
+                                subscriber.onNext(product);
+                                subscriber.onCompleted();
+                            }
                         }
+                        subscriber.onCompleted();
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
-
+                        subscriber.onError(t);
                     }
                 });
 
             }
         });
     }
-
 
 
 }

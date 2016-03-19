@@ -7,8 +7,7 @@
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <include layout="@layout/view_content_with_recycler" />
 
@@ -17,12 +16,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <include
-                layout="@layout/view_toolbar" />
+            <include layout="@layout/view_toolbar" />
         </android.support.design.widget.AppBarLayout>
 
         <android.support.design.widget.FloatingActionButton
-           android:id="@+id/fab_scan"
+            android:id="@+id/fab_scan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
@@ -31,9 +29,8 @@
             android:src="@drawable/ic_camera_enhance_white_24dp"
             app:borderWidth="0dp"
             app:elevation="6dp"
-            app:pressedTranslationZ="12dp"
             app:layout_behavior="com.thuongleit.babr.util.ScrollingFABBehavior"
-            ></android.support.design.widget.FloatingActionButton>
+            app:pressedTranslationZ="12dp"></android.support.design.widget.FloatingActionButton>
 
 
     </android.support.design.widget.CoordinatorLayout>

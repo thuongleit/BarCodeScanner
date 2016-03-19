@@ -55,7 +55,6 @@ public class DataManager {
     UpcItemDbParseService upcItemDbParseService;
 
 
-
     @Inject
     public DataManager(Application app) {
         ((BarApplication) app).getAppComponent().inject(this);
@@ -77,17 +76,17 @@ public class DataManager {
     //missing check login
     public Observable<List<Product>> getProductSearchUpc(String code) {
 
-            return Observable.create(subscriber -> {
-                List<Product> products = new ArrayList<Product>();
-                searchUpcParseService.getProductSearchUpc(code).doOnNext(product -> {
-                    products.add(product);
-                }).doOnCompleted(() -> {
-                    subscriber.onNext(products);
-                    subscriber.onCompleted();
-                })
-                        .subscribeOn(Schedulers.newThread())
-                        .subscribe();
-            });
+        return Observable.create(subscriber -> {
+            List<Product> products = new ArrayList<Product>();
+            searchUpcParseService.getProductSearchUpc(code).doOnNext(product -> {
+                products.add(product);
+            }).doOnCompleted(() -> {
+                subscriber.onNext(products);
+                subscriber.onCompleted();
+            })
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribe();
+        });
     }
 
     //missing check login
@@ -156,7 +155,7 @@ public class DataManager {
             List<Product> products = new ArrayList<>();
             mParseService.getProductBABR(id).doOnNext(product -> {
                 products.add(product);
-            }).doOnCompleted(() ->{
+            }).doOnCompleted(() -> {
                 subscriber.onNext(products);
                 subscriber.onCompleted();
             })
