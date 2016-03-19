@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.9"
-        android:background="@drawable/bgr_tiger"
+        android:background="@drawable/login_background"
         android:scaleType="center" />
 
     <com.thuongleit.babr.view.widget.DancingScriptTextView

@@ -36,15 +36,15 @@ public class BarApplication extends Application {
 
         //enable logger
         CrashlyticsCore crashCore = new CrashlyticsCore.Builder()
-                .disabled(BuildConfig.DEBUG)
+//                .disabled(BuildConfig.DEBUG)
                 .build();
         Fabric.with(this, new Crashlytics.Builder()
                 .core(crashCore)
                 .build());
 
-        if (BuildConfig.DEBUG) {
-            Timber.plant(new Timber.DebugTree());
-        }
+//        if (BuildConfig.DEBUG) {
+//            Timber.plant(new Timber.DebugTree());
+//        }
         Timber.plant(new CrashlyticsTree());
 
         mAppComponent = DaggerApplicationComponent

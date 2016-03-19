@@ -111,6 +111,8 @@ dependencies {
 
     apt "com.github.Raizlabs.DBFlow:dbflow-processor:$DB_FLOW_VERSION"
     apt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
+
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.9.5'

@@ -1,6 +1,6 @@
 package com.thuongleit.babr.view.main;
 
-import android.app.Activity;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,7 +12,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,12 +25,11 @@ import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.config.Config;
 import com.thuongleit.babr.config.Constant;
@@ -59,7 +57,6 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -186,9 +183,18 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             return true;
         }
         if (id == R.id.action_camera) {
-            Intent intent = new Intent(mContext, CameraActivity.class);
-            intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_UPC_SERVICE);
-            startActivityForResult(intent, REQUEST_CAMERA);
+            // Must be done during an initialization phase like onCreate
+            RxPermissions.getInstance(this)
+                    .request(Manifest.permission.CAMERA)
+                    .subscribe(granted -> {
+                        if (granted) { // Always true pre-M
+                            Intent intent = new Intent(mContext, CameraActivity.class);
+                            intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_UPC_SERVICE);
+                            startActivityForResult(intent, REQUEST_CAMERA);
+                        } else {
+                            showToast("You must allow to use camera to access this function");
+                        }
+                    });
             return true;
         }
 
@@ -280,7 +286,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                                 });
 
 
-
                     } else {
                         for (Product product : products) {
                             mProductModel.saveProduct(product);
@@ -335,9 +340,11 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             case R.id.nav_generate:
 
                 if (userId != null) {
+
                     Intent intentGenerate = new Intent(MainActivity.this, GenerateQR.class);
                     intentGenerate.putExtra(USER_ID_EXTRA, userId);
                     startActivity(intentGenerate);
+
                 } else {
                     showToast("You must SignIn!");
                 }
