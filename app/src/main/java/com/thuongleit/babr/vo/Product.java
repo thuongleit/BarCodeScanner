@@ -34,6 +34,8 @@ public class Product extends BaseModel implements Parcelable {
     @Column
     String objectId;
     @Column
+    String source;
+    @Column
     int quantity = 0;
 
     public Product() {
@@ -116,6 +118,13 @@ public class Product extends BaseModel implements Parcelable {
         this.model = model;
     }
 
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     public String getObjectId() {
         return objectId;
@@ -149,6 +158,7 @@ public class Product extends BaseModel implements Parcelable {
         dest.writeString(this.manufacture);
         dest.writeString(this.model);
         dest.writeString(this.objectId);
+        dest.writeString(this.source);
         dest.writeInt(this.quantity);
     }
 
@@ -162,6 +172,7 @@ public class Product extends BaseModel implements Parcelable {
         this.manufacture = in.readString();
         this.model = in.readString();
         this.objectId = in.readString();
+        this.source = in.readString();
         this.quantity = in.readInt();
     }
 

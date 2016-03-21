@@ -45,8 +45,17 @@ public class WalmartlabsParseService {
                     @Override
                     public void onResponse(Response<Walmartlabs> response, Retrofit retrofit) {
                         Walmartlabs walmartlabs = response.body();
-                        product.setName(walmartlabs.getItems().get(0).getName());
-                        product.setImageUrl(walmartlabs.getItems().get(0).getLargeImage());
+                        product.setSource("walmartlabs.com");
+                        if (walmartlabs.getItems().get(0).getName()!=null) {
+                            product.setName(walmartlabs.getItems().get(0).getName());
+                        }
+                        if (walmartlabs.getItems().get(0).getLargeImage()!=null) {
+                            product.setImageUrl(walmartlabs.getItems().get(0).getLargeImage());
+                        }
+                        if (walmartlabs.getItems().get(0).getUpc()!=null){
+                            product.setUpcA(walmartlabs.getItems().get(0).getUpc());
+                        }
+                        
                         subscriber.onNext(product);
                         subscriber.onCompleted();
                     }

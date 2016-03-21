@@ -46,7 +46,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
 
     public static final String EXTRA_SERVICE = "CameraActivity.EXTRA_SERVICE";
     public static final String EXTRA_DATA = "CameraActivity.EXTRA_DATA";
-    public static final String EXTRA_LOAD_USER_ID="load_user_id";
+    public static final String EXTRA_LOAD_USER_ID = "load_user_id";
     private static final int REQUEST_RESULT_ACTIVITY = 1;
 
     @Bind(R.id.cameraPreview)
@@ -68,7 +68,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     private boolean mFlash = false;
     private ProgressDialog mProgressDialog;
     private String mService;
-    private int order=0;
+    private int order = 0;
 
     @Override
     protected int getLayoutId() {
@@ -189,16 +189,18 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
 
     @Override
     public void onEmptyProductReturn() {
-      //  Toast.makeText(mContext, "No Item Found", Toast.LENGTH_SHORT).show();
+        //  Toast.makeText(mContext, "No Item Found", Toast.LENGTH_SHORT).show();
         order++;
-        if (order==1){
-            mService= Constant.KEY_SEACHUPC;
-        }else if(order==2){
-            mService=Constant.KEY_UPCDATABASE;
-        }else if(order==3){
-            mService=Constant.KEY_AMAZON_SERVICE;
-        }else if(order==4){
-            mService=Constant.KEY_BABR;
+        if (order == 1) {
+            mService = Constant.KEY_SEACHUPC;
+        } else if (order == 2) {
+            mService = Constant.KEY_UPCDATABASE;
+        } else if (order == 3) {
+            mService = Constant.KEY_WALMARTLABS;
+        } else if (order == 4) {
+            mService = Constant.KEY_AMAZON_SERVICE;
+        } else if (order == 5) {
+            mService = Constant.KEY_BABR;
         }
         startScan();
     }
@@ -211,12 +213,11 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     }
 
 
-
     @Override
     public void onRequestSuccessList(List<Product> parcelables) {
         Intent intent = new Intent(mContext, SearchResultActivity.class);
         intent.putParcelableArrayListExtra(SearchResultActivity.EXTRA_DATA, (ArrayList<? extends Parcelable>) parcelables);
-        intent.putExtra(EXTRA_LOAD_USER_ID,true);
+        intent.putExtra(EXTRA_LOAD_USER_ID, true);
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
     }
 
@@ -228,17 +229,19 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     @Override
     public void showGeneralError(String message) {
         order++;
-        if (order==1){
-            mService= Constant.KEY_UPCDATABASE;
-        }else if(order==2){
-            mService=Constant.KEY_SEACHUPC;
-        }else if(order==3){
-            mService=Constant.KEY_AMAZON_SERVICE;
-        }else if(order==4){
-            mService=Constant.KEY_BABR;
+        if (order == 1) {
+            mService = Constant.KEY_UPCDATABASE;
+        } else if (order == 2) {
+            mService = Constant.KEY_SEACHUPC;
+        } else if (order == 3) {
+            mService = Constant.KEY_WALMARTLABS;
+        } else if (order == 4) {
+            mService = Constant.KEY_AMAZON_SERVICE;
+        } else if (order == 5) {
+            mService = Constant.KEY_BABR;
         }
         startScan();
-       // buildFailedDialog(message).show();
+        // buildFailedDialog(message).show();
     }
 
     private void setupScanner() {

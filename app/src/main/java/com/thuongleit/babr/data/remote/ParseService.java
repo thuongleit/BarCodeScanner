@@ -51,6 +51,9 @@ public class ParseService {
         if (product.getName() != null) {
             parseProduct.put("name", product.getName());
         }
+        if (product.getSource() != null) {
+            parseProduct.put("source", product.getName());
+        }
         parseProduct.put("quantity", product.getQuantity());
 
         parseProduct.saveInBackground();
@@ -87,6 +90,7 @@ public class ParseService {
                             String manufacture = object.getString("manufacture");
                             String model = object.getString("model");
                             String name = object.getString("name");
+                            String source = object.getString("source");
                             String objectId = object.getObjectId();
                             Number quantity = object.getNumber("quantity");
 
@@ -125,6 +129,7 @@ public class ParseService {
                             String manufacture = object.getString("manufacture");
                             String model = object.getString("model");
                             String name = object.getString("name");
+                            String source = object.getString("source");
                             String objectId = object.getObjectId();
                             Number quantity = object.getNumber("quantity");
 

@@ -182,7 +182,7 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                                             if (products == null || products.size()==0) {
                                                 mView.onEmptyProductReturn();
                                             } else {
-                                                Toast.makeText(mContext, "UPCDATABASE", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(mContext, "WALMARTLABS", Toast.LENGTH_SHORT).show();
 
                                                 mView.onRequestSuccessList(products);
                                             }
