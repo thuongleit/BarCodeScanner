@@ -19,7 +19,8 @@ public class Config {
     private static final String PREF_KEY_NEED_SHOW_TUTOR = "PREF_KEY_NEED_SHOW_TUTOR";
     private static final String PREF_KEY_SIGN_IN_USER = "PREF_KEY_SIGN_IN_USER";
     private static final String PREF_KEY_IS_FIRST_RUN = "PREF_KEY_IS_FIRST_RUN";
-    private static final String PREF_KEY_USER_ID = "PREF_KEY_USER_ID";
+    private static final String PREF_KEY_IS_DONT_SHOW = "PREF_KEY_IS_DONT_SHOW";
+
 
     private final SharedPreferences mSharedPreferences;
 
@@ -36,11 +37,14 @@ public class Config {
         mSharedPreferences.edit().putBoolean(PREF_KEY_IS_FIRST_RUN, isFirstRun).apply();
     }
 
+    public void putIsDontShow(boolean isDontShow){
+        mSharedPreferences.edit().putBoolean(PREF_KEY_IS_DONT_SHOW, isDontShow).apply();
 
+    }
 
-
-
-
+    public boolean isIsDontShow() {
+        return mSharedPreferences.getBoolean(PREF_KEY_IS_DONT_SHOW, false);
+    }
     public boolean isUserLogin() {
         return (getCurrentUser() != null);
     }

@@ -38,6 +38,8 @@ public class Product extends BaseModel implements Parcelable {
     @Column
     String source;
 
+    boolean isChecked=false;
+
     public Product() {
     }
 
@@ -148,6 +150,14 @@ public class Product extends BaseModel implements Parcelable {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
     }
 
     @Override
