@@ -7,6 +7,8 @@
     <integer name="viewfinder_border_length">60</integer>
     <string name="title_activity_main2">Main2Activity</string>
 
+    <string name="selected_count">%1$s selected</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -37,4 +39,7 @@
     <string name="menu_generate_qrcode">Generate QRCode</string>
     <string name="menu_log_out">Log out</string>
     <string name="dialog_error_general_message">Something went wrong. Please try again later</string>
+    <string name="delete_crime">Delete Item</string>
+    <string name="option_save">Option</string>
+    <string name="choose_image">You can choose your own images to save to server or database</string>
 </resources>

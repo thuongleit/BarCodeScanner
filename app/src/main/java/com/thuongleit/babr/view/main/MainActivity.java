@@ -9,27 +9,34 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
+import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
+import com.bignerdranch.android.multiselector.MultiSelector;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.parse.ParseUser;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -69,7 +76,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class MainActivity extends ToolbarActivity implements NavigationView.OnNavigationItemSelectedListener, MainView {
+public class MainActivity extends ToolbarActivity implements NavigationView.OnNavigationItemSelectedListener, MainView,
+        ActionMode.Callback {
 
     private static final int REQUEST_CAMERA = 1;
     private String userId;
@@ -105,9 +113,14 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     private View mViewEmpty;
     private ParseService parseService;
     private List<Product> productList = new ArrayList<>();
+    private ActionMode actionMode;
+
+
 
     private static final android.view.animation.Interpolator INTERPOLATOR = new FastOutSlowInInterpolator();
     private boolean mIsAnimatingOut = false;
+
+
 
     @Override
     protected int getLayoutId() {
@@ -126,7 +139,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             mConfig.putIsFirstRun(false);
         }
 
-
         setupReCyclerView();
         setupNavigationView();
 
@@ -137,39 +149,29 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         tryRestoreLoginSession();
         mMainPresenter.getProducts();
 
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                Timber.d("onScrolled");
-                if (dy > 0 && fabScan.isShown() && !mIsAnimatingOut)
-                    animateOut(fabScan);
-                else if (dy < 0 && !fabScan.isShown())
-                    animateIn(fabScan);
-            }
-        });
+
+
 
         mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(this, mRecyclerView, new ClickListener() {
             @Override
             public void onClick(View iew, int position) {
 
+                if (actionMode != null) {
+                    myToggleSelection(position);
+                    return;
+                }
 
             }
 
             @Override
             public void onLongClick(View view, int position) {
-
-                if (mConfig.isUserLogin()) {
-                    parseService.deleteProduct(productList.get(position).getObjectId());
-                    productList.remove(position);
-                } else {
-                    mProductModel.deleteProduct(productList.get(position));
-                    productList.remove(position);
-                }
-                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteItem(position);
+                actionMode = startSupportActionMode(MainActivity.this);
+                myToggleSelection(position);
 
 
             }
         }));
+
 
         fabScan.setOnClickListener(v -> {
             // Must be done during an initialization phase like onCreate
@@ -409,6 +411,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
 
         removeAdditionalViews();
+
         if (mRecyclerView.getAdapter() == null) {
             RecyclerView.Adapter adapter = new ProductRecyclerAdapter(MainActivity.this, products);
             mRecyclerView.setAdapter(adapter);
@@ -488,6 +491,61 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         }
     }
 
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        MenuInflater menuInflater = mode.getMenuInflater();
+        menuInflater.inflate(R.menu.crime_list_item_context, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+
+        return false;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        if (item.getItemId() == R.id.menu_item_delete_crime) {
+
+
+            List<Integer> selectedItemPositions = ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).getSelectedItems();
+            int currPos;
+            for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
+                currPos = selectedItemPositions.get(i);
+                if (mConfig.isUserLogin()) {
+                    parseService.deleteProduct(productList.get(currPos).getObjectId());
+                    productList.remove(currPos);
+                } else {
+                    mProductModel.deleteProduct(productList.get(currPos));
+                    productList.remove(currPos);
+                }
+                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteItem(currPos);
+            }
+            actionMode.finish();
+
+            return true;
+
+        }
+        return false;
+
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        actionMode = null;
+        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).clearSelections();
+
+    }
+
+
+    private void myToggleSelection(int idx) {
+        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).toggleSelection(idx);
+        String title = getString(R.string.selected_count, ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).getSelectedItemCount());
+        actionMode.setTitle(title);
+    }
+
 
     public interface ClickListener {
         void onClick(View iew, int position);
@@ -539,61 +597,5 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         }
     }
 
-    private void animateOut(final FloatingActionButton button) {
-        if (Build.VERSION.SDK_INT >= 14) {
-            ViewCompat.animate(button).scaleX(0.0F).scaleY(0.0F).alpha(0.0F)
-                    .setInterpolator(INTERPOLATOR).withLayer()
-                    .setListener(new ViewPropertyAnimatorListener() {
-                        @Override
-                        public void onAnimationStart(View view) {
-                            MainActivity.this.mIsAnimatingOut = true;
-                        }
-
-                        @Override
-                        public void onAnimationEnd(View view) {
-                            MainActivity.this.mIsAnimatingOut = false;
-                            view.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onAnimationCancel(View view) {
-                            MainActivity.this.mIsAnimatingOut = false;
-                        }
-                    }).start();
-        } else {
-            Animation anim = AnimationUtils.loadAnimation(button.getContext(), android.support.design.R.anim.design_fab_in);
-            anim.setInterpolator(INTERPOLATOR);
-            anim.setDuration(200L);
-            anim.setAnimationListener(new Animation.AnimationListener() {
-                public void onAnimationStart(Animation animation) {
-                    mIsAnimatingOut = true;
-                }
-
-                public void onAnimationEnd(Animation animation) {
-                    mIsAnimatingOut = false;
-                    button.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onAnimationRepeat(final Animation animation) {
-                }
-            });
-            button.startAnimation(anim);
-        }
-    }
-
-    private void animateIn(FloatingActionButton button) {
-        button.setVisibility(View.VISIBLE);
-        if (Build.VERSION.SDK_INT >= 14) {
-            ViewCompat.animate(button).scaleX(1.0F).scaleY(1.0F).alpha(1.0F)
-                    .setInterpolator(INTERPOLATOR).withLayer().setListener(null)
-                    .start();
-        } else {
-            Animation anim = AnimationUtils.loadAnimation(button.getContext(), android.support.design.R.anim.design_fab_out);
-            anim.setDuration(200L);
-            anim.setInterpolator(INTERPOLATOR);
-            button.startAnimation(anim);
-        }
-    }
 
 }
