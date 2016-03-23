@@ -142,6 +142,14 @@ public class Product extends BaseModel implements Parcelable {
         this.quantity = quantity;
     }
 
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
     @Override
     public int describeContents() {
         return 0;

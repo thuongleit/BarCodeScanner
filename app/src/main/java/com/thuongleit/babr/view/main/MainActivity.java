@@ -172,10 +172,20 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         }));
 
         fabScan.setOnClickListener(v -> {
-                Intent intent = new Intent(mContext, CameraActivity.class);
-                intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_UPC_SERVICE);
-                startActivityForResult(intent, REQUEST_CAMERA);
-            });
+            // Must be done during an initialization phase like onCreate
+            RxPermissions.getInstance(this)
+                    .request(Manifest.permission.CAMERA)
+                    .subscribe(granted -> {
+                        if (granted) { // Always true pre-M
+                            Intent intent = new Intent(mContext, CameraActivity.class);
+                            intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_UPC_SERVICE);
+                            startActivityForResult(intent, REQUEST_CAMERA);
+                        } else {
+                            showToast("You must allow to use camera to access this function");
+                        }
+                    });
+
+        });
     }
 
     @Override
@@ -467,7 +477,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             textUsername.setText(currentUser.getUsername());
         }
     }
-
 
 
     private void removeAdditionalViews() {

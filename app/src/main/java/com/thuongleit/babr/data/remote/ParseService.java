@@ -93,6 +93,7 @@ public class ParseService {
                             String name = object.getString("name");
                             String source = object.getString("source");
                             String objectId = object.getObjectId();
+                            String source=object.getString("source");
                             Number quantity = object.getNumber("quantity");
 
                             Product product = new Product();
