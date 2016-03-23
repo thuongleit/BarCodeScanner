@@ -77,6 +77,8 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         TextView textBarcodeManufacture;
         @Bind(R.id.text_barcode_country)
         TextView textBarcodeCountry;
+        @Bind(R.id.text_source)
+        TextView textSource;
 
         public ViewHolder(View view) {
             super(view);
@@ -89,6 +91,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
             }
             textBarcodeManufacture.setText(product.getManufacture());
             textBarcodeCountry.setText(product.getCountry());
+            textSource.setText(product.getSource());
 
             if (!TextUtils.isEmpty(product.getImageUrl())) {
                 Picasso.with(context).load(product.getImageUrl()).fit().into(imageBarView);

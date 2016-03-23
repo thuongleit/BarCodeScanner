@@ -14,6 +14,7 @@ import com.thuongleit.babr.data.remote.amazon.util.AmazonSignedRequestsHelper;
 import com.thuongleit.babr.data.remote.searchupc.SearchUpcParseService;
 import com.thuongleit.babr.data.remote.upc.UpcParseService;
 import com.thuongleit.babr.data.remote.upcdatabase.UpcDatabaseParseService;
+import com.thuongleit.babr.data.remote.upcitemdb.UpcItemDbParseService;
 import com.thuongleit.babr.vo.Product;
 
 import java.io.UnsupportedEncodingException;
@@ -50,7 +51,8 @@ public class DataManager {
     SearchUpcParseService searchUpcParseService;
     @Inject
     UpcDatabaseParseService upcDatabaseParseService;
-
+    @Inject
+    UpcItemDbParseService upcItemDbParseService;
 
 
     @Inject
@@ -74,17 +76,17 @@ public class DataManager {
     //missing check login
     public Observable<List<Product>> getProductSearchUpc(String code) {
 
-            return Observable.create(subscriber -> {
-                List<Product> products = new ArrayList<Product>();
-                searchUpcParseService.getProductSearchUpc(code).doOnNext(product -> {
-                    products.add(product);
-                }).doOnCompleted(() -> {
-                    subscriber.onNext(products);
-                    subscriber.onCompleted();
-                })
-                        .subscribeOn(Schedulers.newThread())
-                        .subscribe();
-            });
+        return Observable.create(subscriber -> {
+            List<Product> products = new ArrayList<Product>();
+            searchUpcParseService.getProductSearchUpc(code).doOnNext(product -> {
+                products.add(product);
+            }).doOnCompleted(() -> {
+                subscriber.onNext(products);
+                subscriber.onCompleted();
+            })
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribe();
+        });
     }
 
     //missing check login
@@ -93,6 +95,22 @@ public class DataManager {
         return Observable.create(subscriber -> {
             List<Product> products = new ArrayList<Product>();
             upcDatabaseParseService.getProductUpcDatabase(code).doOnNext(product -> {
+                products.add(product);
+            }).doOnCompleted(() -> {
+                subscriber.onNext(products);
+                subscriber.onCompleted();
+            })
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribe();
+        });
+    }
+
+    //missing check login
+    public Observable<List<Product>> getProductUpcItemDb(String code) {
+
+        return Observable.create(subscriber -> {
+            List<Product> products = new ArrayList<Product>();
+            upcItemDbParseService.getUpcItemDbParseService(code).doOnNext(product -> {
                 products.add(product);
             }).doOnCompleted(() -> {
                 subscriber.onNext(products);
@@ -137,7 +155,7 @@ public class DataManager {
             List<Product> products = new ArrayList<>();
             mParseService.getProductBABR(id).doOnNext(product -> {
                 products.add(product);
-            }).doOnCompleted(() ->{
+            }).doOnCompleted(() -> {
                 subscriber.onNext(products);
                 subscriber.onCompleted();
             })

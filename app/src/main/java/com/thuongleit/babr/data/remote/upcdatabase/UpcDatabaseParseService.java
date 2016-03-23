@@ -1,6 +1,5 @@
 package com.thuongleit.babr.data.remote.upcdatabase;
 
-import com.thuongleit.babr.data.remote.searchupc.SearchUpc;
 import com.thuongleit.babr.vo.Product;
 
 import javax.inject.Inject;
@@ -14,8 +13,6 @@ import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -46,15 +43,18 @@ public class UpcDatabaseParseService {
                     @Override
                     public void onResponse(Response<UpcDatabase> response, Retrofit retrofit) {
                         UpcDatabase upcDatabase = response.body();
-                        Timber.d(upcDatabase.getItemname());
-                        product.setName(upcDatabase.getItemname());
-                        subscriber.onNext(product);
+                        if (upcDatabase != null && upcDatabase.getItemname() != null) {
+                            Timber.d(upcDatabase.getItemname());
+                            product.setName(upcDatabase.getItemname());
+                            product.setSource("upcdatabase.com");
+                            subscriber.onNext(product);
+                        }
                         subscriber.onCompleted();
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
-
+                        subscriber.onError(t);
                     }
                 });
 

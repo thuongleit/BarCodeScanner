@@ -53,7 +53,7 @@ public abstract class ToolbarActivity extends BaseActivity {
     protected TextView getToolbarTitle() {
         return mToolbarTitle;
     }
-    
+
     protected void showToast(String message){
         Toast.makeText(ToolbarActivity.this, message, Toast.LENGTH_SHORT).show();
     }

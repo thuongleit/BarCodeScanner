@@ -1,9 +1,6 @@
 package com.thuongleit.babr.data.remote.searchupc;
 
-import android.widget.Toast;
-
 import com.thuongleit.babr.vo.Product;
-
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -16,8 +13,6 @@ import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -50,21 +45,23 @@ public class SearchUpcParseService {
                     public void onResponse(Response<SearchUpc> response, Retrofit retrofit) {
 
                         SearchUpc searchUpc = response.body();
+                        product.setSource("searchupc.com");
 
-                        if (searchUpc.get0().getImageurl()!=null) {
-                            product.setImageUrl(searchUpc.get0().getImageurl());
+                        if (searchUpc != null && searchUpc.get0() != null) {
+                            if (searchUpc.get0().getImageurl() != null) {
+                                product.setImageUrl(searchUpc.get0().getImageurl());
+                            }
+                            if (searchUpc.get0().getProductname() != null) {
+                                product.setName(searchUpc.get0().getProductname());
+                            }
+                            subscriber.onNext(product);
                         }
-                        if (searchUpc.get0().getProductname()!=null) {
-                            product.setName(searchUpc.get0().getProductname());
-                        }
-                        subscriber.onNext(product);
                         subscriber.onCompleted();
-
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
-
+                        subscriber.onError(t);
                     }
                 });
             }
