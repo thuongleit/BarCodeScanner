@@ -1,36 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!--<group android:checkableBehavior="single">-->
+        <!--<item-->
+            <!--android:id="@+id/nav_camera"-->
+            <!--android:icon="@drawable/ic_menu_camera"-->
+            <!--android:title="@string/menu_import" />-->
+        <!--<item-->
+            <!--android:id="@+id/nav_gallery"-->
+            <!--android:icon="@drawable/ic_menu_gallery"-->
+            <!--android:title="@string/menu_gallery" />-->
+    <!--</group>-->
+
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item
-            android:id="@+id/nav_history"
-            android:icon="@drawable/ic_menu_history"
-            android:title="History" />
+    <item
+    android:id="@+id/nav_generate"
+    android:icon="@drawable/ic_add_circle_black_24dp"
+    android:title="@string/menu_generate_qrcode" />
     </group>
 
     <group
         android:id="@+id/nav_group2"
         android:checkableBehavior="none">
         <item
+            android:id="@+id/nav_log_in"
+            android:icon="@drawable/ic_account_circle"
+            android:title="@string/menu_login" />
+    </group>
+    <group
+        android:id="@+id/nav_group3"
+        android:checkableBehavior="none">
+        <item
             android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_settings"
             android:title="@string/settings" />
         <item
             android:id="@+id/nav_about"
-            android:icon="@drawable/ic_info"
             android:title="@string/about" />
         <item
             android:id="@+id/nav_feedback"
-            android:icon="@drawable/ic_help"
             android:title="@string/help_and_feedback" />
-    </group>
 
+    </group>
 </menu>
