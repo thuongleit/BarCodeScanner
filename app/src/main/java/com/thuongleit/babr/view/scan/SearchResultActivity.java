@@ -19,7 +19,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
-import com.bignerdranch.android.multiselector.MultiSelector;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.config.Config;
@@ -42,7 +41,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import timber.log.Timber;
 
-public class SearchResultActivity extends BaseActivity implements ParsingView, ProductRecyclerAdapter.SelectMultiDeleteItemListener,
+public class SearchResultActivity extends BaseActivity implements ParsingView,
         ActionMode.Callback, DialogSaveImage.DialogSaveImageListener {
 
     public static final String EXTRA_DATA = "SearchResultActivity.EXTRA_DATA";
@@ -216,10 +215,7 @@ public class SearchResultActivity extends BaseActivity implements ParsingView, P
         }
     }
 
-    @Override
-    public void onToggle(int pos, boolean isChecked) {
 
-    }
 
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -260,7 +256,7 @@ public class SearchResultActivity extends BaseActivity implements ParsingView, P
     public void onDestroyActionMode(ActionMode mode) {
         actionMode = null;
         ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).clearSelections();
-
+        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).resetCheckbox();
     }
 
 

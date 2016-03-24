@@ -71,6 +71,8 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     private int order = 0;
     private String mCode;
 
+
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_camera;
@@ -192,6 +194,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     public void onEmptyProductReturn() {
         //  Toast.makeText(mContext, "No Item Found", Toast.LENGTH_SHORT).show();
         order++;
+
         if (order == 1) {
             mService = Constant.KEY_SEACHUPC;
         } else if (order == 2) {
@@ -209,6 +212,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
 
     @Override
     public void onRequestSuccess(Parcelable parcelable) {
+
         Intent intent = new Intent(mContext, SearchResultActivity.class);
         intent.putExtra(SearchResultActivity.EXTRA_DATA, parcelable);
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
@@ -231,6 +235,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     @Override
     public void showGeneralError(String message) {
         order++;
+
         if (order == 1) {
             mService = Constant.KEY_SEACHUPC;
         } else if (order == 2) {
@@ -368,5 +373,9 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
             reloadActivity();
         });
         return builder;
+    }
+
+    public interface TaskCompleteListener{
+        void onTaskComplete(boolean isFinished);
     }
 }

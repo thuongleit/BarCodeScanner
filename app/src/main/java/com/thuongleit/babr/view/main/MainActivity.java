@@ -34,9 +34,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-
-import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
-import com.bignerdranch.android.multiselector.MultiSelector;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.parse.ParseUser;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -305,7 +302,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                                     reloadActivity();
                                 });
 
-
                     } else {
                         for (Product product : products) {
                             mProductModel.saveProduct(product);
@@ -536,6 +532,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     public void onDestroyActionMode(ActionMode mode) {
         actionMode = null;
         ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).clearSelections();
+        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).resetCheckbox();
 
     }
 

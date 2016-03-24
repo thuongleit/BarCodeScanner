@@ -173,4 +173,6 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                 break;
         }
     }
+
+
 }
