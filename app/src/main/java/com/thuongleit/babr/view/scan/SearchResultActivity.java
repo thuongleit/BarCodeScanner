@@ -256,7 +256,6 @@ public class SearchResultActivity extends BaseActivity implements ParsingView,
     public void onDestroyActionMode(ActionMode mode) {
         actionMode = null;
         ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).clearSelections();
-        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).resetCheckbox();
     }
 
 

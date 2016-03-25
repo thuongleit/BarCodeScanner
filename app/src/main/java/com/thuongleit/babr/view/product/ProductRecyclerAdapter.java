@@ -78,14 +78,6 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         notifyItemRemoved(position);
     }
 
-    public void resetCheckbox() {
-        for (int i = 0; i < values.size(); i++) {
-            if (values.get(i) != null) {
-                values.get(i).setChecked(false);
-            }
-        }
-        notifyDataSetChanged();
-    }
 
     public List<Integer> getSelectedItems() {
         List<Integer> items = new ArrayList<Integer>(selectedItems.size());
@@ -113,7 +105,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         return selectedItems.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ViewHolder extends RecyclerView.ViewHolder{
 
         @Bind(R.id.image_bar_view)
         ImageView imageBarView;
@@ -125,15 +117,11 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         TextView textBarcodeCountry;
         @Bind(R.id.text_source)
         TextView textSource;
-        @Bind(R.id.cb_itemProdut)
-        CheckBox cbSelect;
-        @Bind(R.id.linear_itemProduct)
-        LinearLayout container;
+
 
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            view.setOnClickListener(this);
         }
 
         public void bindView(Product product) {
@@ -148,21 +136,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
                 Picasso.with(context).load(product.getImageUrl()).fit().into(imageBarView);
             }
 
-
-
         }
-
-        @Override
-        public void onClick(View v) {
-//            if (!values.get(getAdapterPosition()).isChecked()) {
-//                cbSelect.setChecked(true);
-//                container.setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
-//
-//            } else {
-//                cbSelect.setChecked(false);
-//                container.setBackgroundColor(context.getResources().getColor(R.color.white));
-//            }
-     }
 
 
     }
