@@ -164,8 +164,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             public void onLongClick(View view, int position) {
                 actionMode = startSupportActionMode(MainActivity.this);
                 myToggleSelection(position);
-
-
             }
         }));
 

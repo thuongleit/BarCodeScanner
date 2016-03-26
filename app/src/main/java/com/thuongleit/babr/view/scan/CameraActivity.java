@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,10 +37,14 @@ import net.sourceforge.zbar.SymbolSet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class CameraActivity extends ToolbarActivity implements ScanView, Camera.PreviewCallback {
@@ -70,6 +75,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     private String mService;
     private int order = 0;
     private String mCode;
+    private boolean isOnlyResult = false;
 
 
     @Override
@@ -192,20 +198,24 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     @Override
     public void onEmptyProductReturn() {
         //Toast.makeText(mContext, "No Item Found", Toast.LENGTH_SHORT).show();
-      //  swistchToNextScan("No items found on all services");
+        //  swistchToNextScan("No items found on all services");
     }
 
     @Override
     public void onRequestSuccess(Parcelable parcelable) {
 
+
         Intent intent = new Intent(mContext, SearchResultActivity.class);
         intent.putExtra(SearchResultActivity.EXTRA_DATA, parcelable);
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
+
+
     }
 
 
     @Override
     public void onRequestSuccessList(List<Product> parcelables) {
+
         Intent intent = new Intent(mContext, SearchResultActivity.class);
         intent.putParcelableArrayListExtra(SearchResultActivity.EXTRA_DATA, (ArrayList<? extends Parcelable>) parcelables);
         intent.putExtra(EXTRA_LOAD_USER_ID, true);
@@ -219,7 +229,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
 
     @Override
     public void showGeneralError(String message) {
-      //  swistchToNextScan(message);
+        //  swistchToNextScan(message);
     }
 
     private void swistchToNextScan(String message) {

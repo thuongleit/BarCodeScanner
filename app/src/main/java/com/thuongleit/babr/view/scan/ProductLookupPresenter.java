@@ -11,6 +11,7 @@ import com.thuongleit.babr.view.base.BasePresenter;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -27,6 +28,7 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
 
     private final DataManager mDataManager;
     private Subscription mSubscription = Subscriptions.empty();
+    private boolean isOnlyResult=false;
 
     @Inject
     @ApplicationScope
@@ -61,9 +63,12 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                                 mView.onEmptyProductReturn();
                             } else {
                                 stopConcurrencyExe();
-                                Toast.makeText(mContext, "UPC_SERVICE", Toast.LENGTH_SHORT).show();
+                                if (!isOnlyResult) {
+                                    Toast.makeText(mContext, "UPC_SERVICE", Toast.LENGTH_SHORT).show();
 
-                                mView.onRequestSuccessList(products);
+                                    isOnlyResult = true;
+                                    mView.onRequestSuccessList(products);
+                                }
                             }
                         }, e -> {
                             if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
@@ -86,9 +91,12 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                                     } else {
                                         stopConcurrencyExe();
 
-                                        Toast.makeText(mContext, "BABR", Toast.LENGTH_SHORT).show();
+                                        if (!isOnlyResult) {
+                                            Toast.makeText(mContext, "BABR", Toast.LENGTH_SHORT).show();
 
-                                        mView.onRequestSuccessList(products);
+                                            isOnlyResult = true;
+                                            mView.onRequestSuccessList(products);
+                                        }
                                     }
                                 }, e -> {
                                     if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
@@ -111,9 +119,12 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                                     } else {
                                         stopConcurrencyExe();
 
-                                        Toast.makeText(mContext, "SEACHUPC", Toast.LENGTH_SHORT).show();
+                                        if (!isOnlyResult) {
+                                            Toast.makeText(mContext, "SEACHUPC", Toast.LENGTH_SHORT).show();
 
-                                        mView.onRequestSuccessList(products);
+                                            isOnlyResult = true;
+                                            mView.onRequestSuccessList(products);
+                                        }
                                     }
                                 }, e -> {
                                     if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
@@ -135,9 +146,12 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                                         mView.onEmptyProductReturn();
                                     } else {
                                         stopConcurrencyExe();
-                                        Toast.makeText(mContext, "UPCDATABASE", Toast.LENGTH_SHORT).show();
+                                        if (!isOnlyResult) {
+                                            Toast.makeText(mContext, "UPCDATABASE", Toast.LENGTH_SHORT).show();
 
-                                        mView.onRequestSuccessList(products);
+                                            isOnlyResult = true;
+                                            mView.onRequestSuccessList(products);
+                                        }
                                     }
                                 }, e -> {
                                     if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
@@ -160,8 +174,11 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                             } else {
                                 stopConcurrencyExe();
 
-                                Toast.makeText(mContext, "AMAZON_SERVICE", Toast.LENGTH_SHORT).show();
-                                mView.onRequestSuccess(response);
+                                if (!isOnlyResult) {
+                                    Toast.makeText(mContext, "AMAZON_SERVICE", Toast.LENGTH_SHORT).show();
+                                    isOnlyResult = true;
+                                    mView.onRequestSuccess(response);
+                                }
                             }
                         }, e -> {
                             if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
