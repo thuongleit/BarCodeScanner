@@ -120,14 +120,6 @@ public class Product extends BaseModel implements Parcelable {
         this.model = model;
     }
 
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
     public String getObjectId() {
         return objectId;
     }

@@ -1,6 +1,7 @@
 package com.thuongleit.babr.view.scan;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.thuongleit.babr.config.Constant;
@@ -49,66 +50,42 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
         mView.showProgress(true);
         mView.playRingtone();
 
-        switch (service) {
-            case Constant.KEY_AMAZON_SERVICE:
-                Timber.d("KEY_AMAZON_SERVICE"+ code);
-                mSubscription = mDataManager
-                        .searchProductsInAmazon(code)
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                response -> {
-                                    if (response.getProducts() == null || response.getProducts().isEmpty()) {
-                                        mView.onEmptyProductReturn();
-                                    } else {
-                                        Toast.makeText(mContext, "AMAZON_SERVICE", Toast.LENGTH_SHORT).show();
-                                        mView.onRequestSuccess(response);
-                                    }
-                                }, e -> {
-                                    if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                        mView.showNetworkError();
-                                    } else {
-                                        mView.showGeneralError(e.getMessage());
-                                    }
-                                },
-                                () -> mView.showProgress(false));
-                break;
-            case Constant.KEY_UPC_SERVICE:
-                Timber.d("KEY_UPC_SERVICE"+ code);
-                mSubscription =
-                        mDataManager.getProductUpcItemDb(code)
-                                .subscribeOn(Schedulers.newThread())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        products -> {
-                                            if (products == null || products.size()==0) {
-                                                mView.onEmptyProductReturn();
-                                            } else {
-                                                Toast.makeText(mContext, "UPC_SERVICE", Toast.LENGTH_SHORT).show();
 
-                                                mView.onRequestSuccessList(products);
-                                            }
-                                        }, e -> {
-                                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                                mView.showNetworkError();
-                                            } else {
-                                                mView.showGeneralError(e.getMessage());
-                                            }
-                                        },
-                                        () -> mView.showProgress(false));
-                break;
+        Timber.d("KEY_UPC_SERVICE" + code);
+        mSubscription = mDataManager.getProductUpcItemDb(code)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        products -> {
+                            if (products == null || products.size() == 0) {
+                                mView.onEmptyProductReturn();
+                            } else {
+                                stopConcurrencyExe();
+                                Toast.makeText(mContext, "UPC_SERVICE", Toast.LENGTH_SHORT).show();
 
-            case Constant.KEY_BABR:
-                Timber.d("KEY_BABR: " + code);
-                mSubscription =
-                        mDataManager.getProductsBABR(code)
+                                mView.onRequestSuccessList(products);
+                            }
+                        }, e -> {
+                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                mView.showNetworkError();
+                            } else {
+                                mView.showGeneralError(e.getMessage());
+                            }
+                        },
+                        () -> mView.showProgress(false));
+
+        Timber.d("KEY_BABR: " + code);
+        mSubscription =
+                mDataManager.getProductsBABR(code)
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 products -> {
-                                    if (products == null || products.size()==0) {
+                                    if (products == null || products.size() == 0) {
                                         mView.onEmptyProductReturn();
                                     } else {
+                                        stopConcurrencyExe();
+
                                         Toast.makeText(mContext, "BABR", Toast.LENGTH_SHORT).show();
 
                                         mView.onRequestSuccessList(products);
@@ -121,81 +98,88 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                                     }
                                 },
                                 () -> mView.showProgress(false));
-                break;
 
-            case Constant.KEY_SEACHUPC:
-                Timber.d("KEY_SEACHUPC: " + code);
-                mSubscription =
-                        mDataManager.getProductSearchUpc(code)
-                                .subscribeOn(Schedulers.newThread())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        products -> {
-                                            if (products == null || products.size()==0) {
-                                                mView.onEmptyProductReturn();
-                                            } else {
-                                                Toast.makeText(mContext, "SEACHUPC", Toast.LENGTH_SHORT).show();
+        Timber.d("KEY_SEACHUPC: " + code);
+        mSubscription =
+                mDataManager.getProductSearchUpc(code)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                products -> {
+                                    if (products == null || products.size() == 0) {
+                                        mView.onEmptyProductReturn();
+                                    } else {
+                                        stopConcurrencyExe();
 
-                                                mView.onRequestSuccessList(products);
-                                            }
-                                        }, e -> {
-                                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                                mView.showNetworkError();
-                                            } else {
-                                                mView.showGeneralError(e.getMessage());
-                                            }
-                                        },
-                                        () -> mView.showProgress(false));
-                break;
-            case Constant.KEY_UPCDATABASE:
-                Timber.d("KEY_UPCDATABASE: " + code);
-                mSubscription =
-                        mDataManager.getProductUpcDatabase(code)
-                                .subscribeOn(Schedulers.newThread())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        products -> {
-                                            if (products == null || products.size()==0) {
-                                                mView.onEmptyProductReturn();
-                                            } else {
-                                                Toast.makeText(mContext, "UPCDATABASE", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(mContext, "SEACHUPC", Toast.LENGTH_SHORT).show();
 
-                                                mView.onRequestSuccessList(products);
-                                            }
-                                        }, e -> {
-                                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                                mView.showNetworkError();
-                                            } else {
-                                                mView.showGeneralError(e.getMessage());
-                                            }
-                                        },
-                                        () -> mView.showProgress(false));
-                break;
-            case Constant.KEY_WALMARTLABS:
-                Timber.d("KEY_WALMARTLABS: " + code);
-                mSubscription =
-                        mDataManager.getProductWalmartlabs(code)
-                                .subscribeOn(Schedulers.newThread())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        products -> {
-                                            if (products == null || products.size()==0) {
-                                                mView.onEmptyProductReturn();
-                                            } else {
-                                                Toast.makeText(mContext, "WALMARTLABS", Toast.LENGTH_SHORT).show();
+                                        mView.onRequestSuccessList(products);
+                                    }
+                                }, e -> {
+                                    if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                        mView.showNetworkError();
+                                    } else {
+                                        mView.showGeneralError(e.getMessage());
+                                    }
+                                },
+                                () -> mView.showProgress(false));
 
-                                                mView.onRequestSuccessList(products);
-                                            }
-                                        }, e -> {
-                                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                                mView.showNetworkError();
-                                            } else {
-                                                mView.showGeneralError(e.getMessage());
-                                            }
-                                        },
-                                        () -> mView.showProgress(false));
-                break;
+        Timber.d("KEY_UPCDATABASE: " + code);
+        mSubscription =
+                mDataManager.getProductUpcDatabase(code)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                products -> {
+                                    if (products == null || products.size() == 0) {
+                                        mView.onEmptyProductReturn();
+                                    } else {
+                                        stopConcurrencyExe();
+                                        Toast.makeText(mContext, "UPCDATABASE", Toast.LENGTH_SHORT).show();
 
+                                        mView.onRequestSuccessList(products);
+                                    }
+                                }, e -> {
+                                    if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                        mView.showNetworkError();
+                                    } else {
+                                        mView.showGeneralError(e.getMessage());
+                                    }
+                                },
+                                () -> mView.showProgress(false));
+
+        Timber.d("KEY_AMAZON_SERVICE" + code);
+        mSubscription = mDataManager
+                .searchProductsInAmazon(code)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        response -> {
+                            if (response.getProducts() == null || response.getProducts().isEmpty()) {
+                                mView.onEmptyProductReturn();
+                            } else {
+                                stopConcurrencyExe();
+
+                                Toast.makeText(mContext, "AMAZON_SERVICE", Toast.LENGTH_SHORT).show();
+                                mView.onRequestSuccess(response);
+                            }
+                        }, e -> {
+                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                mView.showNetworkError();
+                            } else {
+                                mView.showGeneralError(e.getMessage());
+                            }
+                        },
+                        () -> mView.showProgress(false));
+
+
+    }
+
+    private void stopConcurrencyExe() {
+        if (mSubscription != null) {
+            mSubscription.unsubscribe();
         }
     }
+
+
 }

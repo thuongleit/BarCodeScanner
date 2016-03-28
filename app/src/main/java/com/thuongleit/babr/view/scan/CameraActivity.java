@@ -71,6 +71,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     private int order = 0;
     private String mCode;
 
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_camera;
@@ -190,27 +191,13 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
 
     @Override
     public void onEmptyProductReturn() {
-        //  Toast.makeText(mContext, "No Item Found", Toast.LENGTH_SHORT).show();
-        order++;
-        if (order == 1) {
-            mService = Constant.KEY_SEACHUPC;
-        } else if (order == 2) {
-            mService = Constant.KEY_UPCDATABASE;
-        } else if (order == 3) {
-            mService = Constant.KEY_WALMARTLABS;
-        } else if (order == 4) {
-            mService = Constant.KEY_AMAZON_SERVICE;
-        } else if (order == 5) {
-            mService = Constant.KEY_BABR;
-        } else {
-            buildFailedDialog("No items found on all services").show();
-            return;
-        }
-        mProductLookupPresenter.execute(mCode, mService);
+        //Toast.makeText(mContext, "No Item Found", Toast.LENGTH_SHORT).show();
+      //  swistchToNextScan("No items found on all services");
     }
 
     @Override
     public void onRequestSuccess(Parcelable parcelable) {
+
         Intent intent = new Intent(mContext, SearchResultActivity.class);
         intent.putExtra(SearchResultActivity.EXTRA_DATA, parcelable);
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
@@ -232,16 +219,19 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
 
     @Override
     public void showGeneralError(String message) {
+      //  swistchToNextScan(message);
+    }
+
+    private void swistchToNextScan(String message) {
         order++;
+
         if (order == 1) {
             mService = Constant.KEY_SEACHUPC;
         } else if (order == 2) {
             mService = Constant.KEY_UPCDATABASE;
         } else if (order == 3) {
-            mService = Constant.KEY_WALMARTLABS;
-        } else if (order == 4) {
             mService = Constant.KEY_AMAZON_SERVICE;
-        } else if (order == 5) {
+        } else if (order == 4) {
             mService = Constant.KEY_BABR;
         } else {
             buildFailedDialog(message).show();
@@ -372,5 +362,9 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
             reloadActivity();
         });
         return builder;
+    }
+
+    public interface TaskCompleteListener {
+        void onTaskComplete(boolean isFinished);
     }
 }

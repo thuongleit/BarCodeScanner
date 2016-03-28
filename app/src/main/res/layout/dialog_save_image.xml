@@ -17,6 +17,7 @@
         android:textColor="@color/colorAccent"
         android:layout_marginTop="24dp"
         android:text="@string/option_save"
+        android:textStyle="bold"
         android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
@@ -43,7 +44,7 @@
         <Button
             android:id="@+id/btnDontShow"
             style="@style/ButtonStyle"
-            android:text="Don't show again"
+            android:text="Never Show"
             android:layout_gravity="left"/>
 
         <Button

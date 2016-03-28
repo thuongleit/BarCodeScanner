@@ -2,27 +2,22 @@
 
 
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:showIn="@layout/view_item_recycler_bar_view_new">
 
 
-    <LinearLayout
-        android:id="@+id/linear_itemProduct"
+    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/statelist_item_background"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="5dp">
 
 
-        <CheckBox
-            android:id="@+id/cb_itemProdut"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:buttonTint="@color/colorAccentDark"
-            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/image_bar_view"
@@ -31,11 +26,11 @@
             android:scaleType="fitXY" />
 
         <LinearLayout
+            android:id="@+id/linear_itemProduct"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/statelist_item_background"
             android:gravity="top"
             android:orientation="vertical">
 

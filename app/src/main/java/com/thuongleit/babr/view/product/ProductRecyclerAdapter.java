@@ -11,11 +11,9 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
-import com.bignerdranch.android.multiselector.MultiSelector;
-import com.bignerdranch.android.multiselector.SwappingHolder;
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.vo.Product;
 import com.squareup.picasso.Picasso;
@@ -35,10 +33,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
     private final Context context;
     private final List<Product> values;
     private List<Product> listSearch = new ArrayList<>();
-    private SelectMultiDeleteItemListener listener;
-  //  private MultiSelector mMultiSelector;
     private SparseBooleanArray selectedItems;
-
 
 
     public ProductRecyclerAdapter(Context context, List<Product> values) {
@@ -46,9 +41,8 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         this.values = values;
         this.listSearch.addAll(values);
         selectedItems = new SparseBooleanArray();
-    //    this.mMultiSelector=mMultiSelector;
-
     }
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -60,6 +54,8 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
     public void onBindViewHolder(ViewHolder holder, int position) {
         Product product = values.get(position);
         holder.bindView(product);
+        holder.itemView.setActivated(selectedItems.get(position, false));
+
     }
 
     @Override
@@ -77,10 +73,11 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         notifyDataSetChanged();
     }
 
-    public void deleteItem(int position){
+    public void deleteItem(int position) {
         this.values.remove(position);
         notifyItemRemoved(position);
     }
+
 
     public List<Integer> getSelectedItems() {
         List<Integer> items = new ArrayList<Integer>(selectedItems.size());
@@ -93,8 +90,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
     public void toggleSelection(int pos) {
         if (selectedItems.get(pos, false)) {
             selectedItems.delete(pos);
-        }
-        else {
+        } else {
             selectedItems.put(pos, true);
         }
         notifyItemChanged(pos);
@@ -108,7 +104,8 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
     public int getSelectedItemCount() {
         return selectedItems.size();
     }
-    class ViewHolder extends RecyclerView.ViewHolder {
+
+    class ViewHolder extends RecyclerView.ViewHolder{
 
         @Bind(R.id.image_bar_view)
         ImageView imageBarView;
@@ -120,15 +117,11 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         TextView textBarcodeCountry;
         @Bind(R.id.text_source)
         TextView textSource;
-        @Bind(R.id.cb_itemProdut)
-        CheckBox cbSelect;
+
 
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-//            view.setOnClickListener(this);
-//            view.setLongClickable(true);
-//            view.setOnLongClickListener(this);
         }
 
         public void bindView(Product product) {
@@ -142,28 +135,10 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
             if (!TextUtils.isEmpty(product.getImageUrl())) {
                 Picasso.with(context).load(product.getImageUrl()).fit().into(imageBarView);
             }
-            cbSelect.setChecked(product.isChecked());
+
         }
 
-//        @Override
-//        public void onClick(View v) {
-//            if (mMultiSelector.tapSelection(this)){
-//                toggleSelection(getAdapterPosition());
-//                if (!values.get(getAdapterPosition()).isChecked()) {
-//                    cbSelect.setChecked(true);
-//                    values.get(getAdapterPosition()).setChecked(true);
-//                }else {
-//                    cbSelect.setChecked(false);
-//                    values.get(getAdapterPosition()).setChecked(false);
-//                }
-//            }
-//        }
-//
-//        @Override
-//        public boolean onLongClick(View v) {
-//            mMultiSelector.setSelected(this,true);
-//            return true;
-//        }
+
     }
 
     public void filter(String textSearch) {
@@ -173,7 +148,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
             values.addAll(listSearch);
         } else {
             for (Product product : listSearch) {
-                if (product.getName()!=null&&product.getName().toLowerCase(Locale.getDefault()).contains(textSearch)) {
+                if (product.getName() != null && product.getName().toLowerCase(Locale.getDefault()).contains(textSearch)) {
                     values.add(product);
                 }
             }
@@ -182,9 +157,4 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
 
     }
 
-    public interface SelectMultiDeleteItemListener{
-
-        void onToggle(int pos,boolean isChecked);
-
-    }
 }
