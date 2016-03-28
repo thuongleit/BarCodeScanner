@@ -11,12 +11,14 @@ import com.thuongleit.babr.view.base.BasePresenter;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import timber.log.Timber;
 
@@ -27,6 +29,8 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
 
     private final DataManager mDataManager;
     private Subscription mSubscription = Subscriptions.empty();
+    private CompositeSubscription compositeSubscription = new CompositeSubscription();
+    private boolean isOnlyResult = false;
 
     @Inject
     @ApplicationScope
@@ -52,7 +56,7 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
 
 
         Timber.d("KEY_UPC_SERVICE" + code);
-        mSubscription = mDataManager.getProductUpcItemDb(code)
+        compositeSubscription.add(mDataManager.getProductUpcItemDb(code)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -72,84 +76,87 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                                 mView.showGeneralError(e.getMessage());
                             }
                         },
-                        () -> mView.showProgress(false));
+                        () -> mView.showProgress(false)));
+
 
         Timber.d("KEY_BABR: " + code);
-        mSubscription =
-                mDataManager.getProductsBABR(code)
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                products -> {
-                                    if (products == null || products.size() == 0) {
-                                        mView.onEmptyProductReturn();
-                                    } else {
-                                        stopConcurrencyExe();
 
-                                        Toast.makeText(mContext, "BABR", Toast.LENGTH_SHORT).show();
+        compositeSubscription.add(mDataManager.getProductsBABR(code)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        products -> {
+                            if (products == null || products.size() == 0) {
+                                mView.onEmptyProductReturn();
+                            } else {
+                                stopConcurrencyExe();
 
-                                        mView.onRequestSuccessList(products);
-                                    }
-                                }, e -> {
-                                    if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                        mView.showNetworkError();
-                                    } else {
-                                        mView.showGeneralError(e.getMessage());
-                                    }
-                                },
-                                () -> mView.showProgress(false));
+                                Toast.makeText(mContext, "BABR", Toast.LENGTH_SHORT).show();
+
+                                mView.onRequestSuccessList(products);
+                            }
+                        }, e -> {
+                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                mView.showNetworkError();
+                            } else {
+                                mView.showGeneralError(e.getMessage());
+                            }
+                        },
+                        () -> mView.showProgress(false)));
 
         Timber.d("KEY_SEACHUPC: " + code);
-        mSubscription =
-                mDataManager.getProductSearchUpc(code)
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                products -> {
-                                    if (products == null || products.size() == 0) {
-                                        mView.onEmptyProductReturn();
-                                    } else {
-                                        stopConcurrencyExe();
 
-                                        Toast.makeText(mContext, "SEACHUPC", Toast.LENGTH_SHORT).show();
+        compositeSubscription.add(mDataManager.getProductSearchUpc(code)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        products -> {
+                            if (products == null || products.size() == 0) {
+                                mView.onEmptyProductReturn();
+                            } else {
+                                stopConcurrencyExe();
 
-                                        mView.onRequestSuccessList(products);
-                                    }
-                                }, e -> {
-                                    if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                        mView.showNetworkError();
-                                    } else {
-                                        mView.showGeneralError(e.getMessage());
-                                    }
-                                },
-                                () -> mView.showProgress(false));
+                                Toast.makeText(mContext, "SEACHUPC", Toast.LENGTH_SHORT).show();
+
+                                mView.onRequestSuccessList(products);
+                            }
+                        }, e -> {
+                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                mView.showNetworkError();
+                            } else {
+                                mView.showGeneralError(e.getMessage());
+                            }
+                        },
+                        () -> mView.showProgress(false)));
 
         Timber.d("KEY_UPCDATABASE: " + code);
-        mSubscription =
-                mDataManager.getProductUpcDatabase(code)
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                products -> {
-                                    if (products == null || products.size() == 0) {
-                                        mView.onEmptyProductReturn();
-                                    } else {
-                                        stopConcurrencyExe();
-                                        Toast.makeText(mContext, "UPCDATABASE", Toast.LENGTH_SHORT).show();
 
-                                        mView.onRequestSuccessList(products);
-                                    }
-                                }, e -> {
-                                    if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                        mView.showNetworkError();
-                                    } else {
-                                        mView.showGeneralError(e.getMessage());
-                                    }
-                                },
-                                () -> mView.showProgress(false));
+        compositeSubscription.add(mDataManager.getProductUpcDatabase(code)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        products -> {
+                            if (products == null || products.size() == 0) {
+                                mView.onEmptyProductReturn();
+                            } else {
+                                stopConcurrencyExe();
+
+                                Toast.makeText(mContext, "UPCDATABASE", Toast.LENGTH_SHORT).show();
+
+                                mView.onRequestSuccessList(products);
+
+                            }
+                        }, e -> {
+                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                mView.showNetworkError();
+                            } else {
+                                mView.showGeneralError(e.getMessage());
+                            }
+                        },
+                        () -> mView.showProgress(false)));
 
         Timber.d("KEY_AMAZON_SERVICE" + code);
-        mSubscription = mDataManager
+        compositeSubscription.add(mDataManager
                 .searchProductsInAmazon(code)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -160,8 +167,11 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                             } else {
                                 stopConcurrencyExe();
 
+
                                 Toast.makeText(mContext, "AMAZON_SERVICE", Toast.LENGTH_SHORT).show();
+
                                 mView.onRequestSuccess(response);
+
                             }
                         }, e -> {
                             if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
@@ -170,14 +180,14 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                                 mView.showGeneralError(e.getMessage());
                             }
                         },
-                        () -> mView.showProgress(false));
+                        () -> mView.showProgress(false)));
 
 
     }
 
     private void stopConcurrencyExe() {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
+        if (compositeSubscription != null) {
+            compositeSubscription.clear();
         }
     }
 
