@@ -309,7 +309,11 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                     ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
                     if (mConfig.isUserLogin()) {
                         parseService.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(a -> showToast("products has been saved!"));
+                                .subscribe(a -> {
+                                    showToast("products has been saved!!!!");
+                                    reloadActivity();
+                                });
+
 
                     } else {
                         for (Product product : products) {
