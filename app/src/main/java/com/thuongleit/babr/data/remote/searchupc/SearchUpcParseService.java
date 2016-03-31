@@ -46,6 +46,7 @@ public class SearchUpcParseService {
 
                         SearchUpc searchUpc = response.body();
                         product.setSource("searchupc.com");
+                        product.setListId("a");
 
                         if (searchUpc != null && searchUpc.get0() != null) {
                             if (searchUpc.get0().getImageurl() != null) {

@@ -41,6 +41,7 @@ public class AmazonParseService {
                         String productTitle = element.text();
                         product.setName(productTitle);
                         product.setSource("amazon.com");
+                        product.setListId("a");
 
                     }
                 }

@@ -6,6 +6,8 @@ import android.content.Context;
 import com.thuongleit.babr.di.ActivityScope;
 import com.thuongleit.babr.di.PerActivity;
 import com.thuongleit.babr.di.modules.ActivityModule;
+import com.thuongleit.babr.view.history.DetailActivity;
+import com.thuongleit.babr.view.history.HistoryActivity;
 import com.thuongleit.babr.view.main.MainActivity;
 import com.thuongleit.babr.view.product.BarViewActivity;
 import com.thuongleit.babr.view.scan.CameraActivity;
@@ -41,4 +43,8 @@ public interface ActivityComponent {
     void inject(SearchResultActivity activity);
 
     void inject(SignInWithEmailActivity activity);
+
+    void inject(HistoryActivity activity);
+
+    void inject(DetailActivity activity);
 }

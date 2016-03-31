@@ -69,7 +69,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.AppIntroActivity" />
-        <activity android:name=".view.qrgenerate.GenerateQR"/>
+        <activity android:name=".view.qrgenerate.GenerateQR" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
@@ -82,7 +82,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".view.scan.CameraActivity" />
         </activity>
-
         <activity
             android:name=".view.signin.SignInWithEmailActivity"
             android:parentActivityName=".view.signin.SignInActivity">
@@ -90,6 +89,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".view.signin.SignInActivity" />
         </activity>
+        <activity android:name=".view.history.HistoryActivity" />
+        <activity android:name=".view.history.DetailActivity"></activity>
     </application>
 
 </manifest>

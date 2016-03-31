@@ -78,6 +78,11 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         notifyItemRemoved(position);
     }
 
+    public void deleteAll() {
+        this.values.clear();
+        notifyDataSetChanged();
+    }
+
 
     public List<Integer> getSelectedItems() {
         List<Integer> items = new ArrayList<Integer>(selectedItems.size());
@@ -105,7 +110,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         return selectedItems.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.image_bar_view)
         ImageView imageBarView;

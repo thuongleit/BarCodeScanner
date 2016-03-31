@@ -15,9 +15,9 @@
         android:icon="@drawable/ic_search_white_24dp"
         app:showAsAction="always"/>
 
-    <!--<item-->
-        <!--android:id="@+id/action_camera"-->
-        <!--android:orderInCategory="100"-->
-        <!--android:icon="@drawable/ic_action_camera"-->
-        <!--app:showAsAction="always"/>-->
+    <item
+        android:id="@+id/action_camera"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_send_white_24dp"
+        app:showAsAction="always"/>
 </menu>

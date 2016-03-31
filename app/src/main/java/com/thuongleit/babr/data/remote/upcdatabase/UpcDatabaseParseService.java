@@ -47,6 +47,7 @@ public class UpcDatabaseParseService {
                             Timber.d(upcDatabase.getItemname());
                             product.setName(upcDatabase.getItemname());
                             product.setSource("upcdatabase.com");
+                            product.setListId("a");
                             subscriber.onNext(product);
                         }
                         subscriber.onCompleted();

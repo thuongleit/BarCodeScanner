@@ -49,9 +49,11 @@ import com.thuongleit.babr.data.remote.ParseService;
 import com.thuongleit.babr.di.ActivityScope;
 import com.thuongleit.babr.util.AppUtils;
 import com.thuongleit.babr.util.DialogFactory;
+import com.thuongleit.babr.util.DialogHistory;
 import com.thuongleit.babr.util.ScrollingFABBehavior;
 import com.thuongleit.babr.view.AppIntroActivity;
 import com.thuongleit.babr.view.base.ToolbarActivity;
+import com.thuongleit.babr.view.history.HistoryActivity;
 import com.thuongleit.babr.view.product.ProductRecyclerAdapter;
 import com.thuongleit.babr.view.qrgenerate.GenerateQR;
 import com.thuongleit.babr.view.scan.CameraActivity;
@@ -59,9 +61,11 @@ import com.thuongleit.babr.view.signin.SignInActivity;
 import com.thuongleit.babr.view.widget.DancingScriptTextView;
 import com.thuongleit.babr.view.widget.DividerItemDecoration;
 import com.thuongleit.babr.vo.Product;
+import com.thuongleit.babr.vo.ProductHistory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -74,7 +78,7 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class MainActivity extends ToolbarActivity implements NavigationView.OnNavigationItemSelectedListener, MainView,
-        ActionMode.Callback {
+        ActionMode.Callback, DialogHistory.DialogSaveHistoryListener {
 
     private static final int REQUEST_CAMERA = 1;
     private String userId;
@@ -112,12 +116,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     private List<Product> productList = new ArrayList<>();
     private ActionMode actionMode;
 
-
-
-    private static final android.view.animation.Interpolator INTERPOLATOR = new FastOutSlowInInterpolator();
-    private boolean mIsAnimatingOut = false;
-
-
+    private String generateListId;
 
     @Override
     protected int getLayoutId() {
@@ -144,9 +143,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
         //try restore login session
         tryRestoreLoginSession();
-        mMainPresenter.getProducts();
-
-
+        mMainPresenter.getProductsNotCheckout("a");
 
 
         mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(this, mRecyclerView, new ClickListener() {
@@ -209,6 +206,20 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
             openSearch();
+            return true;
+        }
+
+        if (id == R.id.action_camera) {
+
+            if (productList.size() >= 1) {
+                generateListId = AppUtils.generateString(new Random(), "1254789dhfoendlf89ssofnd896541", 20);
+
+                DialogHistory dialogHistory = new DialogHistory(this, this, generateListId);
+                dialogHistory.show();
+            }else {
+                showToast("You don't have any item!");
+            }
+
             return true;
         }
 
@@ -311,10 +322,10 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                         parseService.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(a -> {
                                     showToast("products has been saved!!!!");
-                                    reloadActivity();
+//                                    reloadActivity();
                                 });
-
-
+                        Observable.timer(1, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(a -> reloadActivity());
                     } else {
                         for (Product product : products) {
                             mProductModel.saveProduct(product);
@@ -365,6 +376,9 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                     showToast("You must SignIn!");
                 }
                 break;
+            case R.id.nav_history:
+                startActivity(new Intent(this, HistoryActivity.class));
+                break;
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
@@ -380,7 +394,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             rootView.addView(mViewNetworkError, layoutParams);
 
             mViewNetworkError.setOnClickListener(v -> {
-                mMainPresenter.getProducts();
+                mMainPresenter.getProductsNotCheckout("a");
                 rootView.removeView(mViewNetworkError);
             });
         }
@@ -541,6 +555,37 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).toggleSelection(idx);
         String title = getString(R.string.selected_count, ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).getSelectedItemCount());
         actionMode.setTitle(title);
+    }
+
+    @Override
+    public void onCancel() {
+
+    }
+
+    @Override
+    public void onSave(String name) {
+        if (mConfig.isUserLogin()) {
+            parseService.saveListProductNoCheckout(productList, generateListId).subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
+                productList.clear();
+                showToast("Generator qr-code has saved to server!");
+            });
+            ProductHistory productHistory = new ProductHistory();
+            productHistory.setListId(generateListId);
+            productHistory.setName(name);
+            parseService.saveProductHistory(productHistory);
+        } else {
+            mProductModel.saveListProductNoCheckout(generateListId).subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
+                productList.clear();
+                showToast("Generator qr-code has saved to database!");
+            });
+            ProductHistory productHistory = new ProductHistory();
+            productHistory.setListId(generateListId);
+            productHistory.setName(name);
+            mProductModel.saveProductHistory(productHistory);
+        }
+        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteAll();
     }
 
 

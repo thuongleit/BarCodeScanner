@@ -37,6 +37,8 @@ public class Product extends BaseModel implements Parcelable {
     int quantity = 0;
     @Column
     String source;
+    @Column
+    String listId;
 
     boolean isChecked=false;
 
@@ -54,6 +56,14 @@ public class Product extends BaseModel implements Parcelable {
                 .append(manufacture).append("\n")
                 .append(model).append("\n");
         return info.toString();
+    }
+
+    public String getListId() {
+        return listId;
+    }
+
+    public void setListId(String listId) {
+        this.listId = listId;
     }
 
     public long getId() {
@@ -171,6 +181,7 @@ public class Product extends BaseModel implements Parcelable {
         dest.writeString(this.model);
         dest.writeString(this.objectId);
         dest.writeString(this.source);
+        dest.writeString(this.listId);
         dest.writeInt(this.quantity);
 
     }
@@ -188,6 +199,7 @@ public class Product extends BaseModel implements Parcelable {
         this.model = in.readString();
         this.objectId = in.readString();
         this.source = in.readString();
+        this.listId = in.readString();
         this.quantity = in.readInt();
     }
 

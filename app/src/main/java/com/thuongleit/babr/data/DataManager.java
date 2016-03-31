@@ -16,6 +16,7 @@ import com.thuongleit.babr.data.remote.upc.UpcParseService;
 import com.thuongleit.babr.data.remote.upcdatabase.UpcDatabaseParseService;
 import com.thuongleit.babr.data.remote.upcitemdb.UpcItemDbParseService;
 import com.thuongleit.babr.vo.Product;
+import com.thuongleit.babr.vo.ProductHistory;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -60,18 +61,18 @@ public class DataManager {
         ((BarApplication) app).getAppComponent().inject(this);
     }
 
-    public Observable<Product> getProduct(String qrCode) {
-        return mUpcParseService.getProduct(Constant.UPC_ENDPOINT_URL + qrCode)
-                .doOnNext(product -> {
-                    //save to db
-                    mProductModel.saveProduct(product);
-
-                    if (mConfig.isUserLogin()) {
-                        //save to parse service
-                        mParseService.saveProduct(product);
-                    }
-                });
-    }
+//    public Observable<Product> getProduct(String qrCode) {
+//        return mUpcParseService.getProduct(Constant.UPC_ENDPOINT_URL + qrCode)
+//                .doOnNext(product -> {
+//                    //save to db
+//                    mProductModel.saveProduct(product);
+//
+//                    if (mConfig.isUserLogin()) {
+//                        //save to parse service
+//                        mParseService.saveProduct(product);
+//                    }
+//                });
+//    }
 
     //missing check login
     public Observable<List<Product>> getProductSearchUpc(String code) {
@@ -122,11 +123,37 @@ public class DataManager {
     }
 
 
-    public Observable<List<Product>> getProducts() {
+//    public Observable<List<Product>> getProducts() {
+//        if (mConfig.isUserLogin()) {
+//            return Observable.create(subscriber -> {
+//                List<Product> products = new ArrayList<>();
+//                mParseService.getProducts().doOnNext(product -> {
+//                    products.add(product);
+//
+//                }).doOnCompleted(() -> {
+//                    subscriber.onNext(products);
+//                    subscriber.onCompleted();
+//                })
+//                        .subscribeOn(Schedulers.newThread())
+//                        .subscribe();
+//            });
+//        } else {
+//            return Observable.create(subscriber -> {
+//                try {
+//                    subscriber.onNext(mProductModel.loadProductsNoCheckout());
+//                    subscriber.onCompleted();
+//                } catch (Exception e) {
+//                    subscriber.onError(e);
+//                }
+//            });
+//        }
+//    }
+
+    public Observable<List<Product>> getProductsCheckout(String listId) {
         if (mConfig.isUserLogin()) {
             return Observable.create(subscriber -> {
                 List<Product> products = new ArrayList<>();
-                mParseService.getProducts().doOnNext(product -> {
+                mParseService.getProductsCheckout(listId).doOnNext(product -> {
                     products.add(product);
 
                 }).doOnCompleted(() -> {
@@ -139,7 +166,7 @@ public class DataManager {
         } else {
             return Observable.create(subscriber -> {
                 try {
-                    subscriber.onNext(mProductModel.loadProducts());
+                    subscriber.onNext(mProductModel.loadProductsNoCheckout(listId));
                     subscriber.onCompleted();
                 } catch (Exception e) {
                     subscriber.onError(e);
@@ -147,6 +174,34 @@ public class DataManager {
             });
         }
     }
+
+    public Observable<List<ProductHistory>> getProductsHistory() {
+        if (mConfig.isUserLogin()) {
+            return Observable.create(subscriber -> {
+                List<ProductHistory> products = new ArrayList<>();
+                mParseService.getProductsHistory().doOnNext(product -> {
+                    products.add(product);
+
+                }).doOnCompleted(() -> {
+                    subscriber.onNext(products);
+                    subscriber.onCompleted();
+                })
+                        .subscribeOn(Schedulers.newThread())
+                        .subscribe();
+            });
+        } else {
+            return Observable.create(subscriber -> {
+                try {
+                    subscriber.onNext(mProductModel.loadProductsHistory());
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            });
+        }
+    }
+
+
 
 
     public Observable<List<Product>> getProductsBABR(String id) {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.parse.ParseUser;
+import com.raizlabs.android.dbflow.sql.language.Set;
 import com.thuongleit.babr.di.ApplicationScope;
 
 import javax.inject.Inject;
@@ -20,9 +21,11 @@ public class Config {
     private static final String PREF_KEY_SIGN_IN_USER = "PREF_KEY_SIGN_IN_USER";
     private static final String PREF_KEY_IS_FIRST_RUN = "PREF_KEY_IS_FIRST_RUN";
     private static final String PREF_KEY_IS_DONT_SHOW = "PREF_KEY_IS_DONT_SHOW";
+    private static final String PREF_NAME_HISTORY = "PREF_NAME_HISTORY";
 
 
     private final SharedPreferences mSharedPreferences;
+
 
     @Inject
     public Config(@ApplicationScope Context context) {
@@ -37,7 +40,7 @@ public class Config {
         mSharedPreferences.edit().putBoolean(PREF_KEY_IS_FIRST_RUN, isFirstRun).apply();
     }
 
-    public void putIsDontShow(boolean isDontShow){
+    public void putIsDontShow(boolean isDontShow) {
         mSharedPreferences.edit().putBoolean(PREF_KEY_IS_DONT_SHOW, isDontShow).apply();
 
     }
@@ -45,6 +48,7 @@ public class Config {
     public boolean isIsDontShow() {
         return mSharedPreferences.getBoolean(PREF_KEY_IS_DONT_SHOW, false);
     }
+
     public boolean isUserLogin() {
         return (getCurrentUser() != null);
     }

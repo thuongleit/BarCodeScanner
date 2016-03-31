@@ -68,7 +68,6 @@ public class SearchResultActivity extends BaseActivity implements ParsingView,
     private List<Product> productListUserId = new ArrayList<>();
     private ActionMode actionMode;
     private List<Product> productList = new ArrayList<>();
-    private boolean isChoice = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

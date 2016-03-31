@@ -1,5 +1,7 @@
 package com.thuongleit.babr.data.remote;
 
+import android.util.Log;
+
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -7,6 +9,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.thuongleit.babr.config.Constant;
 import com.thuongleit.babr.vo.Product;
+import com.thuongleit.babr.vo.ProductHistory;
 
 import java.util.List;
 
@@ -55,14 +58,47 @@ public class ParseService {
             parseProduct.put("source", product.getSource());
         }
 
+        parseProduct.put("listId", "a");
+
         parseProduct.put("quantity", product.getQuantity());
 
         parseProduct.saveInBackground();
     }
 
+    public void saveProductHistory(ProductHistory product) {
+        //save to parse
+        ParseObject parseProduct = new ParseObject(Constant.PARSE_NAMEHISTORY);
+        parseProduct.put("userId", ParseUser.getCurrentUser().getObjectId());
+
+        parseProduct.put("name", product.getName());
+
+        parseProduct.put("listId",product.getListId());
+
+
+        parseProduct.saveInBackground();
+    }
+
+    public void saveProductNoCheckout(String listId, Product product) {
+        Log.d("passedProductNo", "đasadas");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constant.PARSE_PRODUCTS).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
+        query.getInBackground(product.getObjectId(), new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+
+                if (e == null) {
+
+                    object.put("listId", listId);
+
+                    object.saveInBackground();
+                }
+            }
+        });
+
+    }
+
     public void deleteProduct(String query) {
         ParseQuery<ParseObject> queryStm = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId())
-                .whereEqualTo("objectId",query);
+                .whereEqualTo("objectId", query);
         queryStm.getFirstInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
@@ -75,6 +111,48 @@ public class ParseService {
             }
         });
     }
+
+    public Observable<Product> getProductsCheckout(String listId) {
+        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId()).whereEqualTo("listId", listId);
+        return Observable.create(new Observable.OnSubscribe<Product>() {
+            @Override
+            public void call(Subscriber<? super Product> subscriber) {
+                query.findInBackground((objects, e) -> {
+                    if (e == null && objects != null)
+                        for (ParseObject object : objects) {
+                            String image = object.getString("image");
+                            String upcA = object.getString("upcA");
+                            String ean = object.getString("ean");
+                            String country = object.getString("country");
+                            String manufacture = object.getString("manufacture");
+                            String model = object.getString("model");
+                            String name = object.getString("name");
+                            String objectId = object.getObjectId();
+                            String source = object.getString("source");
+                            String listId = object.getString("listId");
+                            Number quantity = object.getNumber("quantity");
+
+                            Product product = new Product();
+                            product.setImageUrl(image);
+                            product.setUpcA(upcA);
+                            product.setEan(ean);
+                            product.setCountry(country);
+                            product.setManufacture(manufacture);
+                            product.setName(name);
+                            product.setObjectId(objectId);
+                            product.setModel(model);
+                            product.setSource(source);
+                            product.setListId(listId);
+
+                            subscriber.onNext(product);
+                        }
+                    subscriber.onCompleted();
+                });
+            }
+        });
+    }
+
+
 
     public Observable<Product> getProducts() {
         ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
@@ -92,7 +170,8 @@ public class ParseService {
                             String model = object.getString("model");
                             String name = object.getString("name");
                             String objectId = object.getObjectId();
-                            String source=object.getString("source");
+                            String source = object.getString("source");
+                            String listId = object.getString("listId");
                             Number quantity = object.getNumber("quantity");
 
                             Product product = new Product();
@@ -104,7 +183,8 @@ public class ParseService {
                             product.setName(name);
                             product.setObjectId(objectId);
                             product.setModel(model);
-                            product.setModel(source);
+                            product.setSource(source);
+                            product.setListId(listId);
 
                             subscriber.onNext(product);
                         }
@@ -114,9 +194,31 @@ public class ParseService {
         });
     }
 
+    public Observable<ProductHistory> getProductsHistory() {
+        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_NAMEHISTORY).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
+        return Observable.create(new Observable.OnSubscribe<ProductHistory>() {
+            @Override
+            public void call(Subscriber<? super ProductHistory> subscriber) {
+                query.findInBackground((objects, e) -> {
+                    if (e == null && objects != null)
+                        for (ParseObject object : objects) {
 
+                            String name = object.getString("name");
+                            String listId = object.getString("listId");
 
-    public Observable<Product> getProductBABR(String id){
+                            ProductHistory product = new ProductHistory();
+                            product.setName(name);
+                            product.setListId(listId);
+
+                            subscriber.onNext(product);
+                        }
+                    subscriber.onCompleted();
+                });
+            }
+        });
+    }
+
+    public Observable<Product> getProductBABR(String id) {
         ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", id);
         return Observable.create(new Observable.OnSubscribe<Product>() {
             @Override
@@ -132,6 +234,7 @@ public class ParseService {
                             String model = object.getString("model");
                             String name = object.getString("name");
                             String source = object.getString("source");
+                            String listId = object.getString("listId");
                             String objectId = object.getObjectId();
                             Number quantity = object.getNumber("quantity");
 
@@ -145,6 +248,7 @@ public class ParseService {
                             product.setObjectId(objectId);
                             product.setModel(model);
                             product.setSource(source);
+                            product.setListId(listId);
 
                             subscriber.onNext(product);
                         }
@@ -155,11 +259,21 @@ public class ParseService {
     }
 
 
-    public Observable<List<Product>> saveListProduct(List<Product> productList){
+    public Observable<List<Product>> saveListProduct(List<Product> productList) {
         return Observable.just(productList).doOnNext(productList1 -> {
-           for (Product product:productList1){
-             saveProduct(product);
-           }
+            for (Product product : productList1) {
+                saveProduct(product);
+            }
+        });
+    }
+
+    public Observable<List<Product>> saveListProductNoCheckout(List<Product> productList, String listId) {
+        Log.d("passedProductNo", "saveListProductNoCheckout");
+        return Observable.just(productList).doOnNext(productList1 -> {
+            for (Product product : productList1) {
+
+                saveProductNoCheckout(listId, product);
+            }
         });
     }
 }
