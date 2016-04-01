@@ -152,6 +152,46 @@ public class ParseService {
         });
     }
 
+    public Observable<Product> getProductsCheckoutScan(String listId) {
+        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("listId", listId);
+        return Observable.create(new Observable.OnSubscribe<Product>() {
+            @Override
+            public void call(Subscriber<? super Product> subscriber) {
+                query.findInBackground((objects, e) -> {
+                    if (e == null && objects != null)
+                        for (ParseObject object : objects) {
+                            String image = object.getString("image");
+                            String upcA = object.getString("upcA");
+                            String ean = object.getString("ean");
+                            String country = object.getString("country");
+                            String manufacture = object.getString("manufacture");
+                            String model = object.getString("model");
+                            String name = object.getString("name");
+                            String objectId = object.getObjectId();
+                            String source = object.getString("source");
+                            String listId = object.getString("listId");
+                            Number quantity = object.getNumber("quantity");
+
+                            Product product = new Product();
+                            product.setImageUrl(image);
+                            product.setUpcA(upcA);
+                            product.setEan(ean);
+                            product.setCountry(country);
+                            product.setManufacture(manufacture);
+                            product.setName(name);
+                            product.setObjectId(objectId);
+                            product.setModel(model);
+                            product.setSource(source);
+                            product.setListId(listId);
+
+                            subscriber.onNext(product);
+                        }
+                    subscriber.onCompleted();
+                });
+            }
+        });
+    }
+
 
 
     public Observable<Product> getProducts() {

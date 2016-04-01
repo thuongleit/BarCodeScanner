@@ -26,8 +26,6 @@ public class DialogHistory  extends AlertDialog {
 
     @Bind(R.id.edNameListHistory)
     EditText edName;
-    @Bind(R.id.iv_qrGenerate)
-    ImageView ivQRGenerate;
 
     public DialogHistory(Context context, DialogSaveHistoryListener listener,String listId) {
         super(context);
@@ -42,8 +40,6 @@ public class DialogHistory  extends AlertDialog {
         setView(inflater);
         ButterKnife.bind(this,inflater);
 
-        Bitmap myBitmap = QRCode.from(listId).bitmap();
-        ivQRGenerate.setImageBitmap(myBitmap);
     }
 
     @OnClick(R.id.btnCancel)

@@ -50,6 +50,7 @@ import com.thuongleit.babr.di.ActivityScope;
 import com.thuongleit.babr.util.AppUtils;
 import com.thuongleit.babr.util.DialogFactory;
 import com.thuongleit.babr.util.DialogHistory;
+import com.thuongleit.babr.util.DialogQrcodeHistory;
 import com.thuongleit.babr.util.ScrollingFABBehavior;
 import com.thuongleit.babr.view.AppIntroActivity;
 import com.thuongleit.babr.view.base.ToolbarActivity;
@@ -574,6 +575,10 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             productHistory.setListId(generateListId);
             productHistory.setName(name);
             parseService.saveProductHistory(productHistory);
+
+            DialogQrcodeHistory qrcodeHistory=new DialogQrcodeHistory(mContext,generateListId);
+            qrcodeHistory.show();
+
         } else {
             mProductModel.saveListProductNoCheckout(generateListId).subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
@@ -584,6 +589,9 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             productHistory.setListId(generateListId);
             productHistory.setName(name);
             mProductModel.saveProductHistory(productHistory);
+
+//            DialogQrcodeHistory qrcodeHistory=new DialogQrcodeHistory(mContext,generateListId);
+//            qrcodeHistory.show();
         }
         ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteAll();
     }

@@ -183,6 +183,32 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                         () -> mView.showProgress(false)));
 
 
+        Timber.d("KEY_PRODUCT" + code);
+        compositeSubscription.add(mDataManager.getProductsCheckoutScan(code)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        products -> {
+                            if (products == null || products.size() == 0) {
+                                mView.onEmptyProductReturn();
+                            } else {
+                                stopConcurrencyExe();
+
+                                Toast.makeText(mContext, "KEY_PRODUCT", Toast.LENGTH_SHORT).show();
+
+                                mView.onRequestSuccessList(products);
+
+                            }
+                        }, e -> {
+                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                mView.showNetworkError();
+                            } else {
+                                mView.showGeneralError(e.getMessage());
+                            }
+                        },
+                        () -> mView.showProgress(false)));
+
+
     }
 
     private void stopConcurrencyExe() {

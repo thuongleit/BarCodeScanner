@@ -59,7 +59,7 @@ public class DetailActivity extends BaseActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mToolbar.setTitle("Detail List");
+        getSupportActionBar().setTitle("Detail List");
 
         Timber.d("onCreateSearchResultActivity");
 

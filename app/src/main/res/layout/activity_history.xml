@@ -24,16 +24,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <ImageButton
+                <TextView
                     android:id="@+id/button_toolbar_cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerInParent="true"
-                    android:layout_marginLeft="-5dp"
-                    android:background="@drawable/ic_action_back_signin"
-                    android:textAllCaps="true"
-                    android:visibility="gone" />
+                    android:text="History"
+                    android:textStyle="bold"
+                    android:textSize="22sp"
+                    android:textColor="@color/white"/>
 
 
             </RelativeLayout>

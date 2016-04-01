@@ -175,6 +175,22 @@ public class DataManager {
         }
     }
 
+    public Observable<List<Product>> getProductsCheckoutScan(String listId) {
+
+        return Observable.create(subscriber -> {
+            List<Product> products = new ArrayList<>();
+            mParseService.getProductsCheckoutScan(listId).doOnNext(product -> {
+                products.add(product);
+
+            }).doOnCompleted(() -> {
+                subscriber.onNext(products);
+                subscriber.onCompleted();
+            })
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribe();
+        });
+    }
+
     public Observable<List<ProductHistory>> getProductsHistory() {
         if (mConfig.isUserLogin()) {
             return Observable.create(subscriber -> {
@@ -237,6 +253,8 @@ public class DataManager {
         }
         return null;
     }
+
+
 
     public Observable<Product> parseProductFromAmazon(String detailPageURL) {
         return mAmazonParseService.parse(detailPageURL);

@@ -61,7 +61,7 @@ public class HistoryActivity extends BaseActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mToolbar.setTitle("History");
+        getSupportActionBar().setTitle("History");
 
         Timber.d("onCreateSearchResultActivity");
 
