@@ -74,7 +74,6 @@ public class DataManager {
 //                });
 //    }
 
-    //missing check login
     public Observable<List<Product>> getProductSearchUpc(String code) {
 
         return Observable.create(subscriber -> {
@@ -90,7 +89,6 @@ public class DataManager {
         });
     }
 
-    //missing check login
     public Observable<List<Product>> getProductUpcDatabase(String code) {
 
         return Observable.create(subscriber -> {
@@ -106,7 +104,6 @@ public class DataManager {
         });
     }
 
-    //missing check login
     public Observable<List<Product>> getProductUpcItemDb(String code) {
 
         return Observable.create(subscriber -> {
@@ -122,32 +119,6 @@ public class DataManager {
         });
     }
 
-
-//    public Observable<List<Product>> getProducts() {
-//        if (mConfig.isUserLogin()) {
-//            return Observable.create(subscriber -> {
-//                List<Product> products = new ArrayList<>();
-//                mParseService.getProducts().doOnNext(product -> {
-//                    products.add(product);
-//
-//                }).doOnCompleted(() -> {
-//                    subscriber.onNext(products);
-//                    subscriber.onCompleted();
-//                })
-//                        .subscribeOn(Schedulers.newThread())
-//                        .subscribe();
-//            });
-//        } else {
-//            return Observable.create(subscriber -> {
-//                try {
-//                    subscriber.onNext(mProductModel.loadProductsNoCheckout());
-//                    subscriber.onCompleted();
-//                } catch (Exception e) {
-//                    subscriber.onError(e);
-//                }
-//            });
-//        }
-//    }
 
     public Observable<List<Product>> getProductsCheckout(String listId) {
         if (mConfig.isUserLogin()) {

@@ -17,8 +17,6 @@
         android:orientation="horizontal"
         android:padding="5dp">
 
-
-
         <ImageView
             android:id="@+id/image_bar_view"
             android:layout_width="120dp"

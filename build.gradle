@@ -7,7 +7,7 @@ buildscript {
         maven { url "http://dl.bintray.com/tbruyelle/tbruyelle" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0-alpha4'
+        classpath 'com.android.tools.build:gradle:2.1.0-alpha5'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
         classpath 'io.fabric.tools:gradle:1.21.2'
         classpath 'me.tatarka:gradle-retrolambda:3.2.4'

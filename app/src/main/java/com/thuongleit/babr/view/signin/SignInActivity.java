@@ -13,7 +13,7 @@ import android.view.WindowManager;
 import com.parse.ParseUser;
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.di.ActivityScope;
-import com.thuongleit.babr.util.DialogFactory;
+import com.thuongleit.babr.util.dialog.DialogFactory;
 import com.thuongleit.babr.view.base.BaseActivity;
 import com.thuongleit.babr.view.main.MainActivity;
 

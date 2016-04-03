@@ -1,4 +1,4 @@
-package com.thuongleit.babr.util;
+package com.thuongleit.babr.util.dialog;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;

@@ -1,22 +1,17 @@
 package com.thuongleit.babr.view.main;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPropertyAnimatorListener;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,13 +23,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.parse.ParseUser;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.quinny898.library.persistentsearch.SearchBox;
@@ -48,10 +39,9 @@ import com.thuongleit.babr.data.local.ProductModel;
 import com.thuongleit.babr.data.remote.ParseService;
 import com.thuongleit.babr.di.ActivityScope;
 import com.thuongleit.babr.util.AppUtils;
-import com.thuongleit.babr.util.DialogFactory;
-import com.thuongleit.babr.util.DialogHistory;
-import com.thuongleit.babr.util.DialogQrcodeHistory;
-import com.thuongleit.babr.util.ScrollingFABBehavior;
+import com.thuongleit.babr.util.dialog.DialogFactory;
+import com.thuongleit.babr.util.dialog.DialogHistory;
+import com.thuongleit.babr.util.dialog.DialogQrcodeHistory;
 import com.thuongleit.babr.view.AppIntroActivity;
 import com.thuongleit.babr.view.base.ToolbarActivity;
 import com.thuongleit.babr.view.history.HistoryActivity;
@@ -74,9 +64,9 @@ import javax.inject.Inject;
 import butterknife.Bind;
 
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class MainActivity extends ToolbarActivity implements NavigationView.OnNavigationItemSelectedListener, MainView,
         ActionMode.Callback, DialogHistory.DialogSaveHistoryListener {
@@ -116,8 +106,10 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     private ParseService parseService;
     private List<Product> productList = new ArrayList<>();
     private ActionMode actionMode;
+    private ProgressDialog progressDialog;
 
     private String generateListId;
+    private Subscription subscription;
 
     @Override
     protected int getLayoutId() {
@@ -187,6 +179,8 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     protected void onDestroy() {
         super.onDestroy();
         mMainPresenter.detachView();
+        if (subscription.isUnsubscribed())
+            subscription.unsubscribe();
     }
 
     @Override
@@ -217,7 +211,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
                 DialogHistory dialogHistory = new DialogHistory(this, this, generateListId);
                 dialogHistory.show();
-            }else {
+            } else {
                 showToast("You don't have any item!");
             }
 
@@ -256,7 +250,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             @Override
             public void onSearchTermChanged(String term) {
 
-                Observable.just(term)
+                subscription = Observable.just(term)
                         .debounce(400, TimeUnit.SECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
@@ -302,14 +296,22 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             removeAdditionalViews();
             if (products.size() >= 1) {
                 productList.addAll(products);
+                progressDialog = DialogFactory.createProgressDialog(this, "Loading...");
+                progressDialog.show();
                 if (mRecyclerView.getAdapter() == null) {
-                    RecyclerView.Adapter adapter = new ProductRecyclerAdapter(mContext, products);
-                    mRecyclerView.setAdapter(adapter);
+//                    RecyclerView.Adapter adapter = new ProductRecyclerAdapter(mContext, products);
+//                    mRecyclerView.setAdapter(adapter);
                     if (mConfig.isUserLogin()) {
                         parseService.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(a -> {
                                     showToast("products has been saved!");
+
+                                });
+                        subscription = Observable.timer(3, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(a -> {
+                                    progressDialog.dismiss();
                                     reloadActivity();
+
                                 });
 
                     } else {
@@ -318,15 +320,20 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                         }
                     }
                 } else {
-                    ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
+
+
+                    //   ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
                     if (mConfig.isUserLogin()) {
                         parseService.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(a -> {
-                                    showToast("products has been saved!!!!");
-//                                    reloadActivity();
+                                    showToast("products has been saved!");
                                 });
-                        Observable.timer(1, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(a -> reloadActivity());
+                        subscription = Observable.timer(3, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(a -> {
+                                    progressDialog.dismiss();
+                                    reloadActivity();
+
+                                });
                     } else {
                         for (Product product : products) {
                             mProductModel.saveProduct(product);
@@ -422,15 +429,18 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
         productList.addAll(products);
 
-
+        //  showToast(String.valueOf(products.size()));
         removeAdditionalViews();
 
-        if (mRecyclerView.getAdapter() == null) {
-            RecyclerView.Adapter adapter = new ProductRecyclerAdapter(MainActivity.this, products);
-            mRecyclerView.setAdapter(adapter);
-        } else {
-            ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
-        }
+        RecyclerView.Adapter adapter = new ProductRecyclerAdapter(MainActivity.this, products);
+        mRecyclerView.setAdapter(adapter);
+
+//        if (mRecyclerView.getAdapter() == null) {
+//            RecyclerView.Adapter adapter = new ProductRecyclerAdapter(MainActivity.this, products);
+//            mRecyclerView.setAdapter(adapter);
+//        } else {
+//            ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
+//        }
     }
 
     @Override
@@ -576,7 +586,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
             productHistory.setName(name);
             parseService.saveProductHistory(productHistory);
 
-            DialogQrcodeHistory qrcodeHistory=new DialogQrcodeHistory(mContext,generateListId);
+            DialogQrcodeHistory qrcodeHistory = new DialogQrcodeHistory(mContext, generateListId);
             qrcodeHistory.show();
 
         } else {

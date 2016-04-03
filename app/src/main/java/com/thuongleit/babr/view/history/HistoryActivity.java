@@ -1,23 +1,18 @@
 package com.thuongleit.babr.view.history;
 
 import android.app.ProgressDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import com.pnikosis.materialishprogress.ProgressWheel;
 import com.thuongleit.babr.R;
 import com.thuongleit.babr.config.Config;
 import com.thuongleit.babr.data.DataManager;
 import com.thuongleit.babr.data.local.ProductModel;
-import com.thuongleit.babr.util.DialogFactory;
+import com.thuongleit.babr.util.dialog.DialogFactory;
 import com.thuongleit.babr.view.base.BaseActivity;
-import com.thuongleit.babr.view.base.ToolbarActivity;
-import com.thuongleit.babr.view.product.ProductRecyclerAdapter;
 import com.thuongleit.babr.view.widget.DividerItemDecoration;
 import com.thuongleit.babr.vo.ProductHistory;
 
@@ -27,9 +22,9 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class HistoryActivity extends BaseActivity {
 
@@ -49,6 +44,9 @@ public class HistoryActivity extends BaseActivity {
     private AdapterHistory adapterHistory;
     private ProgressDialog progressDialog;
 
+    private Subscription subscription;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +61,6 @@ public class HistoryActivity extends BaseActivity {
 
         getSupportActionBar().setTitle("History");
 
-        Timber.d("onCreateSearchResultActivity");
 
         progressDialog = DialogFactory.createProgressDialog(this, "Loading...");
         progressDialog.show();
@@ -76,7 +73,7 @@ public class HistoryActivity extends BaseActivity {
 
         mRecyclerView.setAdapter(adapterHistory);
 
-        mDataManager.getProductsHistory()
+        subscription=  mDataManager.getProductsHistory()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(list -> {
@@ -93,6 +90,13 @@ public class HistoryActivity extends BaseActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (!subscription.isUnsubscribed())
+            subscription.unsubscribe();
     }
 
 }

@@ -1,4 +1,4 @@
-package com.thuongleit.babr.util;
+package com.thuongleit.babr.util.dialog;
 
 import android.content.Context;
 import android.graphics.Bitmap;

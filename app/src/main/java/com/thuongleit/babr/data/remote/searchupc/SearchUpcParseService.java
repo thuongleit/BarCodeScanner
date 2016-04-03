@@ -1,6 +1,10 @@
 package com.thuongleit.babr.data.remote.searchupc;
 
+import android.util.Log;
+
 import com.thuongleit.babr.vo.Product;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -65,6 +69,21 @@ public class SearchUpcParseService {
                         subscriber.onError(t);
                     }
                 });
+
+//                Call<List<_0>> observable = upcService.getProductSearchUpc(code);
+//
+//                observable.enqueue(new Callback<List<_0>>() {
+//                    @Override
+//                    public void onResponse(Response<List<_0>> response, Retrofit retrofit) {
+//                        List<_0> list=response.body();
+//                        Log.d("passedonResponse",String.valueOf(list.size()));
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Throwable t) {
+//
+//                    }
+//                });
             }
         });
     }

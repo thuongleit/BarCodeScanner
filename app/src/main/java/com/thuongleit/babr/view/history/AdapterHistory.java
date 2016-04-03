@@ -48,7 +48,6 @@ public class AdapterHistory extends RecyclerView.Adapter<AdapterHistory.HistoryH
     @Override
     public void onBindViewHolder(HistoryHolder holder, int position) {
         ProductHistory history=list.get(position);
-        holder.tvListId.setText(history.getListId());
         holder.tvName.setText(history.getName());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -69,8 +68,7 @@ public class AdapterHistory extends RecyclerView.Adapter<AdapterHistory.HistoryH
 
     public class HistoryHolder extends RecyclerView.ViewHolder{
 
-        @Bind(R.id.tvListId)
-        TextView tvListId;
+
         @Bind(R.id.tvName)
         TextView tvName;
         public HistoryHolder(View itemView) {
