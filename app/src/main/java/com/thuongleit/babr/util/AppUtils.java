@@ -11,6 +11,8 @@ import android.net.Uri;
 
 import com.thuongleit.babr.R;
 
+import java.util.Random;
+
 import timber.log.Timber;
 
 public class AppUtils {
@@ -78,5 +80,14 @@ public class AppUtils {
             Timber.e(ex, ex.getMessage());
             return false;
         }
+    }
+    public static String generateString(Random rng, String characters, int length)
+    {
+        char[] text = new char[length];
+        for (int i = 0; i < length; i++)
+        {
+            text[i] = characters.charAt(rng.nextInt(characters.length()));
+        }
+        return new String(text);
     }
 }

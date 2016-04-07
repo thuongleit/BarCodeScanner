@@ -51,6 +51,7 @@ public class UpcItemDbParseService {
                             Item item = upcItemDb.getItems().get(0);
                             if (upcItemDb.getCode().equals("OK")) {
                                 product.setSource("upcitemdb.com");
+                                product.setListId("a");
                                 product.setName(item.getTitle());
                                 product.setImageUrl(item.getImages().get(0));
                                 product.setEan(item.getEan());

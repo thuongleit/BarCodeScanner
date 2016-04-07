@@ -1,5 +1,7 @@
 package com.thuongleit.babr.data.remote.searchupc;
 
+import java.util.List;
+
 import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Query;

@@ -30,7 +30,6 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
     private final DataManager mDataManager;
     private Subscription mSubscription = Subscriptions.empty();
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
-    private boolean isOnlyResult = false;
 
     @Inject
     @ApplicationScope
@@ -65,7 +64,7 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                                 mView.onEmptyProductReturn();
                             } else {
                                 stopConcurrencyExe();
-                                Toast.makeText(mContext, "UPC_SERVICE", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, "http://www.upcitemdb.com/", Toast.LENGTH_SHORT).show();
 
                                 mView.onRequestSuccessList(products);
                             }
@@ -104,30 +103,6 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                         },
                         () -> mView.showProgress(false)));
 
-        Timber.d("KEY_SEACHUPC: " + code);
-
-        compositeSubscription.add(mDataManager.getProductSearchUpc(code)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        products -> {
-                            if (products == null || products.size() == 0) {
-                                mView.onEmptyProductReturn();
-                            } else {
-                                stopConcurrencyExe();
-
-                                Toast.makeText(mContext, "SEACHUPC", Toast.LENGTH_SHORT).show();
-
-                                mView.onRequestSuccessList(products);
-                            }
-                        }, e -> {
-                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                mView.showNetworkError();
-                            } else {
-                                mView.showGeneralError(e.getMessage());
-                            }
-                        },
-                        () -> mView.showProgress(false)));
 
         Timber.d("KEY_UPCDATABASE: " + code);
 
@@ -141,7 +116,7 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                             } else {
                                 stopConcurrencyExe();
 
-                                Toast.makeText(mContext, "UPCDATABASE", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, "http://www.upcitemdb.com/", Toast.LENGTH_SHORT).show();
 
                                 mView.onRequestSuccessList(products);
 
@@ -168,10 +143,62 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                                 stopConcurrencyExe();
 
 
-                                Toast.makeText(mContext, "AMAZON_SERVICE", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, "http://www.amazon.com/", Toast.LENGTH_SHORT).show();
 
                                 mView.onRequestSuccess(response);
 
+                            }
+                        }, e -> {
+                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                mView.showNetworkError();
+                            } else {
+                                mView.showGeneralError(e.getMessage());
+                            }
+                        },
+                        () -> mView.showProgress(false)));
+
+
+        Timber.d("KEY_PRODUCT" + code);
+        compositeSubscription.add(mDataManager.getProductsCheckoutScan(code)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        products -> {
+                            if (products == null || products.size() == 0) {
+                                mView.onEmptyProductReturn();
+                            } else {
+                                stopConcurrencyExe();
+
+                                Toast.makeText(mContext, "KEY_PRODUCT", Toast.LENGTH_SHORT).show();
+
+                                mView.onRequestSuccessList(products);
+
+                            }
+                        }, e -> {
+                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                                mView.showNetworkError();
+                            } else {
+                                mView.showGeneralError(e.getMessage());
+                            }
+                        },
+                        () -> mView.showProgress(false)));
+
+        Timber.d("KEY_SEACHUPC: " + code);
+
+
+        compositeSubscription.add(mDataManager.getProductSearchUpc(code)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        products -> {
+                            if (products == null || products.size() == 0) {
+                                mView.onEmptyProductReturn();
+                            } else {
+                                stopConcurrencyExe();
+
+                                Toast.makeText(mContext, "http://searchupc.com/", Toast.LENGTH_SHORT).show();
+
+                                mView.onRequestSuccessList(products);
                             }
                         }, e -> {
                             if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {

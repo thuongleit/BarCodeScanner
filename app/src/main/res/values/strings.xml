@@ -34,7 +34,7 @@
     <string name="dialog_error_title">Sorry</string>
     <string name="dialog_action_try_again">Try Again</string>
     <string name="menu_login">Login</string>
-    <string name="menu_gallery">Gallery</string>
+    <string name="menu_gallery">History</string>
     <string name="menu_import">Import</string>
     <string name="menu_generate_qrcode">Generate QRCode</string>
     <string name="menu_log_out">Log out</string>

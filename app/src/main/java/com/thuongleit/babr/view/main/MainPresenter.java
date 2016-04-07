@@ -34,11 +34,37 @@ public class MainPresenter extends BasePresenter<MainView> {
         }
     }
 
-    public void getProducts() {
+//    public void getProducts() {
+//        checkViewAttached();
+//        mView.showProgress(true);
+//        mSubscription = mDataManager
+//                .getProducts()
+//                .subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(
+//                        products -> {
+//                            if (products == null || products.isEmpty()) {
+//                                mView.showEmptyView();
+//                            } else {
+//                                mView.showProducts(products);
+//                            }
+//                        },
+//                        e -> {
+//                            mView.showProgress(false);
+//                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+//                                mView.showNetworkError();
+//                            } else {
+//                                mView.showGeneralError(e.getMessage());
+//                            }
+//                        }
+//                        , () -> mView.showProgress(false));
+//    }
+
+    public void getProductsNotCheckout(String listId) {
         checkViewAttached();
         mView.showProgress(true);
         mSubscription = mDataManager
-                .getProducts()
+                .getProductsCheckout(listId)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

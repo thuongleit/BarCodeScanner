@@ -14,7 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.thuongleit.babr.R;
-import com.thuongleit.babr.util.DialogFactory;
+import com.thuongleit.babr.util.dialog.DialogFactory;
 import com.thuongleit.babr.view.base.BaseActivity;
 
 import javax.inject.Inject;

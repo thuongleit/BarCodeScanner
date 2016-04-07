@@ -2,11 +2,9 @@ package com.thuongleit.babr.view.scan;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,7 +22,7 @@ import com.thuongleit.babr.R;
 import com.thuongleit.babr.config.Config;
 import com.thuongleit.babr.data.local.ProductModel;
 import com.thuongleit.babr.data.remote.amazon.model.AmazonProductResponse;
-import com.thuongleit.babr.util.DialogSaveImage;
+import com.thuongleit.babr.util.dialog.DialogSaveImage;
 import com.thuongleit.babr.view.base.BaseActivity;
 import com.thuongleit.babr.view.main.MainActivity;
 import com.thuongleit.babr.view.product.ProductRecyclerAdapter;
@@ -68,7 +66,6 @@ public class SearchResultActivity extends BaseActivity implements ParsingView,
     private List<Product> productListUserId = new ArrayList<>();
     private ActionMode actionMode;
     private List<Product> productList = new ArrayList<>();
-    private boolean isChoice = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

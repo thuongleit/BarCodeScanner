@@ -13,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +23,7 @@ import com.thuongleit.babr.R;
 import com.thuongleit.babr.config.Constant;
 import com.thuongleit.babr.di.ActivityScope;
 import com.thuongleit.babr.util.AppUtils;
-import com.thuongleit.babr.util.DialogFactory;
+import com.thuongleit.babr.util.dialog.DialogFactory;
 import com.thuongleit.babr.view.base.ToolbarActivity;
 import com.thuongleit.babr.view.widget.CameraPreview;
 import com.thuongleit.babr.vo.Product;
@@ -37,14 +36,10 @@ import net.sourceforge.zbar.SymbolSet;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class CameraActivity extends ToolbarActivity implements ScanView, Camera.PreviewCallback {
