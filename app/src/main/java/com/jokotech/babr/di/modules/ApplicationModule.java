@@ -3,12 +3,15 @@ package com.jokotech.babr.di.modules;
 import android.app.Application;
 import android.content.Context;
 
+import com.jakewharton.picasso.OkHttp3Downloader;
 import com.jokotech.babr.di.ApplicationScope;
+import com.squareup.picasso.Picasso;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.OkHttpClient;
 
 /**
  * Created by thuongle on 12/23/15.
@@ -32,6 +35,15 @@ public class ApplicationModule {
     @ApplicationScope
     Context provideContext() {
         return application;
+    }
+
+    @Provides
+    @Singleton
+    Picasso providePicasso() {
+        OkHttpClient client = new OkHttpClient.Builder().build();
+        return new Picasso.Builder(application)
+                .downloader(new OkHttp3Downloader(client))
+                .build();
     }
 
 }

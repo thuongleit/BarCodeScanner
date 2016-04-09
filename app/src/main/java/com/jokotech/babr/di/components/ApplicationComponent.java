@@ -11,6 +11,7 @@ import com.jokotech.babr.data.remote.ParseService;
 import com.jokotech.babr.data.remote.amazon.AmazonService;
 import com.jokotech.babr.di.ApplicationScope;
 import com.jokotech.babr.di.modules.ApplicationModule;
+import com.squareup.picasso.Picasso;
 
 import javax.inject.Singleton;
 
@@ -39,4 +40,6 @@ public interface ApplicationComponent {
     Config config();
 
     void inject(DataManager manager);
+
+    Picasso picasso();
 }

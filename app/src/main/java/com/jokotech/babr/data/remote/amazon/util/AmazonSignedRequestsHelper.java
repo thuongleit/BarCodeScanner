@@ -64,7 +64,7 @@ public class AmazonSignedRequestsHelper {
      * This is the URI for the service, don't change unless you really know
      * what you're doing.
      */
-    public static final String REQUEST_URI = "/onca/xml";
+    public static final String REQUEST_URI = "/onca/xml/";
 
     /**
      * The sample uses HTTP GET to fetch the response. If you changed the sample

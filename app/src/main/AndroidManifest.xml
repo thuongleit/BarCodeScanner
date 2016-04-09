@@ -60,8 +60,7 @@
                 android:value="com.jokotech.babr.view.signin.SignInWithEmailActivity" />
         </activity>
         <activity
-            android:name="com.jokotech.babr.view.SplashActivity"
-            android:theme="@style/AppTheme.SplashTheme">
+            android:name="com.jokotech.babr.view.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
