@@ -12,7 +12,7 @@
         android:background="@drawable/login_background"
         android:scaleType="center" />
 
-    <com.thuongleit.babr.view.widget.DancingScriptTextView
+    <com.jokotech.babr.view.widget.DancingScriptTextView
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
