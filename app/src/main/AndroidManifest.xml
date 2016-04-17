@@ -81,13 +81,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jokotech.babr.view.scan.CameraActivity" />
         </activity>
-        <activity
-            android:name="com.jokotech.babr.view.signin.SignInWithEmailActivity"
-            android:parentActivityName="com.jokotech.babr.view.signin.SignInActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.jokotech.babr.view.signin.SignInActivity" />
-        </activity>
         <activity android:name="com.jokotech.babr.view.history.HistoryActivity" />
         <activity android:name="com.jokotech.babr.view.history.DetailActivity"></activity>
     </application>

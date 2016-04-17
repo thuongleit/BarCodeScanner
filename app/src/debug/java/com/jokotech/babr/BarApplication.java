@@ -1,7 +1,7 @@
 package com.jokotech.babr;
 
-import android.app.Application;
 import android.support.annotation.Nullable;
+import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
@@ -18,7 +18,7 @@ import timber.log.Timber;
 /**
  * Created by thuongle on 11/24/15.
  */
-public class BarApplication extends Application {
+public class BarApplication extends MultiDexApplication {
 
     static {
         System.loadLibrary("iconv");

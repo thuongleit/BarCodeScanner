@@ -13,8 +13,6 @@ import com.jokotech.babr.view.product.BarViewActivity;
 import com.jokotech.babr.view.scan.CameraActivity;
 import com.jokotech.babr.view.scan.SearchResultActivity;
 import com.jokotech.babr.view.signin.SignInActivity;
-import com.jokotech.babr.view.signin.SignInWithEmailActivity;
-import com.jokotech.babr.view.signup.SignUpActivity;
 
 import dagger.Component;
 
@@ -32,8 +30,6 @@ public interface ActivityComponent {
 
     void inject(SignInActivity activity);
 
-    void inject(SignUpActivity activity);
-
     void inject(BarViewActivity activity);
 
     void inject(MainActivity activity);
@@ -41,8 +37,6 @@ public interface ActivityComponent {
     void inject(CameraActivity activity);
 
     void inject(SearchResultActivity activity);
-
-    void inject(SignInWithEmailActivity activity);
 
     void inject(HistoryActivity activity);
 

@@ -1,11 +1,8 @@
 package com.jokotech.babr.view.signin;
 
-import com.parse.ParseUser;
-import com.jokotech.babr.data.DataManager;
 import com.jokotech.babr.di.PerActivity;
 import com.jokotech.babr.view.base.BasePresenter;
-
-import org.brickred.socialauth.Profile;
+import com.parse.ParseUser;
 
 import javax.inject.Inject;
 
@@ -15,57 +12,46 @@ import timber.log.Timber;
  * Created by thuongle on 12/30/15.
  */
 @PerActivity
-public class SignInPresenter extends BasePresenter<SignInView> {
-
-    private final DataManager mDataManager;
+class SignInPresenter extends BasePresenter<SignInView> {
 
     @Inject
-    public SignInPresenter(DataManager dataManager) {
-        mDataManager = dataManager;
+    public SignInPresenter() {
     }
 
-    public void login(final String username, String password) {
+    public void login(final String email, String password) {
         checkViewAttached();
         mView.showProgress(true);
 
-        ParseUser.logInInBackground(username, password, (user, e) -> {
+        ParseUser.logInInBackground(email, password, (user, e) -> {
             mView.showProgress(false);
             if (e == null) {
-                Timber.i("Sign in with %s successfully!", username);
-                mView.onSignInSuccess(user);
+                Timber.i("Sign in with %s successfully!", email);
+                mView.onActionSuccess(user);
             } else {
-                Timber.i(e, "Sign in with %s failed!", username);
-                mView.onSignInFailed(e.getMessage());
+                Timber.e(e, "Sign in with %s failed!", email);
+                mView.onActionFailed(e.getMessage());
             }
         });
     }
 
-    public void loginWithSocial(Profile profile, final String token) {
+    public void signUp(String email, String password) {
         checkViewAttached();
         mView.showProgress(true);
 
-        final String username = profile.getEmail().split("@")[0];
-        // FIXME: 12/30/15 need to handle FindCallback
-        ParseUser.getQuery().whereEqualTo("username", username).findInBackground((objects, e) -> {
-            if (e == null) {
-                if (objects != null && !objects.isEmpty()) {
-                    //user has log in
-                    login(username, token);
-                } else {
-                    final ParseUser parseUser = new ParseUser();
-                    parseUser.setUsername(username);
-                    parseUser.setPassword(token);
+        ParseUser parseUser = new ParseUser();
+        parseUser.setUsername(email);
+        parseUser.setEmail(email);
+        parseUser.setPassword(password);
 
-                    parseUser.signUpInBackground(e1 -> {
-                        if (e1 == null) {
-                            Timber.i("Sign up with %s successfully!", username);
-                            mView.onSignInSuccess(parseUser);
-                        } else {
-                            Timber.i(e1, "Sign in with %s failed!", username);
-                            mView.onSignInFailed(e1.getMessage());
-                        }
-                    });
-                }
+        parseUser.signUpInBackground(e -> {
+            mView.showProgress(false);
+            if (e == null) {
+                Timber.i("User %s sign up successfully", email);
+                //the user is logged in
+                mView.onActionSuccess(parseUser);
+            } else {
+                Timber.e(e, "User %s sign up failed", email);
+                mView.onActionFailed(e.getMessage());
             }
         });
     }

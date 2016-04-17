@@ -5,35 +5,36 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.parse.ParseUser;
 import com.jokotech.babr.R;
 import com.jokotech.babr.di.ActivityScope;
 import com.jokotech.babr.util.dialog.DialogFactory;
 import com.jokotech.babr.view.base.BaseActivity;
 import com.jokotech.babr.view.main.MainActivity;
-
-import org.brickred.socialauth.Profile;
-import org.brickred.socialauth.android.DialogListener;
-import org.brickred.socialauth.android.SocialAuthAdapter;
-import org.brickred.socialauth.android.SocialAuthError;
-import org.brickred.socialauth.android.SocialAuthListener;
+import com.parse.ParseUser;
 
 import javax.inject.Inject;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import timber.log.Timber;
+import shem.com.materiallogin.MaterialLoginView;
+import shem.com.materiallogin.MaterialLoginViewListener;
 
 /**
  * A login screen that offers login via email/password.
  */
 public class SignInActivity extends BaseActivity implements SignInView {
-    private static final int REQUEST_SIGN_IN = 1;
+
+    @Bind(R.id.login_view)
+    MaterialLoginView mLoginView;
 
     @Inject
     SignInPresenter mSignInPresenter;
@@ -41,7 +42,6 @@ public class SignInActivity extends BaseActivity implements SignInView {
     @ActivityScope
     Context mContext;
 
-    private SocialAuthAdapter mSocialAuthAdapter;
     private ProgressDialog mProgressDialog;
 
     @Override
@@ -55,64 +55,93 @@ public class SignInActivity extends BaseActivity implements SignInView {
 
         mSignInPresenter.attachView(this);
 
-        mSocialAuthAdapter = new SocialAuthAdapter(new DialogListener() {
+        mLoginView.setListener(new MaterialLoginViewListener() {
             @Override
-            public void onComplete(Bundle bundle) {
-                mSocialAuthAdapter.getUserProfileAsync(new SocialAuthListener<Profile>() {
-                    @Override
-                    public void onExecute(String s, Profile profile) {
-                        String token = mSocialAuthAdapter.getCurrentProvider().getAccessGrant().getKey();
-                        mSignInPresenter.loginWithSocial(profile, token);
-                    }
+            public void onRegister(TextInputLayout registerUser, TextInputLayout registerPass, TextInputLayout registerPassRep) {
+                String email = registerUser.getEditText().getText().toString();
+                String pass = registerPass.getEditText().getText().toString();
+                String rePass = registerPassRep.getEditText().getText().toString();
 
-                    @Override
-                    public void onError(SocialAuthError socialAuthError) {
-                        onError(socialAuthError);
-                    }
-                });
+                boolean isValid = true;
+                if (!pass.equals(rePass)) {
+                    registerPassRep.getEditText().setError(getString(R.string.error_in_same_password));
+                    registerPassRep.getEditText().requestFocus();
+                    isValid = false;
+                } else {
+                    registerPassRep.getEditText().setError(null);
+                }
+                if (!TextUtils.isEmpty(pass)) {
+                    registerPass.getEditText().setError(getString(R.string.error_invalid_password));
+                    registerPass.getEditText().requestFocus();
+                    isValid = false;
+                } else {
+                    registerPass.getEditText().setError(null);
+                }
+                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    registerUser.getEditText().setError(getString(R.string.error_invalid_email));
+                    registerUser.getEditText().requestFocus();
+                    isValid = false;
+                } else {
+                    registerUser.getEditText().setError(null);
+                }
+
+                if (isValid) {
+                    mSignInPresenter.signUp(email, pass);
+                }
             }
 
             @Override
-            public void onError(SocialAuthError socialAuthError) {
-                Timber.e(socialAuthError, socialAuthError.getMessage());
-            }
+            public void onLogin(TextInputLayout loginUser, TextInputLayout loginPass) {
+                String email = loginUser.getEditText().getText().toString();
+                String password = loginPass.getEditText().getText().toString();
 
-            @Override
-            public void onCancel() {
+                boolean isValid = true;
+                if (!TextUtils.isEmpty(password)) {
+                    loginPass.getEditText().setError(getString(R.string.error_invalid_password));
+                    loginPass.getEditText().requestFocus();
+                    isValid = false;
+                } else {
+                    loginPass.getEditText().setError(null);
+                }
 
-            }
+                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    loginUser.getEditText().setError(getString(R.string.error_invalid_email));
+                    loginUser.getEditText().requestFocus();
+                    isValid = false;
+                } else {
+                    loginUser.getEditText().setError(null);
+                }
 
-            @Override
-            public void onBack() {
-
+                if (isValid) {
+                    mSignInPresenter.login(email, password);
+                }
             }
         });
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_SIGN_IN && resultCode == RESULT_OK) {
-            onSignInSuccess(null);
-        }
+    protected void onDestroy() {
+        super.onDestroy();
+        mSignInPresenter.detachView();
+        ButterKnife.unbind(this);
     }
 
     @Override
-    public void onSignInSuccess(ParseUser user) {
+    public void onActionSuccess(ParseUser user) {
         Intent intent = new Intent(mContext, MainActivity.class);
         startActivity(intent);
         finish();
     }
 
     @Override
-    public void onSignInFailed(String message) {
+    public void onActionFailed(String message) {
         DialogFactory.createGenericErrorDialog(mContext, message).show();
     }
 
     @Override
     public void showProgress(boolean show) {
         if (mProgressDialog == null) {
-            mProgressDialog = DialogFactory.createProgressDialog(mContext, "Authenticating...");
+            mProgressDialog = DialogFactory.createProgressDialog(mContext, R.string.dialog_authenticating);
         }
         if (show) {
             mProgressDialog.show();
@@ -123,7 +152,7 @@ public class SignInActivity extends BaseActivity implements SignInView {
 
     @Override
     public void showNetworkError() {
-        DialogFactory.createGenericErrorDialog(mContext, "You has been disconnected!").show();
+        DialogFactory.createGenericErrorDialog(mContext, R.string.dialog_internet_disconnnect_error).show();
     }
 
     @Override
@@ -131,32 +160,16 @@ public class SignInActivity extends BaseActivity implements SignInView {
         DialogFactory.createGenericErrorDialog(mContext, message).show();
     }
 
-    @OnClick(R.id.button_facebook_login)
-    public void loginFacebook(View view) {
-        mSocialAuthAdapter.authorize(this, SocialAuthAdapter.Provider.FACEBOOK);
-    }
-
-    @OnClick(R.id.button_google_login)
-    public void loginGooglePlus(View view) {
-        mSocialAuthAdapter.authorize(this, SocialAuthAdapter.Provider.GOOGLEPLUS);
-    }
-
-    @OnClick(R.id.button_sign_in_with_email)
-    public void signInWithEmail() {
-        Intent intent = new Intent(mContext, SignInWithEmailActivity.class);
-        startActivityForResult(intent, REQUEST_SIGN_IN);
-    }
-
     @OnClick(R.id.text_login_as_guest)
     public void loginAsGuest(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Login as guest will store your products locally. If you want to save them in the cloud, login as your account instead.");
-        builder.setPositiveButton("OK", (dialog, which) -> {
+        builder.setMessage(getString(R.string.dialog_login_as_guest_warning));
+        builder.setPositiveButton(getString(R.string.button_ok), (dialog, which) -> {
             dialog.dismiss();
         });
-        builder.setNegativeButton("Ignore", (dialog, which) -> {
+        builder.setNegativeButton(getString(R.string.button_ignore), (dialog, which) -> {
             dialog.dismiss();
-            onSignInSuccess(null);
+            onActionSuccess(null);
         });
         builder.create().show();
     }

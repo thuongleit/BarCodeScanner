@@ -26,6 +26,6 @@
         android:layout_marginBottom="10dp"
         android:text="@string/app_copyright"
         android:textColor="@color/white"
-        android:textSize="20sp" />
+        android:textSize="14sp" />
 
 </FrameLayout>
