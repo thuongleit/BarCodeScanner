@@ -19,7 +19,7 @@
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_invalid_password">Password cannot be empty</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="about">About</string>
@@ -42,4 +42,13 @@
     <string name="delete_crime">Delete Item</string>
     <string name="option_save">Option</string>
     <string name="choose_image">You can choose your own images to save to server or database</string>
+    <string name="app_copyright">©2016 Jokotech</string>
+    <string name="error_cannot_start_app">Cannot start the app now. Please try again later</string>
+    <string name="text_sign_up_later">Sign up later</string>
+    <string name="dialog_login_as_guest_warning">Login as guest will store your products locally. If you want to save them in the cloud, login as your account instead.</string>
+    <string name="button_ok">OK</string>
+    <string name="button_ignore">Ignore</string>
+    <string name="dialog_internet_disconnnect_error">You has been disconnected!</string>
+    <string name="dialog_authenticating">Authenticating...</string>
+    <string name="error_in_same_password">Password must be same</string>
 </resources>

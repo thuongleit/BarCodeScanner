@@ -31,11 +31,7 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.SplashTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash_background</item>
-    </style>
-
-    <style name="Login"></style>
+    <style name="Login"/>
 
     <style name="Login.InputEditTextStyle" parent="Login">
         <item name="android:textCursorDrawable">@null</item>
@@ -85,6 +81,5 @@
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:textColor">@color/colorAccent</item>
     </style>
-
 
 </resources>
