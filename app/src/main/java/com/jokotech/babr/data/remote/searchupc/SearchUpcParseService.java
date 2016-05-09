@@ -1,5 +1,7 @@
 package com.jokotech.babr.data.remote.searchupc;
 
+import android.util.Log;
+
 import com.jokotech.babr.vo.Product;
 
 import javax.inject.Inject;
@@ -30,7 +32,7 @@ public class SearchUpcParseService {
         return Observable.create(new Observable.OnSubscribe<Product>() {
             @Override
             public void call(Subscriber<? super Product> subscriber) {
-                Timber.d("getProductSearchUpc" + code);
+                Log.d("passedScanner","getProductSearchUpc" + code);
                 Product product = new Product();
                 Retrofit retrofit = new Retrofit.Builder()
                         .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
@@ -64,21 +66,6 @@ public class SearchUpcParseService {
 
                     }
                 });
-
-//                Call<List<_0>> observable = upcService.getProductSearchUpc(code);
-//
-//                observable.enqueue(new Callback<List<_0>>() {
-//                    @Override
-//                    public void onResponse(Response<List<_0>> response, Retrofit retrofit) {
-//                        List<_0> list=response.body();
-//                        Log.d("passedonResponse",String.valueOf(list.size()));
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Throwable t) {
-//
-//                    }
-//                });
             }
         });
     }

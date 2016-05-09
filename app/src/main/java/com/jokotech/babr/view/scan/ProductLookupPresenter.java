@@ -1,17 +1,24 @@
 package com.jokotech.babr.view.scan;
 
 import android.content.Context;
+import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.jokotech.babr.data.DataManager;
+import com.jokotech.babr.data.remote.amazon.model.AmazonProductResponse;
 import com.jokotech.babr.di.ApplicationScope;
 import com.jokotech.babr.view.base.BasePresenter;
+import com.jokotech.babr.vo.Product;
 
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -51,22 +58,33 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
         mView.playRingtone();
 
 
-        Timber.d("KEY_UPC_SERVICE" + code);
-        compositeSubscription.add(mDataManager.getProductUpcItemDb(code)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        products -> {
-                            if (products == null || products.size() == 0) {
-                                mView.onEmptyProductReturn();
-                            } else {
-                                stopConcurrencyExe();
-                                Toast.makeText(mContext, "http://www.upcitemdb.com/", Toast.LENGTH_SHORT).show();
+        Observable<List<Product>> observableUpcItemDb = mDataManager.getProductUpcItemDb(code);
+        Observable<List<Product>> observableBabr = mDataManager.getProductsBABR(code);
+        Observable<List<Product>> observableWalmartlabs = mDataManager.getProductWalmartlabs(code);
+        Observable<List<Product>> observableUpcDatabase = mDataManager.getProductUpcDatabase(code);
+        Observable<List<Product>> observableCheckoutScan = mDataManager.getProductsCheckoutScan(code);
+        Observable<List<Product>> observableSearchUpc = mDataManager.getProductSearchUpc(code);
+        Observable<AmazonProductResponse> observableAmazon = mDataManager.searchProductsInAmazon(code);
 
-                                mView.onRequestSuccessList(products);
+        Observable<List<Product>> merge = Observable.merge(observableUpcItemDb, observableWalmartlabs, observableBabr, observableUpcDatabase,
+                observableCheckoutScan, observableSearchUpc);
+
+        compositeSubscription.add(Observable.combineLatest(merge, observableAmazon, this::setupData)
+                .first(data -> isHavingImage(data))
+                .subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object -> {
+
+                            if (object instanceof AmazonProductResponse) {
+                                AmazonProductResponse reponse = (AmazonProductResponse) object;
+                                mView.onRequestSuccess(reponse);
+                            } else {
+                                List<Product> reponse = (List<Product>) object;
+                                mView.onRequestSuccessList(reponse);
                             }
+                            stopConcurrencyExe();
+
                         }, e -> {
-                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+                            if (e instanceof IOException) {
                                 mView.showNetworkError();
                             } else {
                                 mView.showGeneralError(e.getMessage());
@@ -75,137 +93,27 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                         () -> mView.showProgress(false)));
 
 
-        Timber.d("KEY_BABR: " + code);
+    }
 
-        compositeSubscription.add(mDataManager.getProductsBABR(code)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        products -> {
-                            if (products == null || products.size() == 0) {
-                                mView.onEmptyProductReturn();
-                            } else {
-                                stopConcurrencyExe();
+    private boolean isHavingImage(Object object) {
+        if (object instanceof AmazonProductResponse) {
+            return true;
+        } else {
+            List<Product> reponse = (List<Product>) object;
+            if (!TextUtils.isEmpty(reponse.get(0).getImageUrl())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-                                Toast.makeText(mContext, "BABR", Toast.LENGTH_SHORT).show();
+    private Object setupData(List<Product> products, AmazonProductResponse response) {
 
-                                mView.onRequestSuccessList(products);
-                            }
-                        }, e -> {
-                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                mView.showNetworkError();
-                            } else {
-                                mView.showGeneralError(e.getMessage());
-                            }
-                        },
-                        () -> mView.showProgress(false)));
-
-
-        Timber.d("KEY_UPCDATABASE: " + code);
-
-        compositeSubscription.add(mDataManager.getProductUpcDatabase(code)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        products -> {
-                            if (products == null || products.size() == 0) {
-                                mView.onEmptyProductReturn();
-                            } else {
-                                stopConcurrencyExe();
-
-                                Toast.makeText(mContext, "http://www.upcitemdb.com/", Toast.LENGTH_SHORT).show();
-
-                                mView.onRequestSuccessList(products);
-
-                            }
-                        }, e -> {
-                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                mView.showNetworkError();
-                            } else {
-                                mView.showGeneralError(e.getMessage());
-                            }
-                        },
-                        () -> mView.showProgress(false)));
-
-        Timber.d("KEY_AMAZON_SERVICE" + code);
-        compositeSubscription.add(mDataManager
-                .searchProductsInAmazon(code)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        response -> {
-                            if (response.getProducts() == null || response.getProducts().isEmpty()) {
-                                mView.onEmptyProductReturn();
-                            } else {
-                                stopConcurrencyExe();
-
-
-                                Toast.makeText(mContext, "http://www.amazon.com/", Toast.LENGTH_SHORT).show();
-
-                                mView.onRequestSuccess(response);
-
-                            }
-                        }, e -> {
-                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                mView.showNetworkError();
-                            } else {
-                                mView.showGeneralError(e.getMessage());
-                            }
-                        },
-                        () -> mView.showProgress(false)));
-
-
-        Timber.d("KEY_PRODUCT" + code);
-        compositeSubscription.add(mDataManager.getProductsCheckoutScan(code)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        products -> {
-                            if (products == null || products.size() == 0) {
-                                mView.onEmptyProductReturn();
-                            } else {
-                                stopConcurrencyExe();
-
-                                Toast.makeText(mContext, "KEY_PRODUCT", Toast.LENGTH_SHORT).show();
-
-                                mView.onRequestSuccessList(products);
-
-                            }
-                        }, e -> {
-                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                mView.showNetworkError();
-                            } else {
-                                mView.showGeneralError(e.getMessage());
-                            }
-                        },
-                        () -> mView.showProgress(false)));
-
-        Timber.d("KEY_SEACHUPC: " + code);
-
-
-        compositeSubscription.add(mDataManager.getProductSearchUpc(code)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        products -> {
-                            if (products == null || products.size() == 0) {
-                                mView.onEmptyProductReturn();
-                            } else {
-                                stopConcurrencyExe();
-
-                                Toast.makeText(mContext, "http://searchupc.com/", Toast.LENGTH_SHORT).show();
-
-                                mView.onRequestSuccessList(products);
-                            }
-                        }, e -> {
-                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                mView.showNetworkError();
-                            } else {
-                                mView.showGeneralError(e.getMessage());
-                            }
-                        },
-                        () -> mView.showProgress(false)));
-
+        if (response.getProducts().size()>0 ) {
+            return response;
+        } else {
+            return products;
+        }
 
     }
 

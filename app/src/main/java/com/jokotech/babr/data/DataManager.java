@@ -1,6 +1,7 @@
 package com.jokotech.babr.data;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.jokotech.babr.BarApplication;
 import com.jokotech.babr.config.Config;
@@ -64,18 +65,6 @@ public class DataManager {
         ((BarApplication) app).getAppComponent().inject(this);
     }
 
-//    public Observable<Product> getProduct(String qrCode) {
-//        return mUpcParseService.getProduct(Constant.UPC_ENDPOINT_URL + qrCode)
-//                .doOnNext(product -> {
-//                    //save to db
-//                    mProductModel.saveProduct(product);
-//
-//                    if (mConfig.isUserLogin()) {
-//                        //save to parse service
-//                        mParseService.saveProduct(product);
-//                    }
-//                });
-//    }
 
     public Observable<List<Product>> getProductSearchUpc(String code) {
 
@@ -229,6 +218,7 @@ public class DataManager {
     }
 
     public Observable<AmazonProductResponse> searchProductsInAmazon(String keyword) {
+        Log.d("passedScanner","searchProductsInAmazon" + keyword);
         String signedUrl = null;
         try {
             AmazonSignedRequestsHelper signer = AmazonSignedRequestsHelper.

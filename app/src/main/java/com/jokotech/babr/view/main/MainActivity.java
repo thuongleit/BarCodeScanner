@@ -179,8 +179,8 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     protected void onDestroy() {
         super.onDestroy();
         mMainPresenter.detachView();
-        if (subscription.isUnsubscribed())
-            subscription.unsubscribe();
+//        if (subscription.isUnsubscribed())
+//            subscription.unsubscribe();
     }
 
     @Override

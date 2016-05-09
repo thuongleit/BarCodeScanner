@@ -1,5 +1,8 @@
 package com.jokotech.babr.data.remote.upcitemdb;
 
+import android.text.TextUtils;
+import android.util.Log;
+
 import com.jokotech.babr.data.remote.upcitemdb.model.Item;
 import com.jokotech.babr.data.remote.upcitemdb.model.UpcItemDb;
 import com.jokotech.babr.vo.Product;
@@ -32,7 +35,7 @@ public class UpcItemDbParseService {
             @Override
             public void call(Subscriber<? super Product> subscriber) {
 
-                Timber.d("getUpcItemDbParseService" + code);
+                Log.d("passedScanner","getUpcItemDbParseService" + code);
 
                 Product product = new Product();
                 Retrofit retrofit = new Retrofit.Builder()
@@ -53,7 +56,8 @@ public class UpcItemDbParseService {
                                 product.setSource("upcitemdb.com");
                                 product.setListId("a");
                                 product.setName(item.getTitle());
-                                product.setImageUrl(item.getImages().get(0));
+                                if (item.getImages().size()>0)
+                                    product.setImageUrl(item.getImages().get(0));
                                 product.setEan(item.getEan());
                                 product.setManufacture(item.getBrand());
                                 product.setModel(item.getModel());
