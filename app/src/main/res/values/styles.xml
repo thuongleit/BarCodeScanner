@@ -82,4 +82,12 @@
         <item name="android:textColor">@color/colorAccent</item>
     </style>
 
+    <style name="Babr.Card" parent="CardView">
+        <item name="contentPadding">0dp</item>
+        <item name="cardCornerRadius">@dimen/card_corner_radius</item>
+        <item name="cardPreventCornerOverlap">false</item>
+        <!--<item name="cardElevation">@dimen/card_elevation</item>-->
+    </style>
+
+
 </resources>

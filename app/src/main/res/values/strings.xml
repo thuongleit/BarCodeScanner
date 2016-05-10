@@ -41,7 +41,7 @@
     <string name="dialog_error_general_message">Something went wrong. Please try again later</string>
     <string name="delete_crime">Delete Item</string>
     <string name="option_save">Option</string>
-    <string name="choose_image">You can choose your own images to save to server or database</string>
+    <string name="choose_image">You are having many images. Do you want to save all of them?</string>
     <string name="app_copyright">©2016 Jokotech</string>
     <string name="error_cannot_start_app">Cannot start the app now. Please try again later</string>
 </resources>

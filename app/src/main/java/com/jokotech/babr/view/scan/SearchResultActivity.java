@@ -3,12 +3,19 @@ package com.jokotech.babr.view.scan;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,8 +47,7 @@ import butterknife.OnClick;
 import timber.log.Timber;
 
 public class SearchResultActivity extends BaseActivity implements ParsingView,
-        ActionMode.Callback, DialogSaveImage.DialogSaveImageListener {
-
+        DialogSaveImage.DialogSaveImageListener {
     public static final String EXTRA_DATA = "SearchResultActivity.EXTRA_DATA";
 
     @Bind(R.id.recycler_view)
@@ -64,7 +70,6 @@ public class SearchResultActivity extends BaseActivity implements ParsingView,
     private Parcelable mData;
     private ArrayList<Product> mProducts = new ArrayList<>();
     private List<Product> productListUserId = new ArrayList<>();
-    private ActionMode actionMode;
     private List<Product> productList = new ArrayList<>();
 
     @Override
@@ -79,9 +84,8 @@ public class SearchResultActivity extends BaseActivity implements ParsingView,
 
         Timber.d("onCreateSearchResultActivity");
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
+        setUpRecyclerView();
+
         mData = getIntent().getParcelableExtra(EXTRA_DATA);
         if (getIntent().getBooleanExtra(CameraActivity.EXTRA_LOAD_USER_ID, false)) {
             productListUserId = getIntent().getParcelableArrayListExtra(EXTRA_DATA);
@@ -99,24 +103,6 @@ public class SearchResultActivity extends BaseActivity implements ParsingView,
             }
         }
 
-        mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(this, mRecyclerView, new ClickListener() {
-            @Override
-            public void onClick(View iew, int position) {
-
-                if (actionMode != null) {
-                    myToggleSelection(position);
-                    return;
-                }
-
-            }
-
-            @Override
-            public void onLongClick(View view, int position) {
-                actionMode = startSupportActionMode(SearchResultActivity.this);
-                myToggleSelection(position);
-
-            }
-        }));
 
     }
 
@@ -165,7 +151,6 @@ public class SearchResultActivity extends BaseActivity implements ParsingView,
     }
 
 
-
     private void startResult() {
         if (!getIntent().getBooleanExtra(CameraActivity.EXTRA_LOAD_USER_ID, false)) {
             Intent intent = getIntent();
@@ -181,6 +166,158 @@ public class SearchResultActivity extends BaseActivity implements ParsingView,
         }
     }
 
+    private void setUpRecyclerView() {
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
+
+        setUpItemTouchHelper();
+        setUpAnimationDecoratorHelper();
+
+    }
+
+    private void setUpItemTouchHelper() {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+
+            Drawable background;
+            Drawable xMark;
+            int xMarkMargin;
+            boolean initiated;
+
+            private void init() {
+                background = new ColorDrawable(Color.RED);
+                xMark = ContextCompat.getDrawable(SearchResultActivity.this, R.drawable.ic_delete_sweep_white_24dp);
+                xMark.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+                xMarkMargin = (int) SearchResultActivity.this.getResources().getDimension(R.dimen.card_corner_radius);
+                initiated = true;
+            }
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                int swipedPosition = viewHolder.getAdapterPosition();
+                ProductRecyclerAdapter adapter = (ProductRecyclerAdapter) mRecyclerView.getAdapter();
+                boolean undoOn = adapter.isUndoOn();
+                if (undoOn) {
+                    adapter.pendingRemoval(swipedPosition);
+                } else {
+                    adapter.deleteItem(swipedPosition);
+                }
+            }
+
+            @Override
+            public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                int position = viewHolder.getAdapterPosition();
+                ProductRecyclerAdapter testAdapter = (ProductRecyclerAdapter) recyclerView.getAdapter();
+                if (testAdapter.isUndoOn() && testAdapter.isPendingRemoval(position)) {
+                    return 0;
+                }
+                return super.getSwipeDirs(recyclerView, viewHolder);
+
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                View itemView = viewHolder.itemView;
+
+                if (viewHolder.getAdapterPosition() == -1) {
+                    return;
+                }
+
+                if (!initiated) {
+                    init();
+                }
+
+                background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                background.draw(c);
+
+                int itemHeight = itemView.getBottom() - itemView.getTop();
+                int intrinsicWidth = xMark.getIntrinsicWidth();
+                int intrinsicHeight = xMark.getIntrinsicWidth();
+
+                int xMarkLeft = itemView.getRight() - xMarkMargin - intrinsicWidth;
+                int xMarkRight = itemView.getRight() - xMarkMargin;
+                int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
+                int xMarkBottom = xMarkTop + intrinsicHeight;
+                xMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
+
+                xMark.draw(c);
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
+            }
+        };
+
+        ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
+    }
+
+    private void setUpAnimationDecoratorHelper() {
+        mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+
+            Drawable background;
+            boolean initiated;
+
+            private void init() {
+                background = new ColorDrawable(Color.RED);
+                initiated = true;
+            }
+
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+
+                if (!initiated) {
+                    init();
+                }
+
+                if (parent.getItemAnimator().isRunning()) {
+
+                    View lastViewComingDown = null;
+                    View firstViewComingUp = null;
+
+                    int left = 0;
+                    int right = parent.getWidth();
+
+                    int top = 0;
+                    int bottom = 0;
+
+                    int childCount = parent.getLayoutManager().getChildCount();
+                    for (int i = 0; i < childCount; i++) {
+                        View child = parent.getLayoutManager().getChildAt(i);
+                        if (child.getTranslationY() < 0) {
+                            lastViewComingDown = child;
+                        } else if (child.getTranslationY() > 0) {
+                            if (firstViewComingUp == null) {
+                                firstViewComingUp = child;
+                            }
+                        }
+                    }
+
+                    if (lastViewComingDown != null && firstViewComingUp != null) {
+                        top = lastViewComingDown.getBottom() + (int) lastViewComingDown.getTranslationY();
+                        bottom = firstViewComingUp.getTop() + (int) firstViewComingUp.getTranslationY();
+                    } else if (lastViewComingDown != null) {
+                        top = lastViewComingDown.getBottom() + (int) lastViewComingDown.getTranslationY();
+                        bottom = lastViewComingDown.getBottom();
+                    } else if (firstViewComingUp != null) {
+                        top = firstViewComingUp.getTop();
+                        bottom = firstViewComingUp.getTop() + (int) firstViewComingUp.getTranslationY();
+                    }
+
+                    background.setBounds(left, top, right, bottom);
+                    background.draw(c);
+
+                }
+                super.onDraw(c, parent, state);
+            }
+
+        });
+    }
+
 
     private void bindListView(List<Product> product) {
         mProgressWheel.stopSpinning();
@@ -189,7 +326,6 @@ public class SearchResultActivity extends BaseActivity implements ParsingView,
         productList.addAll(product);
         if (mAdapter == null) {
             mProducts.addAll(product);
-
             mAdapter = new ProductRecyclerAdapter(this, mProducts);
             mRecyclerView.setAdapter(mAdapter);
         } else {
@@ -204,130 +340,27 @@ public class SearchResultActivity extends BaseActivity implements ParsingView,
         productList.add(product);
         if (mAdapter == null) {
             mProducts.add(product);
-
             mAdapter = new ProductRecyclerAdapter(this, mProducts);
             mRecyclerView.setAdapter(mAdapter);
+            // mRecyclerView.setItemAnimator(new FeedItemAnimator());
         } else {
             mAdapter.addItem(product);
         }
     }
 
 
-
-    @Override
-    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        MenuInflater menuInflater = mode.getMenuInflater();
-        menuInflater.inflate(R.menu.crime_list_item_context, menu);
-
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-
-        return false;
-    }
-
-    @Override
-    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        if (item.getItemId() == R.id.menu_item_delete_crime) {
-
-
-            List<Integer> selectedItemPositions = ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).getSelectedItems();
-            int currPos;
-            for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
-                currPos = selectedItemPositions.get(i);
-                productList.remove(currPos);
-                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteItem(currPos);
-            }
-            actionMode.finish();
-
-            return true;
-
-        }
-        return false;
-
-    }
-
-    @Override
-    public void onDestroyActionMode(ActionMode mode) {
-        actionMode = null;
-        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).clearSelections();
-    }
-
-
-    private void myToggleSelection(int idx) {
-        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).toggleSelection(idx);
-        String title = getString(R.string.selected_count, ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).getSelectedItemCount());
-        actionMode.setTitle(title);
-    }
-
     @Override
     public void onCancel() {
         startResult();
-
     }
 
-    @Override
-    public void onChoose() {
-
-    }
 
     @Override
-    public void onDontShow() {
-        mConfig.putIsDontShow(true);
+    public void onDontShow(boolean isDontShow) {
+        mConfig.putIsDontShow(isDontShow);
         startResult();
     }
 
 
-    public interface ClickListener {
-        void onClick(View iew, int position);
-
-        void onLongClick(View view, int position);
-    }
-
-    static class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
-
-        private GestureDetector gestureDetector;
-        private SearchResultActivity.ClickListener clickListener;
-
-        public RecyclerTouchListener(Context context, final RecyclerView recyclerView, final ClickListener clickListener) {
-            this.clickListener = clickListener;
-            this.gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-                @Override
-                public void onLongPress(MotionEvent e) {
-                    View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
-                    if (view != null && clickListener != null) {
-                        clickListener.onLongClick(view, recyclerView.getChildAdapterPosition(view));
-                    }
-                }
-
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    return true;
-                }
-            });
-        }
-
-        @Override
-        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-            View view = rv.findChildViewUnder(e.getX(), e.getY());
-            if (view != null && clickListener != null && gestureDetector.onTouchEvent(e)) {
-                clickListener.onClick(view, rv.getChildAdapterPosition(view));
-            }
-
-            return false;
-        }
-
-        @Override
-        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-        }
-
-        @Override
-        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-        }
-    }
 
 }

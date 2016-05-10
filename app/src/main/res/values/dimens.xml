@@ -10,4 +10,14 @@
     <dimen name="button_radius">10dp</dimen>
     <dimen name="button_padding">10dp</dimen>
     <dimen name="radio_button_horizontal_padding">10dp</dimen>
+
+    <dimen name="item_title_tv">15sp</dimen>
+    <dimen name="item_date_tv">12sp</dimen>
+    <dimen name="item_tag_tv">12sp</dimen>
+    <dimen name="item_content_padding">9dp</dimen>
+    <dimen name="item_via_tv">12sp</dimen>
+    <dimen name="card_corner_radius">2dp</dimen>
+    <dimen name="card_elevation">3dp</dimen>
+
+    <dimen name="ic_clear_margin">16dp</dimen>
 </resources>

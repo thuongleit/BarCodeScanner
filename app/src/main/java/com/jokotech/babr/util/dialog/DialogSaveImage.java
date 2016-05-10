@@ -4,10 +4,12 @@ import android.content.Context;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Toast;
 
 import com.jokotech.babr.R;
 
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 
 /**
@@ -17,19 +19,19 @@ public final class DialogSaveImage extends AlertDialog {
 
     private Context context;
     private DialogSaveImageListener listener;
+    private boolean isDontShow = false;
 
     public DialogSaveImage(Context context, DialogSaveImageListener listener) {
         super(context);
         this.context = context;
         this.listener = listener;
         init(context);
-
     }
 
     private void init(Context context) {
         View inflater = LayoutInflater.from(context).inflate(R.layout.dialog_save_image, null);
         setView(inflater);
-        ButterKnife.bind(this,inflater);
+        ButterKnife.bind(this, inflater);
     }
 
     @OnClick(R.id.btnCancel)
@@ -38,23 +40,21 @@ public final class DialogSaveImage extends AlertDialog {
         dismiss();
     }
 
-    @OnClick(R.id.btnChoose)
-    void onChoose(View v) {
-        listener.onChoose();
-        dismiss();
+    @OnCheckedChanged(R.id.cbChoose)
+    void onChoose(boolean isChecked) {
+            isDontShow = isChecked;
     }
 
     @OnClick(R.id.btnDontShow)
     void onDontShow(View v) {
-        listener.onDontShow();
+        listener.onDontShow(isDontShow);
         dismiss();
     }
 
     public interface DialogSaveImageListener {
         void onCancel();
 
-        void onChoose();
 
-        void onDontShow();
+        void onDontShow(boolean isDontShow);
     }
 }

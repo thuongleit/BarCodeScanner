@@ -4,17 +4,23 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -164,8 +170,13 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                     .request(Manifest.permission.CAMERA)
                     .subscribe(granted -> {
                         if (granted) { // Always true pre-M
+                            int[] startingLocation = new int[2];
+                            v.getLocationOnScreen(startingLocation);
+                            startingLocation[0] += v.getWidth() / 2;
+
                             Intent intent = new Intent(mContext, CameraActivity.class);
                             intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_UPC_SERVICE);
+                            intent.putExtra(CameraActivity.ARG_REVEAL_START_LOCATION, startingLocation);
                             startActivityForResult(intent, REQUEST_CAMERA);
                         } else {
                             showToast("You must allow to use camera to access this function");
@@ -179,8 +190,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     protected void onDestroy() {
         super.onDestroy();
         mMainPresenter.detachView();
-//        if (subscription.isUnsubscribed())
-//            subscription.unsubscribe();
     }
 
     @Override
@@ -299,8 +308,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                 progressDialog = DialogFactory.createProgressDialog(this, "Loading...");
                 progressDialog.show();
                 if (mRecyclerView.getAdapter() == null) {
-//                    RecyclerView.Adapter adapter = new ProductRecyclerAdapter(mContext, products);
-//                    mRecyclerView.setAdapter(adapter);
                     if (mConfig.isUserLogin()) {
                         parseService.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(a -> {
@@ -432,8 +439,11 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         //  showToast(String.valueOf(products.size()));
         removeAdditionalViews();
 
-        RecyclerView.Adapter adapter = new ProductRecyclerAdapter(MainActivity.this, products);
+        RecyclerView.Adapter adapter = new ProductRecyclerAdapter(MainActivity.this, new ArrayList<>());
         mRecyclerView.setAdapter(adapter);
+       // mRecyclerView.setItemAnimator(new FeedItemAnimator());
+        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
+
 
 //        if (mRecyclerView.getAdapter() == null) {
 //            RecyclerView.Adapter adapter = new ProductRecyclerAdapter(MainActivity.this, products);
@@ -456,6 +466,9 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     private void setupReCyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST));
+        mRecyclerView.setHasFixedSize(true);
+       // mRecyclerView.setItemAnimator(new FeedItemAnimator());
+
     }
 
     private void setupNavigationView() {
