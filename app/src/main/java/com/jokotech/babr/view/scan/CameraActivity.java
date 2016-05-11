@@ -242,23 +242,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
         //  swistchToNextScan(message);
     }
 
-    private void swistchToNextScan(String message) {
-        order++;
 
-        if (order == 1) {
-            mService = Constant.KEY_SEACHUPC;
-        } else if (order == 2) {
-            mService = Constant.KEY_UPCDATABASE;
-        } else if (order == 3) {
-            mService = Constant.KEY_AMAZON_SERVICE;
-        } else if (order == 4) {
-            mService = Constant.KEY_BABR;
-        } else {
-            buildFailedDialog(message).show();
-            return;
-        }
-        mProductLookupPresenter.execute(mCode, mService);
-    }
 
 //    private void setupRevealBackground(Bundle savedInstanceState) {
 //        vRevealBackground.setOnStateChangeListener(this);

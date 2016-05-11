@@ -2,6 +2,7 @@ package com.jokotech.babr.view.scan;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,16 +12,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -29,7 +26,6 @@ import com.jokotech.babr.R;
 import com.jokotech.babr.config.Config;
 import com.jokotech.babr.data.local.ProductModel;
 import com.jokotech.babr.data.remote.amazon.model.AmazonProductResponse;
-import com.jokotech.babr.util.dialog.DialogSaveImage;
 import com.jokotech.babr.view.base.BaseActivity;
 import com.jokotech.babr.view.main.MainActivity;
 import com.jokotech.babr.view.product.ProductRecyclerAdapter;
@@ -46,8 +42,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import timber.log.Timber;
 
-public class SearchResultActivity extends BaseActivity implements ParsingView,
-        DialogSaveImage.DialogSaveImageListener {
+public class SearchResultActivity extends BaseActivity implements ParsingView {
     public static final String EXTRA_DATA = "SearchResultActivity.EXTRA_DATA";
 
     @Bind(R.id.recycler_view)
@@ -119,7 +114,7 @@ public class SearchResultActivity extends BaseActivity implements ParsingView,
 
     @Override
     public void showGeneralError(String message) {
-        Toast.makeText(SearchResultActivity.this, message, Toast.LENGTH_SHORT).show();
+           Toast.makeText(SearchResultActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -143,8 +138,28 @@ public class SearchResultActivity extends BaseActivity implements ParsingView,
     @OnClick(R.id.button_toolbar_save)
     public void save() {
         if (!mConfig.isIsDontShow()) {
-            DialogSaveImage dialogSaveImage = new DialogSaveImage(SearchResultActivity.this, this);
-            dialogSaveImage.show();
+            new AlertDialog.Builder(this, R.style.MyAlertDialogAppCompatStyle)
+                    .setTitle("Option")
+                    .setMessage(getString(R.string.choose_image))
+                    .setPositiveButton("Always select all", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mConfig.putIsDontShow(true);
+                            startResult();
+                        }
+                    }).setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            startResult();
+                        }
+                    }).setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+
         } else {
             startResult();
         }
@@ -347,20 +362,6 @@ public class SearchResultActivity extends BaseActivity implements ParsingView,
             mAdapter.addItem(product);
         }
     }
-
-
-    @Override
-    public void onCancel() {
-        startResult();
-    }
-
-
-    @Override
-    public void onDontShow(boolean isDontShow) {
-        mConfig.putIsDontShow(isDontShow);
-        startResult();
-    }
-
 
 
 }

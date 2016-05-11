@@ -59,9 +59,10 @@
 
     <!--Dialog style-->
     <style name="MyAlertDialogAppCompatStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="android:background">@android:color/white</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowTitleStyle">@style/TitleDialogTextStyle</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:background">@color/colorPrimary</item>
     </style>
 
     <style name="TitleDialogTextStyle" parent="Base.DialogWindowTitle.AppCompat">
@@ -88,6 +89,8 @@
         <item name="cardPreventCornerOverlap">false</item>
         <!--<item name="cardElevation">@dimen/card_elevation</item>-->
     </style>
+
+
 
 
 </resources>

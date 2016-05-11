@@ -31,7 +31,8 @@
             app:borderWidth="0dp"
             app:elevation="6dp"
             app:layout_behavior="com.jokotech.babr.util.ScrollingFABBehavior"
-            app:pressedTranslationZ="12dp"></android.support.design.widget.FloatingActionButton>
+            app:pressedTranslationZ="12dp"
+          ></android.support.design.widget.FloatingActionButton>
 
 
     </android.support.design.widget.CoordinatorLayout>
