@@ -114,7 +114,7 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
 
     @Override
     public void showGeneralError(String message) {
-           Toast.makeText(SearchResultActivity.this, message, Toast.LENGTH_SHORT).show();
+          // Toast.makeText(SearchResultActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
