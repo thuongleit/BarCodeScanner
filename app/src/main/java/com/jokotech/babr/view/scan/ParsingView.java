@@ -9,4 +9,5 @@ import com.jokotech.babr.vo.Product;
 public interface ParsingView extends ErrorableView {
 
     void onParseSuccess(Product product);
+    void showProcess(boolean show);
 }

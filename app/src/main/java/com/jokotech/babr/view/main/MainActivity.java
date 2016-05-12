@@ -176,7 +176,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
                             Intent intent = new Intent(mContext, CameraActivity.class);
                             intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_UPC_SERVICE);
-                            intent.putExtra(CameraActivity.ARG_REVEAL_START_LOCATION, startingLocation);
+                         //   intent.putExtra(CameraActivity.ARG_REVEAL_START_LOCATION, startingLocation);
                             startActivityForResult(intent, REQUEST_CAMERA);
                         } else {
                             showToast("You must allow to use camera to access this function");

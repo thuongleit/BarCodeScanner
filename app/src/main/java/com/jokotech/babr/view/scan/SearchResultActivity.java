@@ -66,6 +66,7 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
     private ArrayList<Product> mProducts = new ArrayList<>();
     private List<Product> productListUserId = new ArrayList<>();
     private List<Product> productList = new ArrayList<>();
+    private boolean isAmazon=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +115,6 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
 
     @Override
     public void showGeneralError(String message) {
-          // Toast.makeText(SearchResultActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -127,6 +127,19 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
                 mParsingPresenter.parse(productResponse.getProducts().get(mCurrentParsingIndex).getDetailPageURL());
             }
         }
+    }
+
+    @Override
+    public void showProcess(boolean show) {
+        if (show) {
+            mProgressWheel.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
+        }else{
+            mProgressWheel.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+        }
+        isAmazon=true;
+
     }
 
     @OnClick(R.id.button_toolbar_cancel)
@@ -148,17 +161,17 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
                             startResult();
                         }
                     }).setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
 
-                            startResult();
-                        }
-                    }).setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
+                    startResult();
+                }
+            }).setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            }).show();
 
         } else {
             startResult();
@@ -349,9 +362,12 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
     }
 
     private void bindView(Product product) {
-        mProgressWheel.stopSpinning();
-        mProgressWheel.setVisibility(View.GONE);
-        mRecyclerView.setVisibility(View.VISIBLE);
+        if (!isAmazon){
+            mProgressWheel.stopSpinning();
+            mProgressWheel.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+        }
+
         productList.add(product);
         if (mAdapter == null) {
             mProducts.add(product);

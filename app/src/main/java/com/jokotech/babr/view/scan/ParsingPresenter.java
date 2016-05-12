@@ -35,6 +35,7 @@ public class ParsingPresenter extends BasePresenter<ParsingView> {
     }
 
     public void parse(String detailPageURL) {
+        mView.showProcess(true);
         checkViewAttached();
         mSubscription = mDataManager
                 .parseProductFromAmazon(detailPageURL)
@@ -45,8 +46,10 @@ public class ParsingPresenter extends BasePresenter<ParsingView> {
                         e -> {
                             if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
                                 mView.showNetworkError();
+                                mView.showProcess(false);
                             } else {
                                 mView.showGeneralError(e.getMessage());
+                                mView.showProcess(false);
                             }
                         });
     }
