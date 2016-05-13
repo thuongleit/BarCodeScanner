@@ -21,6 +21,8 @@ public class ProductHistory extends BaseModel implements Parcelable {
     String name;
     @Column
     String listId;
+    @Column
+    long size;
 
     public ProductHistory() {
     }
@@ -51,6 +53,13 @@ public class ProductHistory extends BaseModel implements Parcelable {
         this.id = id;
     }
 
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
 
     public String getName() {
         return name;
@@ -72,6 +81,7 @@ public class ProductHistory extends BaseModel implements Parcelable {
         dest.writeLong(this.id);
         dest.writeString(this.name);
         dest.writeString(this.listId);
+        dest.writeLong(this.size);
     }
 
 
@@ -79,6 +89,7 @@ public class ProductHistory extends BaseModel implements Parcelable {
         this.id = in.readLong();
         this.name = in.readString();
         this.listId = in.readString();
+        this.size=in.readLong();
     }
 
     public static final Parcelable.Creator<ProductHistory> CREATOR = new Parcelable.Creator<ProductHistory>() {

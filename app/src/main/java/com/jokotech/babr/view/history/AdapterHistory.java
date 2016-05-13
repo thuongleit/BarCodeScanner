@@ -2,14 +2,17 @@ package com.jokotech.babr.view.history;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jokotech.babr.R;
 import com.jokotech.babr.config.Constant;
+import com.jokotech.babr.view.qrgenerate.QRCode;
 import com.jokotech.babr.vo.ProductHistory;
 
 import java.util.List;
@@ -23,34 +26,39 @@ import butterknife.ButterKnife;
 public class AdapterHistory extends RecyclerView.Adapter<AdapterHistory.HistoryHolder> {
 
 
+
     private Context context;
     private List<ProductHistory> list;
 
-    public AdapterHistory(Context context, List<ProductHistory> list){
-        this.context=context;
-        this.list=list;
+    public AdapterHistory(Context context, List<ProductHistory> list) {
+        this.context = context;
+        this.list = list;
     }
 
-    public void addItems(List<ProductHistory> arrayList){
-        this.list=arrayList;
+    public void addItems(List<ProductHistory> arrayList) {
+        this.list = arrayList;
         notifyDataSetChanged();
     }
 
     @Override
     public HistoryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new HistoryHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_item_recycler_history,parent,false));
+        return new HistoryHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_item_recycler_bar_view, parent, false));
     }
 
     @Override
     public void onBindViewHolder(HistoryHolder holder, int position) {
-        ProductHistory history=list.get(position);
-        holder.tvName.setText(history.getName());
-
+        ProductHistory history = list.get(position);
+        Bitmap myBitmap = QRCode.from(history.getListId()).bitmap();
+        holder.ivQrCode.setImageBitmap(myBitmap);
+        holder.textGroupTitle.setText(history.getName());
+        holder.textBarcodeCountry.setVisibility(View.GONE);
+        holder.textBarcodeManufacture.setVisibility(View.GONE);
+        holder.textSize.setText(String.valueOf(history.getSize()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(context,DetailActivity.class);
-                intent.putExtra(Constant.KEY_LIST_ID,history.getListId());
+                Intent intent = new Intent(context, DetailActivity.class);
+                intent.putExtra(Constant.KEY_LIST_ID, history.getListId());
                 context.startActivity(intent);
             }
         });
@@ -62,15 +70,24 @@ public class AdapterHistory extends RecyclerView.Adapter<AdapterHistory.HistoryH
     }
 
 
-    public class HistoryHolder extends RecyclerView.ViewHolder{
+    public class HistoryHolder extends RecyclerView.ViewHolder {
 
 
-        @Bind(R.id.tvName)
-        TextView tvName;
+        @Bind(R.id.image_bar_view)
+        ImageView ivQrCode;
+        @Bind(R.id.text_barcode_title)
+        TextView textGroupTitle;
+        @Bind(R.id.text_source)
+        TextView textSize;
+        @Bind(R.id.text_barcode_manufacture)
+        TextView textBarcodeManufacture;
+        @Bind(R.id.text_barcode_country)
+        TextView textBarcodeCountry;
+
         public HistoryHolder(View itemView) {
             super(itemView);
 
-            ButterKnife.bind(this,itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 }

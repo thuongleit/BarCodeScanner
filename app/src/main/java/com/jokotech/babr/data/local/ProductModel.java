@@ -53,6 +53,7 @@ public class ProductModel extends BaseModel {
                 .columnValues(
                         ProductHistory_Table.name.eq(productHistory.getName()),
                         ProductHistory_Table.listId.eq(productHistory.getListId()));
+                        ProductHistory_Table.size.eq(productHistory.getSize());
         Timber.i(insertQuery.getQuery());
         insertQuery.execute();
     }
