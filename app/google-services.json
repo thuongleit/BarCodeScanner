@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "42940496800",
+    "project_id": "babr1-1305"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:42940496800:android:95d4db2d07c373b4",
+        "android_client_info": {
+          "package_name": "com.jokotech.babr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "42940496800-n76t4foc38td7kbjps6edvjd4hlg6kk2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jokotech.babr",
+            "certificate_hash": "694A66920F255535829CA0D16708E15B44463374"
+          }
+        },
+        {
+          "client_id": "42940496800-c9simigv7atunaadn9voicd8k04mb46l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtYhI6L3fk2GCcbjusFVyPjrTgI511SLY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

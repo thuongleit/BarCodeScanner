@@ -12,47 +12,56 @@ import timber.log.Timber;
  * Created by thuongle on 12/30/15.
  */
 @PerActivity
-class SignInPresenter extends BasePresenter<SignInView> {
+public class SignInPresenter extends BasePresenter<SignInView> {
+
 
     @Inject
     public SignInPresenter() {
     }
 
-    public void login(final String email, String password) {
+    public void login(final String username, String password) {
         checkViewAttached();
         mView.showProgress(true);
 
-        ParseUser.logInInBackground(email, password, (user, e) -> {
+        ParseUser.logInInBackground(username, password, (user, e) -> {
             mView.showProgress(false);
             if (e == null) {
-                Timber.i("Sign in with %s successfully!", email);
-                mView.onActionSuccess(user);
+                Timber.i("Sign in with %s successfully!", username);
+                mView.onSignInSuccess(user);
             } else {
-                Timber.e(e, "Sign in with %s failed!", email);
-                mView.onActionFailed(e.getMessage());
+                Timber.i(e, "Sign in with %s failed!", username);
+                mView.onSignInFailed(e.getMessage());
             }
         });
     }
 
-    public void signUp(String email, String password) {
+    public void loginWithSocial(String username, final String token) {
         checkViewAttached();
         mView.showProgress(true);
 
-        ParseUser parseUser = new ParseUser();
-        parseUser.setUsername(email);
-        parseUser.setEmail(email);
-        parseUser.setPassword(password);
-
-        parseUser.signUpInBackground(e -> {
-            mView.showProgress(false);
+        // FIXME: 12/30/15 need to handle FindCallback
+        ParseUser.getQuery().whereEqualTo("username", username).findInBackground((objects, e) -> {
             if (e == null) {
-                Timber.i("User %s sign up successfully", email);
-                //the user is logged in
-                mView.onActionSuccess(parseUser);
-            } else {
-                Timber.e(e, "User %s sign up failed", email);
-                mView.onActionFailed(e.getMessage());
+                if (objects != null && !objects.isEmpty()) {
+                    //user has log in
+                    login(username, token);
+                } else {
+                    final ParseUser parseUser = new ParseUser();
+                    parseUser.setUsername(username);
+                    parseUser.setPassword(token);
+
+                    parseUser.signUpInBackground(e1 -> {
+                        if (e1 == null) {
+                            Timber.i("Sign up with %s successfully!", username);
+                            mView.onSignInSuccess(parseUser);
+                        } else {
+                            Timber.i(e1, "Sign in with %s failed!", username);
+                            mView.onSignInFailed(e1.getMessage());
+                        }
+                    });
+                }
             }
         });
     }
+
 }

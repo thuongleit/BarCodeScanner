@@ -147,11 +147,9 @@ android {
         compile 'com.nineoldandroids:library:2.4.0'
         compile 'com.bignerdranch.android:recyclerview-multiselect:0.2'
         compile 'com.getbase:floatingactionbutton:1.10.1'
-        compile project (':material-login')
-        compile 'com.android.support:multidex:1.0.0'
-        //material login
-
-        compile 'com.android.support:multidex:1.0.0'
+        compile 'com.android.support:multidex:1.0.1'
+        compile 'com.google.android.gms:play-services-auth:8.4.0'
+        compile 'com.facebook.android:facebook-android-sdk:4.11.0'
 
         // debug tools
         debugCompile libraries.okHttpLoggingInterceptor
@@ -166,4 +164,6 @@ android {
         testCompile libraries.mockitoCore
     }
 }
+
+apply plugin: 'com.google.gms.google-services'
 

@@ -5,6 +5,7 @@ import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
+import com.facebook.FacebookSdk;
 import com.jokotech.babr.di.components.ApplicationComponent;
 import com.jokotech.babr.di.components.DaggerApplicationComponent;
 import com.jokotech.babr.di.modules.ApplicationModule;
@@ -31,6 +32,7 @@ public class BarApplication extends MultiDexApplication {
         super.onCreate();
 
         FlowManager.init(this);
+        FacebookSdk.sdkInitialize(getApplicationContext());
 
         //track leak memory
         LeakCanary.install(this);
