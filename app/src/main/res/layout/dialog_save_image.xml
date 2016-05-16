@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
+    android:background="@color/black_10"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:paddingBottom="5dp"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
+    android:paddingTop="5dp">
 
     <TextView
         android:layout_width="match_parent"
@@ -44,7 +44,7 @@
         <Button
             android:id="@+id/btnDontShow"
             style="@style/ButtonStyle"
-            android:text="Never Show"
+            android:text="OK"
             android:layout_gravity="left"/>
 
         <Button
@@ -52,10 +52,12 @@
             style="@style/ButtonStyle"
             android:text="Cancel" />
 
-        <Button
-            android:id="@+id/btnChoose"
+        <CheckBox
+            android:id="@+id/cbChoose"
             style="@style/ButtonStyle"
-            android:text="Choose"
-            android:layout_gravity="right"/>
+            android:textSize="18sp"
+            android:text="Remember"
+            android:shadowColor="@color/login_green"
+            android:layout_gravity="center"/>
     </LinearLayout>
 </LinearLayout>

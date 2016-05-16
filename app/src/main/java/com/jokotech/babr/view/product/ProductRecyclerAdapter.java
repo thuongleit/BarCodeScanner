@@ -1,20 +1,28 @@
 package com.jokotech.babr.view.product;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.jokotech.babr.R;
+import com.jokotech.babr.util.RoundedTransformation;
 import com.jokotech.babr.vo.Product;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,8 +36,17 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
 
     private final Context context;
     private final List<Product> values;
+    private final List<Product> valuesPendingRemoval = new ArrayList<>();
     private List<Product> listSearch = new ArrayList<>();
     private SparseBooleanArray selectedItems;
+    private boolean isUndoOn = true;
+    private Handler handler = new Handler();
+    private HashMap<Product, Runnable> pendingRunnables = new HashMap<>();
+    private static final int PENDING_REMOVAL_TIMEOUT = 2000;
+
+    public boolean isUndoOn() {
+        return true;
+    }
 
 
     public ProductRecyclerAdapter(Context context, List<Product> values) {
@@ -49,9 +66,9 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Product product = values.get(position);
-        holder.bindView(product);
-        holder.itemView.setActivated(selectedItems.get(position, false));
 
+        holder.bindView(product, holder.getAdapterPosition());
+        holder.itemView.setActivated(selectedItems.get(position, false));
     }
 
     @Override
@@ -61,22 +78,34 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
 
     public void addItem(Product product) {
         this.values.add(product);
-        notifyDataSetChanged();
+        notifyItemInserted(values.size());
     }
 
     public void addItems(List<Product> products) {
+        this.values.clear();
         this.values.addAll(products);
-        notifyDataSetChanged();
+        notifyItemRangeInserted(0, values.size());
     }
 
     public void deleteItem(int position) {
-        this.values.remove(position);
-        notifyItemRemoved(position);
+        Product product = values.get(position);
+        if (valuesPendingRemoval.contains(product)) {
+            valuesPendingRemoval.remove(product);
+        }
+        if (values.contains(product)) {
+            this.values.remove(position);
+            notifyItemRemoved(position);
+        }
     }
 
     public void deleteAll() {
         this.values.clear();
         notifyDataSetChanged();
+    }
+
+    public boolean isPendingRemoval(int position) {
+        Product product = values.get(position);
+        return valuesPendingRemoval.contains(product);
     }
 
 
@@ -106,7 +135,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         return selectedItems.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.image_bar_view)
         ImageView imageBarView;
@@ -118,6 +147,10 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         TextView textBarcodeCountry;
         @Bind(R.id.text_source)
         TextView textSource;
+        @Bind(R.id.item_recycler_container)
+        RelativeLayout container;
+        @Bind(R.id.undo_button)
+        Button btnUndo;
 
 
         public ViewHolder(View view) {
@@ -125,22 +158,71 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
             ButterKnife.bind(this, view);
         }
 
-        public void bindView(Product product) {
-            if (!TextUtils.isEmpty(product.getName())) {
-                textBarcodeTitle.setText(product.getName());
-            }
-            textBarcodeManufacture.setText(product.getManufacture());
-            textBarcodeCountry.setText(product.getCountry());
-            textSource.setText(product.getSource());
+        public void bindView(Product product, int position) {
 
-            if (!TextUtils.isEmpty(product.getImageUrl())) {
-                Picasso.with(context).load(product.getImageUrl()).fit().into(imageBarView);
-            }
+            if (valuesPendingRemoval.contains(product)) {
+                container.setVisibility(View.GONE);
+                itemView.setBackgroundColor(Color.RED);
+                btnUndo.setVisibility(View.VISIBLE);
 
+                btnUndo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Runnable pendingRemovalRunnable = pendingRunnables.get(product);
+                        pendingRunnables.remove(product);
+                        if (pendingRemovalRunnable != null)
+                            handler.removeCallbacks(pendingRemovalRunnable);
+                        valuesPendingRemoval.remove(product);
+                        notifyItemChanged(values.indexOf(product));
+                    }
+                });
+            } else {
+
+                itemView.setBackgroundColor(Color.WHITE);
+                 btnUndo.setVisibility(View.GONE);
+                btnUndo.setOnClickListener(null);
+
+                if (!TextUtils.isEmpty(product.getName())) {
+                    textBarcodeTitle.setText(product.getName());
+                }
+                if (!TextUtils.isEmpty(product.getManufacture())) {
+                    textBarcodeManufacture.setText(product.getManufacture());
+                } else {
+                    textBarcodeManufacture.setVisibility(View.GONE);
+                }
+                if (!TextUtils.isEmpty(product.getCountry())) {
+                    textBarcodeCountry.setText(product.getCountry());
+                } else {
+                    textBarcodeCountry.setVisibility(View.GONE);
+                }
+                textSource.setText(product.getSource());
+
+                if (!TextUtils.isEmpty(product.getImageUrl())) {
+                    Picasso.with(context).load(product.getImageUrl()).centerCrop().fit().transform(new RoundedTransformation()).into(imageBarView);
+                }
+
+            }
         }
 
 
     }
+
+    public void pendingRemoval(int position) {
+        final Product item = values.get(position);
+        if (!valuesPendingRemoval.contains(item)) {
+            valuesPendingRemoval.add(item);
+            notifyItemChanged(position);
+            Runnable pendingRemovalRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    deleteItem(values.indexOf(item));
+                }
+            };
+            handler.postDelayed(pendingRemovalRunnable, PENDING_REMOVAL_TIMEOUT);
+            pendingRunnables.put(item, pendingRemovalRunnable);
+        }
+    }
+
 
     public void filter(String textSearch) {
         textSearch = textSearch.toLowerCase(Locale.getDefault());

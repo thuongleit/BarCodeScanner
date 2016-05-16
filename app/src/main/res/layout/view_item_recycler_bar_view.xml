@@ -1,63 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/card_view"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    tools:showIn="@layout/view_item_recycler_bar_view_new">
-
-
-    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/statelist_item_background"
-        android:orientation="horizontal"
-        android:padding="5dp">
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/image_bar_view"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:scaleType="fitXY" />
 
-        <LinearLayout
-            android:id="@+id/linear_itemProduct"
+        <RelativeLayout
+            android:id="@+id/item_recycler_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:gravity="top"
-            android:orientation="vertical">
+            android:layout_height="140dp"
+            android:background="@drawable/selector_item_clickable"
+            android:padding="@dimen/item_content_padding">
+
+            <ImageView
+                android:id="@+id/image_bar_view"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/img_default_gray" />
 
             <TextView
                 android:id="@+id/text_barcode_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:layout_alignTop="@id/image_bar_view"
+                android:layout_marginLeft="9dp"
+                android:layout_marginStart="9dp"
+                android:layout_toEndOf="@id/image_bar_view"
+                android:layout_toRightOf="@id/image_bar_view"
+                android:ellipsize="end"
+                android:gravity="top|start"
+                android:lineSpacingExtra="2dp"
+                android:maxLines="2"
+                android:paddingBottom="6dp"
+                android:textColor="@color/item_title_tv"
+                android:textSize="@dimen/item_title_tv" />
 
             <TextView
-                android:id="@+id/text_barcode_manufacture"
-                android:layout_width="match_parent"
+                android:id="@+id/daily_date_tv"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone" />
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/item_date"
+                android:textSize="@dimen/item_date_tv" />
 
-            <TextView
-                android:id="@+id/text_barcode_country"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone" />
+                android:layout_alignBottom="@id/image_bar_view"
+                android:layout_marginLeft="9dp"
+                android:layout_marginStart="9dp"
+                android:layout_toEndOf="@id/image_bar_view"
+                android:layout_toRightOf="@id/image_bar_view"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/text_source"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/text_barcode_manufacture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/bg_android_tag"
+                    android:gravity="center"
+                    android:text="manufacture"
+                    android:textColor="@color/item_tag_tv"
+                    android:textSize="@dimen/item_tag_tv" />
 
+                <TextView
+                    android:id="@+id/text_barcode_country"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/bg_ios_tag"
+                    android:gravity="center"
+                    android:text="country"
+                    android:textColor="@color/item_tag_tv"
+                    android:textSize="@dimen/item_tag_tv" />
 
-        </LinearLayout>
-    </LinearLayout>
-</android.support.v7.widget.CardView>
+                <TextView
+                    android:id="@+id/text_source"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/bg_js_tag"
+                    android:gravity="center"
+                    android:text="source"
+                    android:textColor="@color/item_tag_tv"
+                    android:textSize="@dimen/item_tag_tv" />
 
+            </LinearLayout>
 
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/undo_button"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:text="Undo"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white" />
+    </FrameLayout>

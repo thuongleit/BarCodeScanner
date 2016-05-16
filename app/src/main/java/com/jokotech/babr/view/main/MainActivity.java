@@ -3,18 +3,26 @@ package com.jokotech.babr.view.main;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,7 +48,6 @@ import com.jokotech.babr.data.remote.ParseService;
 import com.jokotech.babr.di.ActivityScope;
 import com.jokotech.babr.util.AppUtils;
 import com.jokotech.babr.util.dialog.DialogFactory;
-import com.jokotech.babr.util.dialog.DialogHistory;
 import com.jokotech.babr.util.dialog.DialogQrcodeHistory;
 import com.jokotech.babr.view.AppIntroActivity;
 import com.jokotech.babr.view.base.ToolbarActivity;
@@ -69,7 +76,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends ToolbarActivity implements NavigationView.OnNavigationItemSelectedListener, MainView,
-        ActionMode.Callback, DialogHistory.DialogSaveHistoryListener {
+        ActionMode.Callback {
 
     private static final int REQUEST_CAMERA = 1;
     private String userId;
@@ -164,8 +171,13 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                     .request(Manifest.permission.CAMERA)
                     .subscribe(granted -> {
                         if (granted) { // Always true pre-M
+                            int[] startingLocation = new int[2];
+                            v.getLocationOnScreen(startingLocation);
+                            startingLocation[0] += v.getWidth() / 2;
+
                             Intent intent = new Intent(mContext, CameraActivity.class);
                             intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_UPC_SERVICE);
+                            //   intent.putExtra(CameraActivity.ARG_REVEAL_START_LOCATION, startingLocation);
                             startActivityForResult(intent, REQUEST_CAMERA);
                         } else {
                             showToast("You must allow to use camera to access this function");
@@ -179,8 +191,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     protected void onDestroy() {
         super.onDestroy();
         mMainPresenter.detachView();
-        if (subscription.isUnsubscribed())
-            subscription.unsubscribe();
     }
 
     @Override
@@ -193,12 +203,8 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
             openSearch();
             return true;
@@ -206,11 +212,19 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
         if (id == R.id.action_camera) {
 
-            if (productList.size() >= 1) {
-                generateListId = AppUtils.generateString(new Random(), "1254789dhfoendlf89ssofnd896541", 20);
 
-                DialogHistory dialogHistory = new DialogHistory(this, this, generateListId);
-                dialogHistory.show();
+            if (productList.size() >= 1) {
+
+                new AlertDialog.Builder(this, R.style.MyAlertDialogAppCompatStyle)
+                        .setMessage(getResources().getString(R.string.save_to_history))
+                        .setTitle("Option")
+                        .setNegativeButton("OK", ((dialog, which) -> {
+                            saveProductToHistory();
+                        })).setPositiveButton("Cancle", ((dialog1, which1) -> {
+                    dialog1.dismiss();
+                })).show();
+
+
             } else {
                 showToast("You don't have any item!");
             }
@@ -219,6 +233,40 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void saveProductToHistory() {
+        generateListId = AppUtils.generateString(new Random(), "1254789dhfoendlf89ssofnd896541", 20);
+
+        if (mConfig.isUserLogin()) {
+            parseService.saveListProductNoCheckout(productList, generateListId).subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
+                productList.clear();
+                showToast("Generator qr-code has saved to server!");
+            });
+            ProductHistory productHistory = new ProductHistory();
+            productHistory.setListId(generateListId);
+            productHistory.setName(AppUtils.gerenateDateFormat());
+            productHistory.setSize(productList.size());
+            parseService.saveProductHistory(productHistory);
+
+            DialogQrcodeHistory qrcodeHistory = new DialogQrcodeHistory(mContext, generateListId);
+            qrcodeHistory.show();
+
+        } else {
+            mProductModel.saveListProductNoCheckout(generateListId).subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
+                productList.clear();
+                showToast("Generator qr-code has saved to database!");
+            });
+            ProductHistory productHistory = new ProductHistory();
+            productHistory.setListId(generateListId);
+            productHistory.setName(AppUtils.gerenateDateFormat());
+            productHistory.setSize(productList.size());
+            mProductModel.saveProductHistory(productHistory);
+
+        }
+        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteAll();
     }
 
 
@@ -299,8 +347,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                 progressDialog = DialogFactory.createProgressDialog(this, "Loading...");
                 progressDialog.show();
                 if (mRecyclerView.getAdapter() == null) {
-//                    RecyclerView.Adapter adapter = new ProductRecyclerAdapter(mContext, products);
-//                    mRecyclerView.setAdapter(adapter);
                     if (mConfig.isUserLogin()) {
                         parseService.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(a -> {
@@ -322,7 +368,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                 } else {
 
 
-                    //   ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
                     if (mConfig.isUserLogin()) {
                         parseService.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(a -> {
@@ -429,18 +474,13 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
         productList.addAll(products);
 
-        //  showToast(String.valueOf(products.size()));
         removeAdditionalViews();
 
-        RecyclerView.Adapter adapter = new ProductRecyclerAdapter(MainActivity.this, products);
+        RecyclerView.Adapter adapter = new ProductRecyclerAdapter(MainActivity.this, new ArrayList<>());
         mRecyclerView.setAdapter(adapter);
+        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
 
-//        if (mRecyclerView.getAdapter() == null) {
-//            RecyclerView.Adapter adapter = new ProductRecyclerAdapter(MainActivity.this, products);
-//            mRecyclerView.setAdapter(adapter);
-//        } else {
-//            ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
-//        }
+
     }
 
     @Override
@@ -456,6 +496,9 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     private void setupReCyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST));
+        mRecyclerView.setHasFixedSize(true);
+        // mRecyclerView.setItemAnimator(new FeedItemAnimator());
+
     }
 
     private void setupNavigationView() {
@@ -566,44 +609,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
         ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).toggleSelection(idx);
         String title = getString(R.string.selected_count, ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).getSelectedItemCount());
         actionMode.setTitle(title);
-    }
-
-    @Override
-    public void onCancel() {
-
-    }
-
-    @Override
-    public void onSave(String name) {
-        if (mConfig.isUserLogin()) {
-            parseService.saveListProductNoCheckout(productList, generateListId).subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
-                productList.clear();
-                showToast("Generator qr-code has saved to server!");
-            });
-            ProductHistory productHistory = new ProductHistory();
-            productHistory.setListId(generateListId);
-            productHistory.setName(name);
-            parseService.saveProductHistory(productHistory);
-
-            DialogQrcodeHistory qrcodeHistory = new DialogQrcodeHistory(mContext, generateListId);
-            qrcodeHistory.show();
-
-        } else {
-            mProductModel.saveListProductNoCheckout(generateListId).subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
-                productList.clear();
-                showToast("Generator qr-code has saved to database!");
-            });
-            ProductHistory productHistory = new ProductHistory();
-            productHistory.setListId(generateListId);
-            productHistory.setName(name);
-            mProductModel.saveProductHistory(productHistory);
-
-//            DialogQrcodeHistory qrcodeHistory=new DialogQrcodeHistory(mContext,generateListId);
-//            qrcodeHistory.show();
-        }
-        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteAll();
     }
 
 

@@ -13,6 +13,10 @@ public class Walmartlabs {
     @Expose
     private List<Item> items = new ArrayList<Item>();
 
+    @SerializedName("errors")
+    @Expose
+    private List<Error> errors = new ArrayList<Error>();
+
     /**
      * 
      * @return
@@ -31,4 +35,11 @@ public class Walmartlabs {
         this.items = items;
     }
 
+    public List<Error> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<Error> errors) {
+        this.errors = errors;
+    }
 }

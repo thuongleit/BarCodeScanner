@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -23,9 +24,11 @@ import com.jokotech.babr.R;
 import com.jokotech.babr.config.Constant;
 import com.jokotech.babr.di.ActivityScope;
 import com.jokotech.babr.util.AppUtils;
+import com.jokotech.babr.util.RevealBackgroundView;
 import com.jokotech.babr.util.dialog.DialogFactory;
 import com.jokotech.babr.view.base.ToolbarActivity;
 import com.jokotech.babr.view.widget.CameraPreview;
+import com.jokotech.babr.view.widget.ViewFinderView;
 import com.jokotech.babr.vo.Product;
 
 import net.sourceforge.zbar.Config;
@@ -42,15 +45,20 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import timber.log.Timber;
 
-public class CameraActivity extends ToolbarActivity implements ScanView, Camera.PreviewCallback {
+public class CameraActivity extends ToolbarActivity implements ScanView, Camera.PreviewCallback{
 
     public static final String EXTRA_SERVICE = "CameraActivity.EXTRA_SERVICE";
     public static final String EXTRA_DATA = "CameraActivity.EXTRA_DATA";
     public static final String EXTRA_LOAD_USER_ID = "load_user_id";
+    public static final String ARG_REVEAL_START_LOCATION = "reveal_start_location";
     private static final int REQUEST_RESULT_ACTIVITY = 1;
 
     @Bind(R.id.cameraPreview)
     FrameLayout mCameraPreview;
+    @Bind(R.id.vRevealBackground)
+    RevealBackgroundView vRevealBackground;
+    @Bind(R.id.viewFinder)
+    ViewFinderView viewFinderView;
 
     @Inject
     ProductLookupPresenter mProductLookupPresenter;
@@ -71,7 +79,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     private int order = 0;
     private String mCode;
     private boolean isOnlyResult = false;
-
+    private int state=0;
 
     @Override
     protected int getLayoutId() {
@@ -88,7 +96,13 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
 
         mService = getIntent().getStringExtra(EXTRA_SERVICE);
         mAutoFocusHandler = new Handler();
-
+//        if (state==0) {
+//            setupRevealBackground(savedInstanceState);
+//            state=1;
+//        }else {
+//            mCameraPreview.setVisibility(View.VISIBLE);
+//            viewFinderView.setVisibility(View.VISIBLE);
+//        }
         // Create and configure the ImageScanner;
         setupScanner();
         //Create and Configure Camera
@@ -215,6 +229,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
         intent.putParcelableArrayListExtra(SearchResultActivity.EXTRA_DATA, (ArrayList<? extends Parcelable>) parcelables);
         intent.putExtra(EXTRA_LOAD_USER_ID, true);
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
+
     }
 
     @Override
@@ -227,23 +242,26 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
         //  swistchToNextScan(message);
     }
 
-    private void swistchToNextScan(String message) {
-        order++;
 
-        if (order == 1) {
-            mService = Constant.KEY_SEACHUPC;
-        } else if (order == 2) {
-            mService = Constant.KEY_UPCDATABASE;
-        } else if (order == 3) {
-            mService = Constant.KEY_AMAZON_SERVICE;
-        } else if (order == 4) {
-            mService = Constant.KEY_BABR;
-        } else {
-            buildFailedDialog(message).show();
-            return;
-        }
-        mProductLookupPresenter.execute(mCode, mService);
-    }
+
+//    private void setupRevealBackground(Bundle savedInstanceState) {
+//        vRevealBackground.setOnStateChangeListener(this);
+//        final int[] startingLocation = getIntent().getIntArrayExtra(ARG_REVEAL_START_LOCATION);
+//        if (savedInstanceState == null && startingLocation.length > 0) {
+//
+//            vRevealBackground.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+//                @Override
+//                public boolean onPreDraw() {
+//                    vRevealBackground.getViewTreeObserver().removeOnPreDrawListener(this);
+//                    vRevealBackground.startFromLocation(startingLocation);
+//                    return true;
+//                }
+//            });
+//        } else {
+//            vRevealBackground.setToFinishedFrame();
+//            // userPhotosAdapter.setLockedAnimations(true);
+//        }
+//    }
 
     private void setupScanner() {
         mScanner = new ImageScanner();
@@ -368,6 +386,18 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
         });
         return builder;
     }
+
+//    @Override
+//    public void onStateChange(int state) {
+//        if (RevealBackgroundView.STATE_FINISHED == state) {
+//            mCameraPreview.setVisibility(View.VISIBLE);
+//            viewFinderView.setVisibility(View.VISIBLE);
+//        } else {
+//            mCameraPreview.setVisibility(View.INVISIBLE);
+//            viewFinderView.setVisibility(View.INVISIBLE);
+//
+//        }
+//    }
 
     public interface TaskCompleteListener {
         void onTaskComplete(boolean isFinished);

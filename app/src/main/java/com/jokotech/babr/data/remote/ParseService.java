@@ -73,6 +73,7 @@ public class ParseService {
         parseProduct.put("name", product.getName());
 
         parseProduct.put("listId",product.getListId());
+        parseProduct.put("size",product.getSize());
 
 
         parseProduct.saveInBackground();
@@ -245,11 +246,12 @@ public class ParseService {
 
                             String name = object.getString("name");
                             String listId = object.getString("listId");
+                            long size = object.getLong("size");
 
                             ProductHistory product = new ProductHistory();
                             product.setName(name);
                             product.setListId(listId);
-
+                            product.setSize(size);
                             subscriber.onNext(product);
                         }
                     subscriber.onCompleted();

@@ -1,5 +1,7 @@
 package com.jokotech.babr.data.remote.walmartlabs;
 
+import android.util.Log;
+
 import com.jokotech.babr.data.remote.walmartlabs.model.Walmartlabs;
 import com.jokotech.babr.vo.Product;
 
@@ -31,7 +33,7 @@ public class WalmartlabsParseService {
         return Observable.create(new Observable.OnSubscribe<Product>() {
             @Override
             public void call(Subscriber<? super Product> subscriber) {
-                Timber.d("getProductWalmart" + code);
+                Log.d("passedScanner", "getProductWalmart" + code);
                 Product product = new Product();
                 Retrofit retrofit = new Retrofit.Builder()
                         .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
@@ -45,18 +47,22 @@ public class WalmartlabsParseService {
                     @Override
                     public void onResponse(Call<Walmartlabs> call, Response<Walmartlabs> response) {
                         Walmartlabs walmartlabs = response.body();
-                        product.setSource("walmartlabs.com");
-                        if (walmartlabs.getItems().get(0).getName() != null) {
-                            product.setName(walmartlabs.getItems().get(0).getName());
-                        }
-                        if (walmartlabs.getItems().get(0).getLargeImage() != null) {
-                            product.setImageUrl(walmartlabs.getItems().get(0).getLargeImage());
-                        }
-                        if (walmartlabs.getItems().get(0).getUpc() != null) {
-                            product.setUpcA(walmartlabs.getItems().get(0).getUpc());
+                        if (walmartlabs != null) {
+                            product.setSource("walmartlabs.com");
+                            product.setListId("a");
+                            if (walmartlabs.getItems().get(0).getName() != null) {
+                                product.setName(walmartlabs.getItems().get(0).getName());
+                            }
+                            if (walmartlabs.getItems().get(0).getLargeImage() != null) {
+                                product.setImageUrl(walmartlabs.getItems().get(0).getLargeImage());
+                            }
+                            if (walmartlabs.getItems().get(0).getUpc() != null) {
+                                product.setUpcA(walmartlabs.getItems().get(0).getUpc());
+                            }
+                            subscriber.onNext(product);
                         }
 
-                        subscriber.onNext(product);
+
                         subscriber.onCompleted();
                     }
 

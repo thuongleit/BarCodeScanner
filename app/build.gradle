@@ -21,6 +21,7 @@ android {
         }
         renderscriptTargetApi 19
         renderscriptSupportModeEnabled true
+
         // Enabling multidex support.
         multiDexEnabled true
     }
@@ -52,6 +53,10 @@ android {
         }
     }
 
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
     packagingOptions {
         exclude 'LICENSE.txt'
         exclude 'META-INF/DEPENDENCIES'
@@ -80,87 +85,85 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    dependencies {
+        compile fileTree(dir: 'libs', include: ['*.jar'])
+        // Reactive
+        compile libraries.rxJava
+        compile libraries.rxAndroid
+
+        // Dagger 2
+        compile libraries.dagger
+        apt libraries.daggerCompiler
+        provided 'javax.annotation:jsr250-api:1.0'
+
+        // Retrofit
+        compile libraries.retrofit
+        compile libraries.retrofitJacksonConverter
+        compile libraries.retrofitRxJavaAdapter
+        compile libraries.retrofitGsonConverter
+        compile(libraries.retrofitSimpleXmlConverter) {
+            exclude group: 'xpp3', module: 'xpp3'
+            exclude group: 'stax', module: 'stax-api'
+            exclude group: 'stax', module: 'stax'
+        }
+        //parsing html
+        compile 'org.jsoup:jsoup:1.7.3'
+
+        //support libraries
+        compile libraries.supportAppCompat
+        compile(libraries.supportDesign)
+        compile libraries.supportRecyclerView
+        compile libraries.supportCardView
+
+        //utils
+        compile libraries.butterKnife
+        compile libraries.timber
+        compile libraries.picasso
+        compile libraries.picassoOkHttpDownloader
+
+        // saving view state
+        compile libraries.icepick
+        apt libraries.icepickCompiler
+
+        //DBFlow
+        compile libraries.dbFlowCore
+        compile libraries.dbFlow
+        apt libraries.dbFlowProcessor
+
+        compile libraries.parseCore
+        compile libraries.parseBolts
+
+        compile(libraries.crashlytics) {
+            transitive = true;
+        }
+        compile libraries.eventbus
+
+        compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
+        compile 'com.pnikosis:materialish-progress:1.7'
+        compile 'com.quinny898.library.persistentsearch:library:1.1.0-SNAPSHOT'
+        compile 'com.github.kenglxn.QRGen:javase:2.1.0'
+        compile 'com.miguelcatalan:materialsearchview:1.4.0'
+        compile 'com.github.paolorotolo:appintro:3.3.0'
+        compile 'com.nineoldandroids:library:2.4.0'
+        compile 'com.bignerdranch.android:recyclerview-multiselect:0.2'
+        compile 'com.getbase:floatingactionbutton:1.10.1'
+        compile project (':material-login')
+        compile 'com.android.support:multidex:1.0.0'
+        //material login
+
+        compile 'com.android.support:multidex:1.0.0'
+
+        // debug tools
+        debugCompile libraries.okHttpLoggingInterceptor
+        debugCompile libraries.stetho
+        debugCompile libraries.stethoOkHttp
+        debugCompile libraries.leakCanary
+
+        testCompile libraries.junit
+        testCompile libraries.robolectric
+        testCompile libraries.assertJ
+        testCompile libraries.equalsVerifier
+        testCompile libraries.mockitoCore
+    }
 }
 
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    // Reactive
-    compile libraries.rxJava
-    compile libraries.rxAndroid
-
-    // Dagger 2
-    compile libraries.dagger
-    apt libraries.daggerCompiler
-    provided 'javax.annotation:jsr250-api:1.0'
-
-    // Retrofit
-    compile libraries.retrofit
-    compile libraries.retrofitJacksonConverter
-    compile libraries.retrofitRxJavaAdapter
-    compile libraries.retrofitGsonConverter
-    compile(libraries.retrofitSimpleXmlConverter) {
-        exclude group: 'xpp3', module: 'xpp3'
-        exclude group: 'stax', module: 'stax-api'
-        exclude group: 'stax', module: 'stax'
-    }
-    //parsing html
-    compile 'org.jsoup:jsoup:1.7.3'
-
-    //support libraries
-    compile libraries.supportAppCompat
-    compile(libraries.supportDesign)
-    compile libraries.supportRecyclerView
-    compile libraries.supportCardView
-
-    //utils
-    compile libraries.butterKnife
-    compile libraries.timber
-    compile libraries.picasso
-    compile libraries.picassoOkHttpDownloader
-
-    // saving view state
-    compile libraries.icepick
-    apt libraries.icepickCompiler
-
-    //DBFlow
-    compile libraries.dbFlowCore
-    compile libraries.dbFlow
-    apt libraries.dbFlowProcessor
-
-    compile libraries.parseCore
-    compile libraries.parseBolts
-
-    compile(libraries.crashlytics) {
-        transitive = true;
-    }
-    compile libraries.eventbus
-
-    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
-    compile 'com.pnikosis:materialish-progress:1.7'
-    compile 'com.quinny898.library.persistentsearch:library:1.1.0-SNAPSHOT'
-    compile 'com.github.kenglxn.QRGen:javase:2.1.0'
-    compile 'com.miguelcatalan:materialsearchview:1.4.0'
-    compile 'com.github.paolorotolo:appintro:3.3.0'
-    compile 'com.nineoldandroids:library:2.4.0'
-    compile 'com.bignerdranch.android:recyclerview-multiselect:0.2'
-    compile 'com.getbase:floatingactionbutton:1.10.1'
-    compile project (':material-login')
-    compile 'com.android.support:multidex:1.0.0'
-    //material login
-//    compile 'com.github.shem8:material-login:1.3.0'
-//    compile ('com.github.ozodrukh:CircularReveal:1.3.1@aar') {
-//        transitive = true;
-//    }
-
-    // debug tools
-    debugCompile libraries.okHttpLoggingInterceptor
-    debugCompile libraries.stetho
-    debugCompile libraries.stethoOkHttp
-    debugCompile libraries.leakCanary
-
-    testCompile libraries.junit
-    testCompile libraries.robolectric
-    testCompile libraries.assertJ
-    testCompile libraries.equalsVerifier
-    testCompile libraries.mockitoCore
-}

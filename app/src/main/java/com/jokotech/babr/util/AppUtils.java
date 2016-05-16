@@ -11,6 +11,9 @@ import android.net.Uri;
 
 import com.jokotech.babr.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 
 import timber.log.Timber;
@@ -89,5 +92,11 @@ public class AppUtils {
             text[i] = characters.charAt(rng.nextInt(characters.length()));
         }
         return new String(text);
+    }
+
+    public static String gerenateDateFormat(){
+        Date date= Calendar.getInstance().getTime();
+        SimpleDateFormat dateFormat=new SimpleDateFormat("hh:mm:ss dd:MM:yyyy");
+        return dateFormat.format(date);
     }
 }

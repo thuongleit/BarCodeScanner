@@ -1,5 +1,7 @@
 package com.jokotech.babr.data.remote.upcdatabase;
 
+import android.util.Log;
+
 import com.jokotech.babr.vo.Product;
 
 import javax.inject.Inject;
@@ -29,7 +31,7 @@ public class UpcDatabaseParseService {
         return Observable.create(new Observable.OnSubscribe<Product>() {
             @Override
             public void call(Subscriber<? super Product> subscriber) {
-                Timber.d("getProductUpcDatabase" + code);
+                Log.d("passedScanner","getProductUpcDatabase" + code);
                 Product product = new Product();
                 Retrofit retrofit = new Retrofit.Builder()
                         .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
