@@ -110,12 +110,12 @@ public class SignInWithEmailActivity extends BaseActivity implements SignInView 
     }
 
     @Override
-    public void showNetworkError() {
+    public void onNetworkFailed() {
         DialogFactory.createGenericErrorDialog(mContext, "You has been disconnected!").show();
     }
 
     @Override
-    public void showGeneralError(String message) {
+    public void onGeneralFailed(String message) {
         DialogFactory.createGenericErrorDialog(mContext, message).show();
     }
 

@@ -16,8 +16,6 @@ public interface ScanView extends ErrorableView {
 
     void playRingtone();
 
-    void onEmptyProductReturn();
-
     void onRequestSuccess(Parcelable parcelable);
 
     void onRequestSuccessList(List<Product> parcelables);

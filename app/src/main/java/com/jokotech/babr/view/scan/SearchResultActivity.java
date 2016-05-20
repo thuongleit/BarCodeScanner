@@ -1,7 +1,6 @@
 package com.jokotech.babr.view.scan;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -13,7 +12,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -21,16 +19,16 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.Toast;
 
-import com.pnikosis.materialishprogress.ProgressWheel;
 import com.jokotech.babr.R;
 import com.jokotech.babr.config.Config;
 import com.jokotech.babr.data.local.ProductModel;
 import com.jokotech.babr.data.remote.amazon.model.AmazonProductResponse;
-import com.jokotech.babr.view.base.BaseActivity;
+import com.jokotech.babr.view.base.ToolbarActivity;
 import com.jokotech.babr.view.main.MainActivity;
 import com.jokotech.babr.view.product.ProductRecyclerAdapter;
 import com.jokotech.babr.view.widget.DividerItemDecoration;
 import com.jokotech.babr.vo.Product;
+import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +38,9 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import timber.log.Timber;
 
-public class SearchResultActivity extends BaseActivity implements ParsingView {
-    public static final String EXTRA_DATA = "SearchResultActivity.EXTRA_DATA";
+public class SearchResultActivity extends ToolbarActivity implements ParsingView {
+    public static final String EXTRA_PRODUCTS_DATA = "exProductsData";
 
     @Bind(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -51,7 +48,6 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
     ProgressWheel mProgressWheel;
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
-
 
     @Inject
     ParsingPresenter mParsingPresenter;
@@ -69,22 +65,24 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
     private boolean isAmazon=false;
 
     @Override
+    protected int getLayoutId() {
+        return R.layout.activity_search_result;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_result);
-        ButterKnife.bind(this);
         getComponent().inject(this);
-        setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        Timber.d("onCreateSearchResultActivity");
+        setTitle(R.string.title_scan_result);
 
         setUpRecyclerView();
 
-        mData = getIntent().getParcelableExtra(EXTRA_DATA);
+        mData = getIntent().getParcelableExtra(EXTRA_PRODUCTS_DATA);
         if (getIntent().getBooleanExtra(CameraActivity.EXTRA_LOAD_USER_ID, false)) {
-            productListUserId = getIntent().getParcelableArrayListExtra(EXTRA_DATA);
+            productListUserId = getIntent().getParcelableArrayListExtra(EXTRA_PRODUCTS_DATA);
             bindListView(productListUserId);
         } else {
             //check if the array contains product object
@@ -105,16 +103,17 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        ButterKnife.unbind(this);
         mParsingPresenter.detachView();
     }
 
     @Override
-    public void showNetworkError() {
+    public void onNetworkFailed() {
         Toast.makeText(SearchResultActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void showGeneralError(String message) {
+    public void onGeneralFailed(String message) {
     }
 
     @Override
@@ -140,12 +139,6 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
         }
         isAmazon=true;
 
-    }
-
-    @OnClick(R.id.button_toolbar_cancel)
-    public void cancel() {
-        setResult(Activity.RESULT_CANCELED);
-        finish();
     }
 
     @OnClick(R.id.button_toolbar_save)
@@ -182,13 +175,13 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
     private void startResult() {
         if (!getIntent().getBooleanExtra(CameraActivity.EXTRA_LOAD_USER_ID, false)) {
             Intent intent = getIntent();
-            intent.putParcelableArrayListExtra(EXTRA_DATA, mProducts);
+            intent.putParcelableArrayListExtra(EXTRA_PRODUCTS_DATA, mProducts);
             setResult(Activity.RESULT_OK, intent);
             finish();
         } else {
             Intent intent = new Intent(SearchResultActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.putParcelableArrayListExtra(EXTRA_DATA, mProducts);
+            intent.putParcelableArrayListExtra(EXTRA_PRODUCTS_DATA, mProducts);
             setResult(Activity.RESULT_OK, intent);
             finish();
         }
@@ -378,6 +371,4 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
             mAdapter.addItem(product);
         }
     }
-
-
 }

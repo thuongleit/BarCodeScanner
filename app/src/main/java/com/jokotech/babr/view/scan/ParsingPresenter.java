@@ -45,10 +45,10 @@ public class ParsingPresenter extends BasePresenter<ParsingView> {
                         product -> mView.onParseSuccess(product),
                         e -> {
                             if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                mView.showNetworkError();
+                                mView.onNetworkFailed();
                                 mView.showProcess(false);
                             } else {
-                                mView.showGeneralError(e.getMessage());
+                                mView.onGeneralFailed(e.getMessage());
                                 mView.showProcess(false);
                             }
                         });

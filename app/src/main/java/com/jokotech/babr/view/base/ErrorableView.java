@@ -5,7 +5,7 @@ package com.jokotech.babr.view.base;
  */
 public interface ErrorableView extends MvpView {
 
-    void showNetworkError();
+    void onNetworkFailed();
 
-    void showGeneralError(String message);
+    void onGeneralFailed(String message);
 }

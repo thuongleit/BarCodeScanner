@@ -54,5 +54,6 @@
     <string name="error_in_same_password">Password must be same</string>
     <string name="save_to_history">Are you sure to save all the products to history?</string>
     <string name="server_client_id">42940496800-c9simigv7atunaadn9voicd8k04mb46l.apps.googleusercontent.com</string>
+    <string name="title_scan_result">Scan Result</string>
 
 </resources>

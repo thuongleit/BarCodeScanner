@@ -3,18 +3,12 @@ package com.jokotech.babr.view.main;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,7 +16,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,14 +27,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.parse.ParseUser;
-import com.pnikosis.materialishprogress.ProgressWheel;
-import com.quinny898.library.persistentsearch.SearchBox;
-import com.quinny898.library.persistentsearch.SearchResult;
-import com.tbruyelle.rxpermissions.RxPermissions;
 import com.jokotech.babr.R;
 import com.jokotech.babr.config.Config;
-import com.jokotech.babr.config.Constant;
 import com.jokotech.babr.data.DataManager;
 import com.jokotech.babr.data.local.ProductModel;
 import com.jokotech.babr.data.remote.ParseService;
@@ -60,6 +47,11 @@ import com.jokotech.babr.view.widget.DancingScriptTextView;
 import com.jokotech.babr.view.widget.DividerItemDecoration;
 import com.jokotech.babr.vo.Product;
 import com.jokotech.babr.vo.ProductHistory;
+import com.parse.ParseUser;
+import com.pnikosis.materialishprogress.ProgressWheel;
+import com.quinny898.library.persistentsearch.SearchBox;
+import com.quinny898.library.persistentsearch.SearchResult;
+import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +61,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import butterknife.Bind;
-
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -171,13 +162,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
                     .request(Manifest.permission.CAMERA)
                     .subscribe(granted -> {
                         if (granted) { // Always true pre-M
-                            int[] startingLocation = new int[2];
-                            v.getLocationOnScreen(startingLocation);
-                            startingLocation[0] += v.getWidth() / 2;
-
                             Intent intent = new Intent(mContext, CameraActivity.class);
-                            intent.putExtra(CameraActivity.EXTRA_SERVICE, Constant.KEY_UPC_SERVICE);
-                            //   intent.putExtra(CameraActivity.ARG_REVEAL_START_LOCATION, startingLocation);
                             startActivityForResult(intent, REQUEST_CAMERA);
                         } else {
                             showToast("You must allow to use camera to access this function");
@@ -439,7 +424,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
 
     @Override
-    public void showNetworkError() {
+    public void onNetworkFailed() {
         if (mViewNetworkError == null) {
             mViewNetworkError = LayoutInflater.from(mContext).inflate(R.layout.view_network_error, null);
             ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -454,7 +439,7 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
     }
 
     @Override
-    public void showGeneralError(String message) {
+    public void onGeneralFailed(String message) {
         DialogFactory.createGenericErrorDialog(mContext, R.string.dialog_error_general_message).show();
     }
 
@@ -471,7 +456,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
     @Override
     public void showProducts(List<Product> products) {
-
         productList.addAll(products);
 
         removeAdditionalViews();
@@ -567,7 +551,6 @@ public class MainActivity extends ToolbarActivity implements NavigationView.OnNa
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-
         return false;
     }
 

@@ -52,9 +52,9 @@ public class MainPresenter extends BasePresenter<MainView> {
 //                        e -> {
 //                            mView.showProgress(false);
 //                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-//                                mView.showNetworkError();
+//                                mView.onNetworkFailed();
 //                            } else {
-//                                mView.showGeneralError(e.getMessage());
+//                                mView.onGeneralFailed(e.getMessage());
 //                            }
 //                        }
 //                        , () -> mView.showProgress(false));
@@ -78,9 +78,9 @@ public class MainPresenter extends BasePresenter<MainView> {
                         e -> {
                             mView.showProgress(false);
                             if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                mView.showNetworkError();
+                                mView.onNetworkFailed();
                             } else {
-                                mView.showGeneralError(e.getMessage());
+                                mView.onGeneralFailed(e.getMessage());
                             }
                         }
                         , () -> mView.showProgress(false));

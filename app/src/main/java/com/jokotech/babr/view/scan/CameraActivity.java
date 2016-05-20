@@ -3,7 +3,6 @@ package com.jokotech.babr.view.scan;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -16,12 +15,10 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.jokotech.babr.R;
-import com.jokotech.babr.config.Constant;
 import com.jokotech.babr.di.ActivityScope;
 import com.jokotech.babr.util.AppUtils;
 import com.jokotech.babr.util.RevealBackgroundView;
@@ -43,14 +40,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class CameraActivity extends ToolbarActivity implements ScanView, Camera.PreviewCallback{
+public class CameraActivity extends ToolbarActivity implements ScanView, Camera.PreviewCallback {
 
-    public static final String EXTRA_SERVICE = "CameraActivity.EXTRA_SERVICE";
-    public static final String EXTRA_DATA = "CameraActivity.EXTRA_DATA";
+    public static final String EXTRA_DATA = "CameraActivity.EXTRA_PRODUCTS_DATA";
     public static final String EXTRA_LOAD_USER_ID = "load_user_id";
-    public static final String ARG_REVEAL_START_LOCATION = "reveal_start_location";
     private static final int REQUEST_RESULT_ACTIVITY = 1;
 
     @Bind(R.id.cameraPreview)
@@ -70,16 +66,10 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     private Camera mCamera;
     private ImageScanner mScanner;
 
-
     private Handler mAutoFocusHandler;
     private boolean mPreviewing = true;
     private boolean mFlash = false;
     private ProgressDialog mProgressDialog;
-    private String mService;
-    private int order = 0;
-    private String mCode;
-    private boolean isOnlyResult = false;
-    private int state=0;
 
     @Override
     protected int getLayoutId() {
@@ -94,23 +84,11 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
 
         mSupportActionBar.setDisplayHomeAsUpEnabled(true);
 
-        mService = getIntent().getStringExtra(EXTRA_SERVICE);
         mAutoFocusHandler = new Handler();
-//        if (state==0) {
-//            setupRevealBackground(savedInstanceState);
-//            state=1;
-//        }else {
-//            mCameraPreview.setVisibility(View.VISIBLE);
-//            viewFinderView.setVisibility(View.VISIBLE);
-//        }
         // Create and configure the ImageScanner;
         setupScanner();
         //Create and Configure Camera
         setupCamera();
-        if (!AppUtils.isCameraAvailable(mContext)) {
-            // Cancel request if there is no rear-facing camera.
-            cancelRequest();
-        }
         mProductLookupPresenter.attachView(this);
     }
 
@@ -143,8 +121,8 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     public void onDestroy() {
         super.onDestroy();
         mProductLookupPresenter.detachView();
+        ButterKnife.unbind(this);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -176,7 +154,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
             case REQUEST_RESULT_ACTIVITY:
                 if (resultCode == Activity.RESULT_OK) {
                     Intent intent = getIntent();
-                    intent.putParcelableArrayListExtra(EXTRA_DATA, data.getParcelableArrayListExtra(SearchResultActivity.EXTRA_DATA));
+                    intent.putParcelableArrayListExtra(EXTRA_DATA, data.getParcelableArrayListExtra(SearchResultActivity.EXTRA_PRODUCTS_DATA));
                     setResult(Activity.RESULT_OK, intent);
                     finish();
                 } else {
@@ -205,63 +183,30 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     }
 
     @Override
-    public void onEmptyProductReturn() {
-        //Toast.makeText(mContext, "No Item Found", Toast.LENGTH_SHORT).show();
-        //  swistchToNextScan("No items found on all services");
-    }
-
-    @Override
     public void onRequestSuccess(Parcelable parcelable) {
-
-
         Intent intent = new Intent(mContext, SearchResultActivity.class);
-        intent.putExtra(SearchResultActivity.EXTRA_DATA, parcelable);
+        intent.putExtra(SearchResultActivity.EXTRA_PRODUCTS_DATA, parcelable);
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
-
-
     }
 
 
     @Override
     public void onRequestSuccessList(List<Product> parcelables) {
-
         Intent intent = new Intent(mContext, SearchResultActivity.class);
-        intent.putParcelableArrayListExtra(SearchResultActivity.EXTRA_DATA, (ArrayList<? extends Parcelable>) parcelables);
+        intent.putParcelableArrayListExtra(SearchResultActivity.EXTRA_PRODUCTS_DATA, (ArrayList<? extends Parcelable>) parcelables);
         intent.putExtra(EXTRA_LOAD_USER_ID, true);
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
-
     }
 
     @Override
-    public void showNetworkError() {
+    public void onNetworkFailed() {
         buildFailedDialog("You has been disconnected!").show();
     }
 
     @Override
-    public void showGeneralError(String message) {
+    public void onGeneralFailed(String message) {
         //  swistchToNextScan(message);
     }
-
-
-
-//    private void setupRevealBackground(Bundle savedInstanceState) {
-//        vRevealBackground.setOnStateChangeListener(this);
-//        final int[] startingLocation = getIntent().getIntArrayExtra(ARG_REVEAL_START_LOCATION);
-//        if (savedInstanceState == null && startingLocation.length > 0) {
-//
-//            vRevealBackground.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-//                @Override
-//                public boolean onPreDraw() {
-//                    vRevealBackground.getViewTreeObserver().removeOnPreDrawListener(this);
-//                    vRevealBackground.startFromLocation(startingLocation);
-//                    return true;
-//                }
-//            });
-//        } else {
-//            vRevealBackground.setToFinishedFrame();
-//            // userPhotosAdapter.setLockedAnimations(true);
-//        }
-//    }
 
     private void setupScanner() {
         mScanner = new ImageScanner();
@@ -331,21 +276,17 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
 
                         String scanResult = sym.getData().trim();
 
-                        mCode = scanResult;
                         //Use Below function to make a server call and complete request.
-                        mProductLookupPresenter.execute(scanResult, mService);
+                        mProductLookupPresenter.execute(scanResult);
                         break;
                     }
                 }
             }
         } catch (Exception e) {
             Timber.e(e, "Failed in getting qr code from server");
-            DialogFactory.createTryAgainDialog(mContext, "Cannot query this QR Code from server. Please try again", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    reloadActivity();
-                }
+            DialogFactory.createTryAgainDialog(mContext, "Cannot query this QR Code from server. Please try again", (dialog, which) -> {
+                dialog.dismiss();
+                reloadActivity();
             });
         }
     }
@@ -364,7 +305,6 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
             mAutoFocusHandler.postDelayed(doAutoFocus, 1000);
         }
     };
-
 
     @NonNull
     private AlertDialog.Builder buildFailedDialog(String message) {
@@ -385,21 +325,5 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
             reloadActivity();
         });
         return builder;
-    }
-
-//    @Override
-//    public void onStateChange(int state) {
-//        if (RevealBackgroundView.STATE_FINISHED == state) {
-//            mCameraPreview.setVisibility(View.VISIBLE);
-//            viewFinderView.setVisibility(View.VISIBLE);
-//        } else {
-//            mCameraPreview.setVisibility(View.INVISIBLE);
-//            viewFinderView.setVisibility(View.INVISIBLE);
-//
-//        }
-//    }
-
-    public interface TaskCompleteListener {
-        void onTaskComplete(boolean isFinished);
     }
 }
