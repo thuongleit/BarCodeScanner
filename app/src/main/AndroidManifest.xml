@@ -26,12 +26,6 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
-        <meta-data
-            android:name="com.parse.APPLICATION_ID"
-            android:value="n54lBhnIqnMHF6D3COwMm4IKKorqpSeGZz6bzhns" />
-        <meta-data
-            android:name="com.parse.CLIENT_KEY"
-            android:value="u4J7MU3cy2R0NRjLPpIYOaYXV8VIgFAiSqMKfZiX" />
 
         <activity
             android:name="com.jokotech.babr.view.main.MainActivity"
@@ -70,10 +64,6 @@
         </activity>
         <activity android:name="com.jokotech.babr.view.AppIntroActivity" />
         <activity android:name="com.jokotech.babr.view.qrgenerate.GenerateQR" />
-
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="22d4614fff80c524f8d3b07d3501fedd20385f40" />
 
         <activity
             android:name="com.jokotech.babr.view.scan.SearchResultActivity"
