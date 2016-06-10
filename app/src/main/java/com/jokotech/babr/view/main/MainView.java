@@ -1,6 +1,5 @@
 package com.jokotech.babr.view.main;
 
-import com.jokotech.babr.view.base.ErrorableView;
 import com.jokotech.babr.vo.Product;
 
 import java.util.List;

@@ -1,106 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.signin.SignInActivity">
+    android:orientation="vertical"
+    tools:context=".view.signup.SignUpActivity">
 
-    <ImageView
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0.9"
-        android:background="@drawable/login_background"
-        android:scaleType="center"/>
+        android:layout_height="wrap_content">
 
-    <com.jokotech.babr.view.widget.DancingScriptTextView
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:text="@string/app_name"
-        android:textColor="@color/white"
-        android:textSize="50sp"
-        android:textStyle="bold"/>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+    </android.support.design.widget.AppBarLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/layout_button_sign_in"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:text="Connect with"
-        android:textColor="@android:color/white"
-        android:textSize="22sp"/>
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/layout_button_sign_in"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/text_login_as_guest"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:orientation="horizontal">
+        <FrameLayout
+            android:id="@+id/layout_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-        <!--<com.facebook.login.widget.LoginButton-->
-        <!--android:id="@+id/button_facebook_login"-->
-        <!--android:layout_width="70dp"-->
-        <!--android:layout_height="70dp"-->
-        <!--android:layout_marginRight="15dp"-->
-        <!--android:background="@drawable/ring"-->
-        <!--android:scaleType="center"-->
-        <!--android:src="@drawable/ico_fb"/>-->
-
-        <ImageButton
-            android:id="@+id/button_facebook_login"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginRight="15dp"
-            android:background="@drawable/ring"
-            android:scaleType="center"
-            android:src="@drawable/ico_fb" />
-
-        <!--<com.google.android.gms.common.SignInButton-->
-        <!--android:id="@+id/button_google_login"-->
-        <!--android:layout_width="70dp"-->
-        <!--android:layout_height="70dp"-->
-        <!--android:layout_marginLeft="15dp"-->
-        <!--android:layout_marginRight="15dp"-->
-        <!--android:background="@drawable/ring"-->
-        <!--android:scaleType="center"-->
-        <!--android:src="@drawable/ico_gplus" />-->
-
-
-        <ImageButton
-            android:id="@+id/button_google_login"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:background="@drawable/ring"
-            android:scaleType="center"
-            android:src="@drawable/ico_gplus"/>
-
-        <ImageButton
-            android:id="@+id/button_sign_in_with_email"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginLeft="15dp"
-            android:background="@drawable/ring"
-            android:padding="10dp"
-            android:scaleType="center"
-            android:src="@drawable/ic_email_white"/>
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/text_login_as_guest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp"
-        android:text="Sign up later"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@android:color/white"/>
-</RelativeLayout>
+    </android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

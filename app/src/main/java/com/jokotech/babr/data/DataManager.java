@@ -32,14 +32,9 @@ import javax.inject.Singleton;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-/**
- * Created by thuongle on 1/30/16.
- */
 @Singleton
 public class DataManager {
 
-    @Inject
-    ProductModel mProductModel;
     @Inject
     UpcParseService mUpcParseService;
     @Inject

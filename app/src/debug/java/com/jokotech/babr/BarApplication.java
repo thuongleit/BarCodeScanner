@@ -2,18 +2,14 @@ package com.jokotech.babr;
 
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
-import com.facebook.FacebookSdk;
+import com.google.firebase.crash.FirebaseCrash;
 import com.jokotech.babr.di.components.ApplicationComponent;
 import com.jokotech.babr.di.components.DaggerApplicationComponent;
 import com.jokotech.babr.di.modules.ApplicationModule;
-import com.parse.Parse;
 import com.raizlabs.android.dbflow.config.FlowManager;
-import com.squareup.leakcanary.LeakCanary;
 
-import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 /**
@@ -32,21 +28,6 @@ public class BarApplication extends MultiDexApplication {
         super.onCreate();
 
         FlowManager.init(this);
-        FacebookSdk.sdkInitialize(getApplicationContext());
-
-        //track leak memory
-        LeakCanary.install(this);
-
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this);
-
-        //enable logger
-        CrashlyticsCore crashCore = new CrashlyticsCore.Builder()
-                .disabled(BuildConfig.DEBUG)
-                .build();
-        Fabric.with(this, new Crashlytics.Builder()
-                .core(crashCore)
-                .build());
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
@@ -63,25 +44,28 @@ public class BarApplication extends MultiDexApplication {
         return mAppComponent;
     }
 
-    public class CrashlyticsTree extends Timber.Tree {
-        private static final String CRASHLYTICS_KEY_PRIORITY = "priority";
-        private static final String CRASHLYTICS_KEY_TAG = "tag";
-        private static final String CRASHLYTICS_KEY_MESSAGE = "message";
+    private class CrashlyticsTree extends Timber.Tree {
 
         @Override
         protected void log(int priority, @Nullable String tag, @Nullable String message, @Nullable Throwable t) {
-            if (priority == android.util.Log.VERBOSE || priority == android.util.Log.DEBUG || priority == android.util.Log.INFO) {
-                return;
+            switch (priority) {
+                case Log.DEBUG:
+                case Log.WARN:
+                    FirebaseCrash.logcat(priority, tag, message);
+                    return;
+                case Log.ERROR:
+                    report(priority, tag, message, t);
+                    return;
+                default: //mean Log.INFO || Log.VERBOSE || Log.ASSERT
             }
+        }
 
-            Crashlytics.setInt(CRASHLYTICS_KEY_PRIORITY, priority);
-            Crashlytics.setString(CRASHLYTICS_KEY_TAG, tag);
-            Crashlytics.setString(CRASHLYTICS_KEY_MESSAGE, message);
-
+        private void report(int priority, @Nullable String tag, @Nullable String message, @Nullable Throwable t) {
+            FirebaseCrash.logcat(priority, tag, message);
             if (t == null) {
-                Crashlytics.logException(new Exception(message));
+                FirebaseCrash.report(new Exception(message));
             } else {
-                Crashlytics.logException(t);
+                FirebaseCrash.report(t);
             }
         }
     }

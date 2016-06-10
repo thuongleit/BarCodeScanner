@@ -55,7 +55,7 @@
         <activity
             android:name="com.jokotech.babr.view.signin.SignInActivity"
             android:configChanges="keyboardHidden|orientation" />
-        <activity android:name="com.jokotech.babr.view.SplashActivity">
+        <activity android:name="com.jokotech.babr.view.splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -74,14 +74,6 @@
         </activity>
         <activity android:name="com.jokotech.babr.view.history.HistoryActivity" />
         <activity android:name="com.jokotech.babr.view.history.DetailActivity" />
-
-        <activity
-            android:name=".view.signin.SignInWithEmailActivity"
-            android:parentActivityName=".view.signin.SignInActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.jokotech.babr.view.signin.SignInActivity" />
-        </activity>
 
         <activity
             android:name="com.facebook.FacebookActivity"

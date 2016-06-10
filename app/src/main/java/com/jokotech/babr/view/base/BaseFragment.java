@@ -1,9 +1,8 @@
 package com.jokotech.babr.view.base;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-
-import com.jokotech.babr.di.components.ActivityComponent;
 
 import timber.log.Timber;
 
@@ -12,17 +11,15 @@ import timber.log.Timber;
  */
 public abstract class BaseFragment extends Fragment {
 
-    protected ActivityComponent getComponent() {
-        return ((BaseActivity) getActivity()).getComponent();
+    @Nullable
+    public BaseFragment create() {
+        return create(null);
     }
 
-    public static BaseFragment create(Class<? extends BaseFragment> clazz) {
-        return BaseFragment.create(clazz, null);
-    }
-
-    public static BaseFragment create(Class<? extends BaseFragment> clazz, Bundle args) {
+    @Nullable
+    public BaseFragment create(Bundle args) {
         try {
-            BaseFragment fragment = clazz.newInstance();
+            BaseFragment fragment = this.getClass().newInstance();
             if (args != null) {
                 fragment.setArguments(args);
             }

@@ -1,7 +1,6 @@
 package com.jokotech.babr.view.scan;
 
 import com.jokotech.babr.data.DataManager;
-import com.jokotech.babr.view.base.BasePresenter;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -16,19 +15,18 @@ import rx.subscriptions.Subscriptions;
 /**
  * Created by thuongle on 2/25/16.
  */
-public class ParsingPresenter extends BasePresenter<ParsingView> {
+public class ParsingPresenter {
 
     private final DataManager mDataManager;
     private Subscription mSubscription = Subscriptions.empty();
+    private SearchResultActivity mView;
 
     @Inject
     public ParsingPresenter(DataManager dataManager) {
         mDataManager = dataManager;
     }
 
-    @Override
     public void detachView() {
-        super.detachView();
         if (mSubscription != null) {
             mSubscription.unsubscribe();
         }
@@ -36,7 +34,6 @@ public class ParsingPresenter extends BasePresenter<ParsingView> {
 
     public void parse(String detailPageURL) {
         mView.showProcess(true);
-        checkViewAttached();
         mSubscription = mDataManager
                 .parseProductFromAmazon(detailPageURL)
                 .subscribeOn(Schedulers.newThread())

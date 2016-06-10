@@ -3,7 +3,6 @@ package com.jokotech.babr.config;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.parse.ParseUser;
 import com.jokotech.babr.di.ApplicationScope;
 
 import javax.inject.Inject;
@@ -47,9 +46,6 @@ public class Config {
         return mSharedPreferences.getBoolean(PREF_KEY_IS_DONT_SHOW, false);
     }
 
-    public ParseUser getCurrentUser() {
-        return ParseUser.getCurrentUser();
-    }
 
     public void putIsSignIn(boolean isSignIn) {
         mSharedPreferences.edit().putBoolean(PREF_KEY_SIGN_IN_USER, isSignIn).apply();
@@ -69,7 +65,4 @@ public class Config {
         return mSharedPreferences.getInt(PREF_KEY_SIGN_IN_TYPE, -1);
     }
 
-    public boolean isUserLogin() {
-        return (getCurrentUser() != null);
-    }
 }

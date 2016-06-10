@@ -3,6 +3,7 @@ package com.jokotech.babr.di.modules;
 import android.app.Application;
 import android.content.Context;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.jokotech.babr.di.ApplicationScope;
 import com.squareup.picasso.Picasso;
@@ -46,4 +47,9 @@ public class ApplicationModule {
                 .build();
     }
 
+    @Provides
+    @Singleton
+    FirebaseAuth provideFirebaseAuth() {
+        return FirebaseAuth.getInstance();
+    }
 }

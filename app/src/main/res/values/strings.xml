@@ -55,5 +55,12 @@
     <string name="save_to_history">Are you sure to save all the products to history?</string>
     <string name="server_client_id">42940496800-c9simigv7atunaadn9voicd8k04mb46l.apps.googleusercontent.com</string>
     <string name="title_scan_result">Scan Result</string>
+    <string name="text_create_account">Create account</string>
+    <string name="icons_made_by_freepik_www_flaticon_com_is_licensed_by_creative_commons_by_3_0">Icons made by Freepik www.flaticon.com is licensed by Creative Commons BY 3.0</string>
+    <string name="email">email</string>
+    <string name="required_symbol">(*)</string>
+    <string name="full_name">full name</string>
+    <string name="password">password</string>
+    <string name="log_in">Log In</string>
 
 </resources>

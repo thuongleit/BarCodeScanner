@@ -1,40 +1,43 @@
 package com.jokotech.babr.view.signup;
 
-import com.parse.ParseUser;
-import com.jokotech.babr.view.base.BasePresenter;
+import android.support.annotation.NonNull;
 
-import javax.inject.Inject;
+import com.google.firebase.auth.FirebaseAuth;
 
 import timber.log.Timber;
 
 /**
  * Created by thuongle on 12/30/15.
  */
-public class SignUpPresenter extends BasePresenter<SignUpView> {
+public class SignUpPresenter implements SignUpContract.Presenter {
 
-    @Inject
-    public SignUpPresenter() {
+    @NonNull
+    private final FirebaseAuth mAuth;
+    @NonNull
+    private final SignUpContract.View mView;
+
+    public SignUpPresenter(SignUpContract.View view, FirebaseAuth auth) {
+        this.mView = view;
+        this.mAuth = auth;
+    }
+
+    @Override
+    public void subscribe() {
+    }
+
+    @Override
+    public void unsubscribe() {
 
     }
 
-    public void signUp(final String username, String email, String password) {
-        checkViewAttached();
-        mView.showProgress(true);
-
-        ParseUser parseUser = new ParseUser();
-        parseUser.setUsername(username);
-        parseUser.setEmail(email);
-        parseUser.setPassword(password);
-
-        parseUser.signUpInBackground(e -> {
-            mView.showProgress(false);
-            if (e == null) {
-                Timber.i("User %s sign up successfully", username);
-                //the user is logged in
-                mView.onSignUpSuccess();
+    @Override
+    public void createUser(User user) {
+        mAuth.createUserWithEmailAndPassword(user.email, user.password).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                mView.onCreateUserSuccess();
             } else {
-                Timber.i(e, "User %s sign up failed", username);
-                mView.onSignUpFailed(e.getMessage());
+                Timber.e(task.getException(), "Failed in creating new user: %s", user.email);
+                mView.onInAppError(task.getException());
             }
         });
     }

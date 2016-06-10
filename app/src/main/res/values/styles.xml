@@ -2,7 +2,7 @@
 
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:textColorSecondary">@color/black_alpha_54</item>
-        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowBackground">@color/black_12</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:textColor">@color/black_alpha_87</item>
         <item name="android:textColorTertiary">@color/black_alpha_38</item>
