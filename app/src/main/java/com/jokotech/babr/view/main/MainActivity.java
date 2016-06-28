@@ -42,7 +42,7 @@ import com.jokotech.babr.view.history.HistoryActivity;
 import com.jokotech.babr.view.product.ProductRecyclerAdapter;
 import com.jokotech.babr.view.qrgenerate.GenerateQR;
 import com.jokotech.babr.view.scan.CameraActivity;
-import com.jokotech.babr.view.signin.SignInActivity;
+import com.jokotech.babr.view.session.signin.SignInActivity;
 import com.jokotech.babr.view.widget.DancingScriptTextView;
 import com.jokotech.babr.view.widget.DividerItemDecoration;
 import com.jokotech.babr.vo.Product;
