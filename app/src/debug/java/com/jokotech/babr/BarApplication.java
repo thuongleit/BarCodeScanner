@@ -6,9 +6,6 @@ import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.jokotech.babr.di.components.ApplicationComponent;
-import com.jokotech.babr.di.components.DaggerApplicationComponent;
-import com.jokotech.babr.di.modules.ApplicationModule;
-import com.raizlabs.android.dbflow.config.FlowManager;
 
 import timber.log.Timber;
 
@@ -27,17 +24,15 @@ public class BarApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
-        FlowManager.init(this);
-
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
         Timber.plant(new CrashlyticsTree());
 
-        mAppComponent = DaggerApplicationComponent
-                .builder()
-                .applicationModule(new ApplicationModule(this))
-                .build();
+//        mAppComponent = DaggerApplicationComponent
+//                .builder()
+//                .applicationModule(new ApplicationModule(this))
+//                .build();
     }
 
     public ApplicationComponent getAppComponent() {

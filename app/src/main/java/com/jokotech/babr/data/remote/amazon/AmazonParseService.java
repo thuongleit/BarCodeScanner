@@ -39,9 +39,9 @@ public class AmazonParseService {
                     String idElement = element.attr("id");
                     if ("productTitle".equals(idElement)) {
                         String productTitle = element.text();
-                        product.setName(productTitle);
-                        product.setSource("amazon.com");
-                        product.setListId("a");
+                        product.name = productTitle;
+                        product.source = "amazon.com";
+                        product.listId = "a";
 
                     }
                 }
@@ -59,15 +59,15 @@ public class AmazonParseService {
                                 if (!"".equals(img)) {
                                     String url = img.substring(img.indexOf("http://"), img.indexOf(".jpg")) + ".jpg";
                                     if (url.matches(IMAGE_URL_PATTERN)) {
-                                        product.setImageUrl(url);
+                                        product.imageUrl = url;
                                     } else {
                                         url = img.substring(img.indexOf("http://"), img.indexOf(".jpeg")) + ".jpeg";
                                         if (url.matches(IMAGE_URL_PATTERN)) {
-                                            product.setImageUrl(url);
+                                            product.imageUrl = url;
                                         } else {
                                             url = img.substring(img.indexOf("http://"), img.indexOf(".png")) + ".png";
                                             if (url.matches(IMAGE_URL_PATTERN)) {
-                                                product.setImageUrl(url);
+                                                product.imageUrl = url;
                                             }
 
                                         }

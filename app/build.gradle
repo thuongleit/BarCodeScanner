@@ -141,11 +141,7 @@ dependencies {
     // saving view state
     compile "frankiesardo:icepick:$rootProject.icepick"
     apt "frankiesardo:icepick:$rootProject.icepick"
-    //DBFlow
-    compile "com.github.Raizlabs.DBFlow:dbflow:$rootProject.dbFlow"
-    compile "com.github.Raizlabs.DBFlow:dbflow-core:$rootProject.dbFlow"
-    apt "com.github.Raizlabs.DBFlow:dbflow-processor:$rootProject.dbFlow"
-    compile "com.google.guava:guava:$rootProject.guavaVersion"
+    apt "com.google.guava:guava:$rootProject.guavaVersion"
     //facebook
     compile 'com.facebook.android:facebook-android-sdk:4.3.0'
     compile 'com.pnikosis:materialish-progress:1.7'

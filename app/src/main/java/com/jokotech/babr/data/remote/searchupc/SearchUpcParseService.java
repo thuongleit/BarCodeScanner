@@ -15,7 +15,6 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.Subscriber;
-import timber.log.Timber;
 
 /**
  * Created by ThongLe on 3/18/2016.
@@ -32,7 +31,7 @@ public class SearchUpcParseService {
         return Observable.create(new Observable.OnSubscribe<Product>() {
             @Override
             public void call(Subscriber<? super Product> subscriber) {
-                Log.d("passedScanner","getProductSearchUpc" + code);
+                Log.d("passedScanner", "getProductSearchUpc" + code);
                 Product product = new Product();
                 Retrofit retrofit = new Retrofit.Builder()
                         .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
@@ -46,15 +45,15 @@ public class SearchUpcParseService {
                     @Override
                     public void onResponse(Call<SearchUpc> call, Response<SearchUpc> response) {
                         SearchUpc searchUpc = response.body();
-                        product.setSource("searchupc.com");
-                        product.setListId("a");
+                        product.source = "searchupc.com";
+                        product.listId = "a";
 
                         if (searchUpc != null && searchUpc.get0() != null) {
                             if (searchUpc.get0().getImageurl() != null) {
-                                product.setImageUrl(searchUpc.get0().getImageurl());
+                                product.imageUrl = searchUpc.get0().getImageurl();
                             }
                             if (searchUpc.get0().getProductname() != null) {
-                                product.setName(searchUpc.get0().getProductname());
+                                product.name = searchUpc.get0().getProductname();
                             }
                             subscriber.onNext(product);
                         }

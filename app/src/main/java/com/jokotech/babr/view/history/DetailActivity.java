@@ -11,9 +11,9 @@ import com.jokotech.babr.R;
 import com.jokotech.babr.config.Config;
 import com.jokotech.babr.config.Constant;
 import com.jokotech.babr.data.DataManager;
-import com.jokotech.babr.data.local.ProductModel;
 import com.jokotech.babr.util.dialog.DialogFactory;
 import com.jokotech.babr.view.base.BaseActivity;
+import com.jokotech.babr.view.base.BasePresenter;
 import com.jokotech.babr.view.product.ProductRecyclerAdapter;
 import com.jokotech.babr.view.widget.DividerItemDecoration;
 import com.jokotech.babr.vo.Product;
@@ -37,8 +37,6 @@ public class DetailActivity extends BaseActivity {
     @Inject
     Config mConfig;
     @Inject
-    ProductModel mProductModel;
-    @Inject
     DataManager mDataManager;
 
     private ArrayList<Product> productHistories = new ArrayList<>();
@@ -55,7 +53,6 @@ public class DetailActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        getComponent().inject(this);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -64,7 +61,7 @@ public class DetailActivity extends BaseActivity {
 
         listId = getIntent().getStringExtra(Constant.KEY_LIST_ID);
 
-        progressDialog = DialogFactory.createProgressDialog(this, "Loading...");
+        progressDialog = DialogFactory.createProgressDialog(this, "", "Loading...");
         progressDialog.show();
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -102,5 +99,10 @@ public class DetailActivity extends BaseActivity {
         super.onDestroy();
         if (!subscription.isUnsubscribed())
             subscription.unsubscribe();
+    }
+
+    @Override
+    protected BasePresenter getPresenter() {
+        return null;
     }
 }

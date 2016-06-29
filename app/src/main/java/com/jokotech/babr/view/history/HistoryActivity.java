@@ -10,11 +10,11 @@ import android.view.MenuItem;
 import com.jokotech.babr.R;
 import com.jokotech.babr.config.Config;
 import com.jokotech.babr.data.DataManager;
-import com.jokotech.babr.data.local.ProductModel;
 import com.jokotech.babr.util.dialog.DialogFactory;
 import com.jokotech.babr.view.base.BaseActivity;
+import com.jokotech.babr.view.base.BasePresenter;
 import com.jokotech.babr.view.widget.DividerItemDecoration;
-import com.jokotech.babr.vo.ProductHistory;
+import com.jokotech.babr.vo.CheckoutHistory;
 
 import java.util.ArrayList;
 
@@ -36,11 +36,9 @@ public class HistoryActivity extends BaseActivity {
     @Inject
     Config mConfig;
     @Inject
-    ProductModel mProductModel;
-    @Inject
     DataManager mDataManager;
 
-    private ArrayList<ProductHistory> productHistories = new ArrayList<>();
+    private ArrayList<CheckoutHistory> productHistories = new ArrayList<>();
     private AdapterHistory adapterHistory;
     private ProgressDialog progressDialog;
 
@@ -54,7 +52,6 @@ public class HistoryActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        getComponent().inject(this);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -62,7 +59,7 @@ public class HistoryActivity extends BaseActivity {
         getSupportActionBar().setTitle("History");
 
 
-        progressDialog = DialogFactory.createProgressDialog(this, "Loading...");
+        progressDialog = DialogFactory.createProgressDialog(this, "", "Loading...");
         progressDialog.show();
 
         adapterHistory = new AdapterHistory(this, productHistories);
@@ -73,7 +70,7 @@ public class HistoryActivity extends BaseActivity {
 
         mRecyclerView.setAdapter(adapterHistory);
 
-        subscription=  mDataManager.getProductsHistory()
+        subscription = mDataManager.getProductsHistory()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(list -> {
@@ -97,6 +94,11 @@ public class HistoryActivity extends BaseActivity {
         super.onDestroy();
         if (!subscription.isUnsubscribed())
             subscription.unsubscribe();
+    }
+
+    @Override
+    protected BasePresenter getPresenter() {
+        return null;
     }
 
 }

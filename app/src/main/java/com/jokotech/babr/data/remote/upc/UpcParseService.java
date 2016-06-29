@@ -54,15 +54,15 @@ public class UpcParseService {
                         String textInElement = element.text();
 
                         if (textInElement.startsWith("UPC-A")) {
-                            product.setUpcA(textInElement);
+                            product.upcA = textInElement;
                         } else if (textInElement.startsWith("EAN-13")) {
-                            product.setEan(textInElement);
+                            product.ean = textInElement;
                         } else if (textInElement.startsWith("Country of Registration")) {
-                            product.setCountry(textInElement);
+                            product.country = textInElement;
                         } else if (textInElement.startsWith("Manufacture")) {
-                            product.setManufacture(textInElement);
+                            product.manufacture = textInElement;
                         } else if (textInElement.startsWith("Model")) {
-                            product.setModel(textInElement);
+                            product.model = textInElement;
                         }
                     }
 
@@ -71,7 +71,7 @@ public class UpcParseService {
                         String aClass = element.attr("class");
                         if ("amzn".equals(aClass)) {
                             String src = element.attr("src");
-                            product.setImageUrl(src);
+                            product.imageUrl = src;
                         }
                     }
 

@@ -6,7 +6,6 @@ import android.util.Log;
 import com.jokotech.babr.BarApplication;
 import com.jokotech.babr.config.Config;
 import com.jokotech.babr.config.Constant;
-import com.jokotech.babr.data.local.ProductModel;
 import com.jokotech.babr.data.remote.ParseService;
 import com.jokotech.babr.data.remote.amazon.AmazonParseService;
 import com.jokotech.babr.data.remote.amazon.AmazonService;
@@ -17,8 +16,8 @@ import com.jokotech.babr.data.remote.upc.UpcParseService;
 import com.jokotech.babr.data.remote.upcdatabase.UpcDatabaseParseService;
 import com.jokotech.babr.data.remote.upcitemdb.UpcItemDbParseService;
 import com.jokotech.babr.data.remote.walmartlabs.WalmartlabsParseService;
+import com.jokotech.babr.vo.CheckoutHistory;
 import com.jokotech.babr.vo.Product;
-import com.jokotech.babr.vo.ProductHistory;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -127,29 +126,18 @@ public class DataManager {
 
 
     public Observable<List<Product>> getProductsCheckout(String listId) {
-        if (mConfig.isUserLogin()) {
-            return Observable.create(subscriber -> {
-                List<Product> products = new ArrayList<>();
-                mParseService.getProductsCheckout(listId).doOnNext(product -> {
-                    products.add(product);
+        return Observable.create(subscriber -> {
+            List<Product> products = new ArrayList<>();
+            mParseService.getProductsCheckout(listId).doOnNext(product -> {
+                products.add(product);
 
-                }).doOnCompleted(() -> {
-                    subscriber.onNext(products);
-                    subscriber.onCompleted();
-                })
-                        .subscribeOn(Schedulers.newThread())
-                        .subscribe();
-            });
-        } else {
-            return Observable.create(subscriber -> {
-                try {
-                    subscriber.onNext(mProductModel.loadProductsNoCheckout(listId));
-                    subscriber.onCompleted();
-                } catch (Exception e) {
-                    subscriber.onError(e);
-                }
-            });
-        }
+            }).doOnCompleted(() -> {
+                subscriber.onNext(products);
+                subscriber.onCompleted();
+            })
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribe();
+        });
     }
 
     public Observable<List<Product>> getProductsCheckoutScan(String listId) {
@@ -168,33 +156,20 @@ public class DataManager {
         });
     }
 
-    public Observable<List<ProductHistory>> getProductsHistory() {
-        if (mConfig.isUserLogin()) {
-            return Observable.create(subscriber -> {
-                List<ProductHistory> products = new ArrayList<>();
-                mParseService.getProductsHistory().doOnNext(product -> {
-                    products.add(product);
+    public Observable<List<CheckoutHistory>> getProductsHistory() {
+        return Observable.create(subscriber -> {
+            List<CheckoutHistory> products = new ArrayList<>();
+            mParseService.getProductsHistory().doOnNext(product -> {
+                products.add(product);
 
-                }).doOnCompleted(() -> {
-                    subscriber.onNext(products);
-                    subscriber.onCompleted();
-                })
-                        .subscribeOn(Schedulers.newThread())
-                        .subscribe();
-            });
-        } else {
-            return Observable.create(subscriber -> {
-                try {
-                    subscriber.onNext(mProductModel.loadProductsHistory());
-                    subscriber.onCompleted();
-                } catch (Exception e) {
-                    subscriber.onError(e);
-                }
-            });
-        }
+            }).doOnCompleted(() -> {
+                subscriber.onNext(products);
+                subscriber.onCompleted();
+            })
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribe();
+        });
     }
-
-
 
 
     public Observable<List<Product>> getProductsBABR(String id) {
@@ -213,7 +188,7 @@ public class DataManager {
     }
 
     public Observable<AmazonProductResponse> searchProductsInAmazon(String keyword) {
-        Log.d("passedScanner","searchProductsInAmazon" + keyword);
+        Log.d("passedScanner", "searchProductsInAmazon" + keyword);
         String signedUrl = null;
         try {
             AmazonSignedRequestsHelper signer = AmazonSignedRequestsHelper.
@@ -231,7 +206,6 @@ public class DataManager {
         }
         return null;
     }
-
 
 
     public Observable<Product> parseProductFromAmazon(String detailPageURL) {

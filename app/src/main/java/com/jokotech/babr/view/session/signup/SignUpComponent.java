@@ -1,11 +1,11 @@
 package com.jokotech.babr.view.session.signup;
 
-import com.jokotech.babr.di.PerFragment;
+import com.jokotech.babr.di.PerActivity;
 import com.jokotech.babr.di.components.ApplicationComponent;
 
 import dagger.Component;
 
-@PerFragment
+@PerActivity
 @Component(modules = SignUpModule.class, dependencies = ApplicationComponent.class)
-public class SignUpComponent {
+public interface SignUpComponent {
 }

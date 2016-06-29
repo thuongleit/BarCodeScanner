@@ -22,7 +22,7 @@ import dagger.Component;
  */
 @Singleton
 @Component(modules = {ApplicationModule.class, ApiModule.class})
-public interface ApplicationComponent extends android.databinding.DataBindingComponent {
+public interface ApplicationComponent {
 
     Application application();
 

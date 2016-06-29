@@ -1,6 +1,5 @@
 package com.jokotech.babr.data.remote.upcitemdb;
 
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.jokotech.babr.data.remote.upcitemdb.model.Item;
@@ -18,7 +17,6 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.Subscriber;
-import timber.log.Timber;
 
 /**
  * Created by ThongLe on 3/19/2016.
@@ -35,7 +33,7 @@ public class UpcItemDbParseService {
             @Override
             public void call(Subscriber<? super Product> subscriber) {
 
-                Log.d("passedScanner","getUpcItemDbParseService" + code);
+                Log.d("passedScanner", "getUpcItemDbParseService" + code);
 
                 Product product = new Product();
                 Retrofit retrofit = new Retrofit.Builder()
@@ -53,15 +51,15 @@ public class UpcItemDbParseService {
                         if (upcItemDb != null && upcItemDb.getItems() != null && !upcItemDb.getItems().isEmpty()) {
                             Item item = upcItemDb.getItems().get(0);
                             if (upcItemDb.getCode().equals("OK")) {
-                                product.setSource("upcitemdb.com");
-                                product.setListId("a");
-                                product.setName(item.getTitle());
-                                if (item.getImages().size()>0)
-                                    product.setImageUrl(item.getImages().get(0));
-                                product.setEan(item.getEan());
-                                product.setManufacture(item.getBrand());
-                                product.setModel(item.getModel());
-                                product.setUpcA(item.getUpc());
+                                product.source = "upcitemdb.com";
+                                product.listId = "a";
+                                product.name = item.getTitle();
+                                if (item.getImages().size() > 0)
+                                    product.imageUrl = item.getImages().get(0);
+                                product.ean = item.getEan();
+                                product.manufacture = item.getBrand();
+                                product.model = item.getModel();
+                                product.upcA = item.getUpc();
                                 subscriber.onNext(product);
                                 subscriber.onCompleted();
                             }

@@ -21,9 +21,9 @@ import android.widget.Toast;
 
 import com.jokotech.babr.R;
 import com.jokotech.babr.config.Config;
-import com.jokotech.babr.data.local.ProductModel;
 import com.jokotech.babr.data.remote.amazon.model.AmazonProductResponse;
-import com.jokotech.babr.view.base.ToolbarActivity;
+import com.jokotech.babr.view.base.BaseActivity;
+import com.jokotech.babr.view.base.BasePresenter;
 import com.jokotech.babr.view.main.MainActivity;
 import com.jokotech.babr.view.product.ProductRecyclerAdapter;
 import com.jokotech.babr.view.widget.DividerItemDecoration;
@@ -33,13 +33,11 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SearchResultActivity extends ToolbarActivity implements ParsingView {
+public class SearchResultActivity extends BaseActivity implements ParsingView {
     public static final String EXTRA_PRODUCTS_DATA = "exProductsData";
 
     @Bind(R.id.recycler_view)
@@ -49,12 +47,8 @@ public class SearchResultActivity extends ToolbarActivity implements ParsingView
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Inject
     ParsingPresenter mParsingPresenter;
-    @Inject
     Config mConfig;
-    @Inject
-    ProductModel mProductModel;
 
     private ProductRecyclerAdapter mAdapter;
     private int mCurrentParsingIndex = 0;
@@ -62,18 +56,12 @@ public class SearchResultActivity extends ToolbarActivity implements ParsingView
     private ArrayList<Product> mProducts = new ArrayList<>();
     private List<Product> productListUserId = new ArrayList<>();
     private List<Product> productList = new ArrayList<>();
-    private boolean isAmazon=false;
-
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_search_result;
-    }
+    private boolean isAmazon = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_result);
-        getComponent().inject(this);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(R.string.title_scan_result);
@@ -90,7 +78,6 @@ public class SearchResultActivity extends ToolbarActivity implements ParsingView
                 if (mData instanceof Product) {
                     bindView((Product) mData);
                 } else if (mData instanceof AmazonProductResponse) {
-                    mParsingPresenter.attachView(this);
                     AmazonProductResponse amazonProductResponse = (AmazonProductResponse) mData;
                     mParsingPresenter.parse(amazonProductResponse.getProducts().get(mCurrentParsingIndex).getDetailPageURL());
                 }
@@ -108,11 +95,14 @@ public class SearchResultActivity extends ToolbarActivity implements ParsingView
     }
 
     @Override
+    protected BasePresenter getPresenter() {
+        return null;
+    }
+
     public void onNetworkFailed() {
         Toast.makeText(SearchResultActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
     }
 
-    @Override
     public void onGeneralFailed(String message) {
     }
 
@@ -133,11 +123,11 @@ public class SearchResultActivity extends ToolbarActivity implements ParsingView
         if (show) {
             mProgressWheel.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
-        }else{
+        } else {
             mProgressWheel.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);
         }
-        isAmazon=true;
+        isAmazon = true;
 
     }
 
@@ -355,7 +345,7 @@ public class SearchResultActivity extends ToolbarActivity implements ParsingView
     }
 
     private void bindView(Product product) {
-        if (!isAmazon){
+        if (!isAmazon) {
             mProgressWheel.stopSpinning();
             mProgressWheel.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);

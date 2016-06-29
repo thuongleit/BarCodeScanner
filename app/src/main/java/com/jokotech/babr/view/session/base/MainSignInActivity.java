@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.jokotech.babr.R;
 import com.jokotech.babr.view.base.BaseActivity;
+import com.jokotech.babr.view.base.BasePresenter;
 
 import butterknife.ButterKnife;
 
@@ -19,5 +20,10 @@ public class MainSignInActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in_main);
         ButterKnife.bind(this);
+    }
+
+    @Override
+    protected BasePresenter getPresenter() {
+        return null;
     }
 }

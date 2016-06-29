@@ -1,7 +1,7 @@
 package com.jokotech.babr.view.session.splash;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.jokotech.babr.di.PerFragment;
+import com.jokotech.babr.di.PerActivity;
 
 import dagger.Module;
 import dagger.Provides;
@@ -15,7 +15,7 @@ public class SplashModule {
         mView = view;
     }
 
-    @PerFragment
+    @PerActivity
     @Provides
     SplashContract.Presenter providePresenter(FirebaseAuth auth) {
         return new SplashPresenter(mView, auth);

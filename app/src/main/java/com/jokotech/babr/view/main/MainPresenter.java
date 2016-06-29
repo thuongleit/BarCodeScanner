@@ -1,37 +1,21 @@
 package com.jokotech.babr.view.main;
 
 import com.jokotech.babr.data.DataManager;
-import com.jokotech.babr.view.base.BasePresenter;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-
-import javax.inject.Inject;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
-/**
- * Created by thuongle on 1/31/16.
- */
-public class MainPresenter extends BasePresenter<MainView> {
+public class MainPresenter implements MainContract.Presenter {
 
-    private final DataManager mDataManager;
+    private  DataManager mDataManager;
     private Subscription mSubscription = Subscriptions.empty();
 
-    @Inject
-    public MainPresenter(DataManager dataManager) {
-        mDataManager = dataManager;
-    }
-
-    @Override
-    public void detachView() {
-        super.detachView();
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
+    public MainPresenter() {
     }
 
 //    public void getProducts() {
@@ -61,8 +45,6 @@ public class MainPresenter extends BasePresenter<MainView> {
 //    }
 
     public void getProductsNotCheckout(String listId) {
-        checkViewAttached();
-        mView.showProgress(true);
         mSubscription = mDataManager
                 .getProductsCheckout(listId)
                 .subscribeOn(Schedulers.newThread())
@@ -70,19 +52,34 @@ public class MainPresenter extends BasePresenter<MainView> {
                 .subscribe(
                         products -> {
                             if (products == null || products.isEmpty()) {
-                                mView.showEmptyView();
+//                                mView.showEmptyView();
                             } else {
-                                mView.showProducts(products);
+//                                mView.showProducts(products);
                             }
                         },
                         e -> {
-                            mView.showProgress(false);
+//                            mView.showProgress(false);
                             if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-                                mView.onNetworkFailed();
+//                                mView.onNetworkFailed();
                             } else {
-                                mView.onGeneralFailed(e.getMessage());
+//                                mView.onGeneralFailed(e.getMessage());
                             }
-                        }
-                        , () -> mView.showProgress(false));
+                        });
+//                        , () -> mView.showProgress(false));
+    }
+
+    @Override
+    public void subscribe() {
+
+    }
+
+    @Override
+    public void unsubscribe() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+
     }
 }

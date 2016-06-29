@@ -8,11 +8,11 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.parse.ParseUser;
+import com.jokotech.babr.view.base.BaseActivity;
+import com.jokotech.babr.view.base.BasePresenter;
 import com.squareup.picasso.Picasso;
 import com.jokotech.babr.R;
 import com.jokotech.babr.data.remote.ParseService;
-import com.jokotech.babr.view.base.ToolbarActivity;
 import com.jokotech.babr.vo.Product;
 
 import javax.inject.Inject;
@@ -20,7 +20,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class BarViewActivity extends ToolbarActivity {
+public class BarViewActivity extends BaseActivity {
 
     private static final String EXTRA_PRODUCT =
             "com.whooo.barscanner.view.product.BarViewActivity.EXTRA_PRODUCT";
@@ -39,23 +39,20 @@ public class BarViewActivity extends ToolbarActivity {
     private Product mProduct;
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_bar_view;
-    }
-
-
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_bar_view);
         ButterKnife.bind(this);
-
-        getComponent().inject(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mProduct = getIntent().getParcelableExtra(EXTRA_PRODUCT);
         bindView(mProduct);
+    }
+
+    @Override
+    protected BasePresenter getPresenter() {
+        return null;
     }
 
     @Override
@@ -70,10 +67,10 @@ public class BarViewActivity extends ToolbarActivity {
             case R.id.action_add: {
                 Intent intent = getIntent();
 
-                if (ParseUser.getCurrentUser() != null) {
-                    //put data to server
-                    mParseService.saveProduct(mProduct);
-                }
+//                if (ParseUser.getCurrentUser() != null) {
+//                    //put data to server
+//                    mParseService.saveProduct(mProduct);
+//                }
 
                 intent.putExtra(EXTRA_PRODUCT, mProduct);
                 setResult(RESULT_OK, intent);
@@ -85,12 +82,12 @@ public class BarViewActivity extends ToolbarActivity {
     }
 
     private void bindView(Product product) {
-        mTextBarcodeTitle.setText(product.getModel());
-        mTextBarcodeManufacture.setText(product.getManufacture());
-        mTextBarcodeCountry.setText(product.getCountry());
+        mTextBarcodeTitle.setText(product.model);
+        mTextBarcodeManufacture.setText(product.manufacture);
+        mTextBarcodeCountry.setText(product.country);
 
-        if (!TextUtils.isEmpty(product.getImageUrl())) {
-            Picasso.with(this).load(product.getImageUrl()).into(mImageBarView);
+        if (!TextUtils.isEmpty(product.imageUrl)) {
+            Picasso.with(this).load(product.imageUrl).into(mImageBarView);
         }
     }
 }

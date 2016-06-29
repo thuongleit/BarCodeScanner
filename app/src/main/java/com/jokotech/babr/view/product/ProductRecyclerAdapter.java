@@ -9,8 +9,6 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -179,26 +177,26 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
             } else {
 
                 itemView.setBackgroundColor(Color.WHITE);
-                 btnUndo.setVisibility(View.GONE);
+                btnUndo.setVisibility(View.GONE);
                 btnUndo.setOnClickListener(null);
 
-                if (!TextUtils.isEmpty(product.getName())) {
-                    textBarcodeTitle.setText(product.getName());
+                if (!TextUtils.isEmpty(product.name)) {
+                    textBarcodeTitle.setText(product.name);
                 }
-                if (!TextUtils.isEmpty(product.getManufacture())) {
-                    textBarcodeManufacture.setText(product.getManufacture());
+                if (!TextUtils.isEmpty(product.manufacture)) {
+                    textBarcodeManufacture.setText(product.manufacture);
                 } else {
                     textBarcodeManufacture.setVisibility(View.GONE);
                 }
-                if (!TextUtils.isEmpty(product.getCountry())) {
-                    textBarcodeCountry.setText(product.getCountry());
+                if (!TextUtils.isEmpty(product.country)) {
+                    textBarcodeCountry.setText(product.country);
                 } else {
                     textBarcodeCountry.setVisibility(View.GONE);
                 }
-                textSource.setText(product.getSource());
+                textSource.setText(product.source);
 
-                if (!TextUtils.isEmpty(product.getImageUrl())) {
-                    Picasso.with(context).load(product.getImageUrl()).centerCrop().fit().transform(new RoundedTransformation()).into(imageBarView);
+                if (!TextUtils.isEmpty(product.imageUrl)) {
+                    Picasso.with(context).load(product.imageUrl).centerCrop().fit().transform(new RoundedTransformation()).into(imageBarView);
                 }
 
             }
@@ -231,7 +229,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
             values.addAll(listSearch);
         } else {
             for (Product product : listSearch) {
-                if (product.getName() != null && product.getName().toLowerCase(Locale.getDefault()).contains(textSearch)) {
+                if (product.name != null && product.name.toLowerCase(Locale.getDefault()).contains(textSearch)) {
                     values.add(product);
                 }
             }

@@ -15,9 +15,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SplashPresenter implements SplashContract.Presenter {
 
-    private final SplashContract.View mView;
+    private SplashContract.View mView;
     private final FirebaseAuth mAuth;
-    private final FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private Subscription mSubscription;
 
     public SplashPresenter(@NonNull SplashContract.View view, @NonNull FirebaseAuth auth) {
@@ -47,7 +47,7 @@ public class SplashPresenter implements SplashContract.Presenter {
                         },
                         e -> {
                             Timber.e(e, "Unable restoring session");
-                            mView.inAppError(e);
+                            mView.showInAppError();
                         });
     }
 
@@ -59,5 +59,12 @@ public class SplashPresenter implements SplashContract.Presenter {
         if (mSubscription != null) {
             mSubscription.unsubscribe();
         }
+    }
+
+
+    @Override
+    public void onDestroy() {
+        mView = null;
+        mAuthStateListener = null;
     }
 }

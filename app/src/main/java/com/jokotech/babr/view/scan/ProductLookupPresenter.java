@@ -22,7 +22,7 @@ import rx.subscriptions.Subscriptions;
 /**
  * Created by thuongle on 1/3/16.
  */
-public class ProductLookupPresenter extends BasePresenter<ScanView> {
+public class ProductLookupPresenter implements BasePresenter {
 
     private final DataManager mDataManager;
     private Subscription mSubscription = Subscriptions.empty();
@@ -33,18 +33,9 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
         mDataManager = dataManager;
     }
 
-    @Override
-    public void detachView() {
-        super.detachView();
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
-    }
-
     public void execute(final String code) {
-        checkViewAttached();
-        mView.showProgress(true);
-        mView.playRingtone();
+//        mView.showProgress(true);
+//        mView.playRingtone();
 
         Observable<List<Product>> observableUpcItemDb = mDataManager.getProductUpcItemDb(code);
         Observable<List<Product>> observableBabr = mDataManager.getProductsBABR(code);
@@ -63,21 +54,23 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
                 .subscribe(object -> {
                             if (object instanceof AmazonProductResponse) {
                                 AmazonProductResponse reponse = (AmazonProductResponse) object;
-                                mView.onRequestSuccess(reponse);
+//                                mView.onRequestSuccess(reponse);
                             } else {
                                 List<Product> reponse = (List<Product>) object;
-                                mView.onRequestSuccessList(reponse);
+//                                mView.onRequestSuccessList(reponse);
                             }
                             stopConcurrencyExe();
 
                         }, e -> {
                             if (e instanceof IOException) {
-                                mView.onNetworkFailed();
+//                                mView.onNetworkFailed();
                             } else {
-                                mView.onGeneralFailed(e.getMessage());
+//                                mView.onGeneralFailed(e.getMessage());
                             }
                         },
-                        () -> mView.showProgress(false)));
+                        () -> {
+//                            mView.showProgress(false)
+                        }));
 
 
     }
@@ -87,7 +80,7 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
             return true;
         } else {
             List<Product> reponse = (List<Product>) object;
-            if (!TextUtils.isEmpty(reponse.get(0).getImageUrl())) {
+            if (!TextUtils.isEmpty(reponse.get(0).imageUrl)) {
                 return true;
             }
         }
@@ -106,5 +99,20 @@ public class ProductLookupPresenter extends BasePresenter<ScanView> {
         if (compositeSubscription != null) {
             compositeSubscription.clear();
         }
+    }
+
+    @Override
+    public void subscribe() {
+
+    }
+
+    @Override
+    public void unsubscribe() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+
     }
 }

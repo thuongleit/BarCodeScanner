@@ -16,7 +16,6 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.Subscriber;
-import timber.log.Timber;
 
 /**
  * Created by ThongLe on 3/19/2016.
@@ -48,16 +47,16 @@ public class WalmartlabsParseService {
                     public void onResponse(Call<Walmartlabs> call, Response<Walmartlabs> response) {
                         Walmartlabs walmartlabs = response.body();
                         if (walmartlabs != null) {
-                            product.setSource("walmartlabs.com");
-                            product.setListId("a");
+                            product.source = "walmartlabs.com";
+                            product.listId = "a";
                             if (walmartlabs.getItems().get(0).getName() != null) {
-                                product.setName(walmartlabs.getItems().get(0).getName());
+                                product.name = walmartlabs.getItems().get(0).getName();
                             }
                             if (walmartlabs.getItems().get(0).getLargeImage() != null) {
-                                product.setImageUrl(walmartlabs.getItems().get(0).getLargeImage());
+                                product.imageUrl = walmartlabs.getItems().get(0).getLargeImage();
                             }
                             if (walmartlabs.getItems().get(0).getUpc() != null) {
-                                product.setUpcA(walmartlabs.getItems().get(0).getUpc());
+                                product.upcA = walmartlabs.getItems().get(0).getUpc();
                             }
                             subscriber.onNext(product);
                         }

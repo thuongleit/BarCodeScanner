@@ -1,8 +1,4 @@
-package com.jokotech.babr.view.session.signup;
-
-/**
- * Created by thuongle on 6/8/16.
- */
+package com.jokotech.babr.view.session.base;
 
 public class User {
     public String email;

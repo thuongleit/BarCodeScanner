@@ -1,17 +1,14 @@
-package com.jokotech.babr.view.session.splash;
+package com.jokotech.babr.view.main;
 
 import com.jokotech.babr.view.base.BasePresenter;
 import com.jokotech.babr.view.base.BaseView;
 
-public interface SplashContract {
-
+public interface MainContract {
     interface View extends BaseView {
 
-        void onUserHasSignedIn();
-
-        void onUserNotSignedIn();
     }
 
     interface Presenter extends BasePresenter {
+
     }
 }

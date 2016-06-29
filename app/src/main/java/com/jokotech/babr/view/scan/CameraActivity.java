@@ -19,11 +19,11 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.jokotech.babr.R;
-import com.jokotech.babr.di.ActivityScope;
 import com.jokotech.babr.util.AppUtils;
 import com.jokotech.babr.util.RevealBackgroundView;
 import com.jokotech.babr.util.dialog.DialogFactory;
-import com.jokotech.babr.view.base.ToolbarActivity;
+import com.jokotech.babr.view.base.BaseActivity;
+import com.jokotech.babr.view.base.BasePresenter;
 import com.jokotech.babr.view.widget.CameraPreview;
 import com.jokotech.babr.view.widget.ViewFinderView;
 import com.jokotech.babr.vo.Product;
@@ -37,13 +37,11 @@ import net.sourceforge.zbar.SymbolSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class CameraActivity extends ToolbarActivity implements ScanView, Camera.PreviewCallback {
+public class CameraActivity extends BaseActivity implements ScanView, Camera.PreviewCallback {
 
     public static final String EXTRA_DATA = "CameraActivity.EXTRA_PRODUCTS_DATA";
     public static final String EXTRA_LOAD_USER_ID = "load_user_id";
@@ -56,10 +54,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     @Bind(R.id.viewFinder)
     ViewFinderView viewFinderView;
 
-    @Inject
     ProductLookupPresenter mProductLookupPresenter;
-    @Inject
-    @ActivityScope
     Context mContext;
 
     private CameraPreview mPreview;
@@ -72,24 +67,17 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     private ProgressDialog mProgressDialog;
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_camera;
-    }
-
-
-    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getComponent().inject(this);
+        setContentView(R.layout.activity_camera);
 
-        mSupportActionBar.setDisplayHomeAsUpEnabled(true);
+//        mSupportActionBar.setDisplayHomeAsUpEnabled(true);
 
         mAutoFocusHandler = new Handler();
         // Create and configure the ImageScanner;
         setupScanner();
         //Create and Configure Camera
         setupCamera();
-        mProductLookupPresenter.attachView(this);
     }
 
     @Override
@@ -120,8 +108,12 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mProductLookupPresenter.detachView();
         ButterKnife.unbind(this);
+    }
+
+    @Override
+    protected BasePresenter getPresenter() {
+        return null;
     }
 
     @Override
@@ -167,7 +159,7 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
     @Override
     public void showProgress(boolean show) {
         if (mProgressDialog == null) {
-            mProgressDialog = DialogFactory.createProgressDialog(mContext, "Searching...");
+            mProgressDialog = DialogFactory.createProgressDialog(mContext, "", "Searching...");
         }
 
         if (show) {
@@ -198,12 +190,10 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
     }
 
-    @Override
     public void onNetworkFailed() {
         buildFailedDialog("You has been disconnected!").show();
     }
 
-    @Override
     public void onGeneralFailed(String message) {
         //  swistchToNextScan(message);
     }
@@ -284,10 +274,10 @@ public class CameraActivity extends ToolbarActivity implements ScanView, Camera.
             }
         } catch (Exception e) {
             Timber.e(e, "Failed in getting qr code from server");
-            DialogFactory.createTryAgainDialog(mContext, "Cannot query this QR Code from server. Please try again", (dialog, which) -> {
-                dialog.dismiss();
-                reloadActivity();
-            });
+//            DialogFactory.createTryAgainDialog(mContext, "Cannot query this QR Code from server. Please try again", (dialog, which) -> {
+//                dialog.dismiss();
+//                reloadActivity();
+//            });
         }
     }
 

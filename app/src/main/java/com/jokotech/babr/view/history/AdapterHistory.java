@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.jokotech.babr.R;
 import com.jokotech.babr.config.Constant;
 import com.jokotech.babr.view.qrgenerate.QRCode;
-import com.jokotech.babr.vo.ProductHistory;
+import com.jokotech.babr.vo.CheckoutHistory;
 
 import java.util.List;
 
@@ -26,16 +26,15 @@ import butterknife.ButterKnife;
 public class AdapterHistory extends RecyclerView.Adapter<AdapterHistory.HistoryHolder> {
 
 
-
     private Context context;
-    private List<ProductHistory> list;
+    private List<CheckoutHistory> list;
 
-    public AdapterHistory(Context context, List<ProductHistory> list) {
+    public AdapterHistory(Context context, List<CheckoutHistory> list) {
         this.context = context;
         this.list = list;
     }
 
-    public void addItems(List<ProductHistory> arrayList) {
+    public void addItems(List<CheckoutHistory> arrayList) {
         this.list = arrayList;
         notifyDataSetChanged();
     }
@@ -47,18 +46,18 @@ public class AdapterHistory extends RecyclerView.Adapter<AdapterHistory.HistoryH
 
     @Override
     public void onBindViewHolder(HistoryHolder holder, int position) {
-        ProductHistory history = list.get(position);
-        Bitmap myBitmap = QRCode.from(history.getListId()).bitmap();
+        CheckoutHistory history = list.get(position);
+        Bitmap myBitmap = QRCode.from(history.listId).bitmap();
         holder.ivQrCode.setImageBitmap(myBitmap);
-        holder.textGroupTitle.setText(history.getName());
+        holder.textGroupTitle.setText(history.name);
         holder.textBarcodeCountry.setVisibility(View.GONE);
         holder.textBarcodeManufacture.setVisibility(View.GONE);
-        holder.textSize.setText(String.valueOf(history.getSize()));
+        holder.textSize.setText(String.valueOf(history.size));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtra(Constant.KEY_LIST_ID, history.getListId());
+                intent.putExtra(Constant.KEY_LIST_ID, history.listId);
                 context.startActivity(intent);
             }
         });
