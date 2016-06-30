@@ -26,6 +26,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (getPresenter() != null) {
+            getPresenter().subscribe();
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
     }

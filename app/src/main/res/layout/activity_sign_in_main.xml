@@ -75,7 +75,6 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/text_login_as_guest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -85,6 +84,7 @@
             android:textColor="@android:color/white" />
 
         <Button
+            android:id="@+id/button_sign_in_anonymous"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_gravity="center_horizontal"
@@ -102,8 +102,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp" />
 
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/google_original_btn"
-        android:layout_width="0dp"
-        android:layout_height="0dp" />
+    <!--<com.google.android.gms.common.SignInButton-->
+        <!--android:id="@+id/google_original_btn"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="0dp" />-->
 </FrameLayout>

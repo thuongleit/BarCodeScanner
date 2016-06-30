@@ -27,34 +27,6 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity
-            android:name="com.jokotech.babr.view.main.MainActivity"
-            android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.seachable"
-                android:resource="@xml/searchable" />
-        </activity>
-        <activity
-            android:name="com.jokotech.babr.view.scan.CameraActivity"
-            android:parentActivityName="com.jokotech.babr.view.main.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.jokotech.babr.view.main.MainActivity" />
-        </activity>
-        <activity
-            android:name="com.jokotech.babr.view.product.BarViewActivity"
-            android:parentActivityName="com.jokotech.babr.view.main.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.jokotech.babr.view.main.MainActivity" />
-        </activity>
-        <activity
-            android:name=".view.session.signin.SignInActivity"
-            android:configChanges="keyboardHidden|orientation" />
         <activity android:name=".view.session.splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -81,13 +53,41 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
+        <!-- Session activities -->
+        <activity
+            android:name=".view.session.base.MainSignInActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.session.signup.SignUpActivity"
-            android:configChanges="keyboardHidden|orientation"
-            android:parentActivityName=".view.session.signin.SignInWithEmailActivity">
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.session.signin.SignInActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.jokotech.babr.view.main.MainActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.seachable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity
+            android:name="com.jokotech.babr.view.scan.CameraActivity"
+            android:parentActivityName="com.jokotech.babr.view.main.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.session.signin.SignInWithEmailActivity" />
+                android:value="com.jokotech.babr.view.main.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.jokotech.babr.view.product.BarViewActivity"
+            android:parentActivityName="com.jokotech.babr.view.main.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.jokotech.babr.view.main.MainActivity" />
         </activity>
     </application>
 

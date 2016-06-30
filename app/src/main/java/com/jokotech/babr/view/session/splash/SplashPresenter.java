@@ -11,8 +11,6 @@ import rx.Observable;
 import rx.Subscription;
 import timber.log.Timber;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public class SplashPresenter implements SplashContract.Presenter {
 
     private SplashContract.View mView;
@@ -21,8 +19,8 @@ public class SplashPresenter implements SplashContract.Presenter {
     private Subscription mSubscription;
 
     public SplashPresenter(@NonNull SplashContract.View view, @NonNull FirebaseAuth auth) {
-        this.mView = checkNotNull(view);
-        this.mAuth = checkNotNull(auth);
+        this.mView = view;
+        this.mAuth = auth;
 
         mAuthStateListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();

@@ -9,7 +9,7 @@ import com.jokotech.babr.R;
 import com.jokotech.babr.view.base.BaseActivity;
 import com.jokotech.babr.view.base.BasePresenter;
 import com.jokotech.babr.view.main.MainActivity;
-import com.jokotech.babr.view.session.signin.SignInActivity;
+import com.jokotech.babr.view.session.base.MainSignInActivity;
 
 import javax.inject.Inject;
 
@@ -24,6 +24,13 @@ public class SplashActivity extends BaseActivity implements SplashContract.View 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        DaggerSplashComponent
+                .builder()
+                .applicationComponent(getApp().getAppComponent())
+                .splashModule(new SplashModule(this))
+                .build()
+                .inject(this);
     }
 
     @Override
@@ -40,7 +47,7 @@ public class SplashActivity extends BaseActivity implements SplashContract.View 
 
     @Override
     public void onUserNotSignedIn() {
-        Intent intent = new Intent(this, SignInActivity.class);
+        Intent intent = new Intent(this, MainSignInActivity.class);
         startActivity(intent);
         finish();
     }

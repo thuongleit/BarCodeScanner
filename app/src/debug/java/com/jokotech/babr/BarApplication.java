@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.jokotech.babr.di.components.ApplicationComponent;
+import com.jokotech.babr.di.components.DaggerApplicationComponent;
+import com.jokotech.babr.di.modules.ApplicationModule;
 
 import timber.log.Timber;
 
@@ -29,10 +31,10 @@ public class BarApplication extends MultiDexApplication {
         }
         Timber.plant(new CrashlyticsTree());
 
-//        mAppComponent = DaggerApplicationComponent
-//                .builder()
-//                .applicationModule(new ApplicationModule(this))
-//                .build();
+        mAppComponent = DaggerApplicationComponent
+                .builder()
+                .applicationModule(new ApplicationModule(this))
+                .build();
     }
 
     public ApplicationComponent getAppComponent() {

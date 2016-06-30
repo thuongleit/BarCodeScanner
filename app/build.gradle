@@ -114,6 +114,9 @@ dependencies {
     compile "com.google.firebase:firebase-auth:$rootProject.playServices"
     compile "com.google.firebase:firebase-config:$rootProject.playServices"
     compile "com.google.firebase:firebase-crash:$rootProject.playServices"
+
+    //google play services
+    compile "com.google.android.gms:play-services-auth:$rootProject.playServices"
     //rx
     compile "io.reactivex:rxjava:$rootProject.rxJava"
     compile "io.reactivex:rxandroid:$rootProject.rxAndroid"
