@@ -30,8 +30,7 @@ public class SignUpPresenter implements SignUpContract.Presenter {
             } else {
                 // User is signed out
                 Timber.d("onAuthStateChanged:signed_out");
-                //// TODO: 6/18/16 remove or not??
-                mView.onSignUpFailed("");
+                //do nothing
             }
         };
     }

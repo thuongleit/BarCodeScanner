@@ -1,11 +1,14 @@
 package com.jokotech.babr.view.session.base;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -40,12 +43,20 @@ public class MainSignInActivity extends BaseActivity implements GoogleApiClient.
 
     @Bind(R.id.fb_original_btn)
     LoginButton mFbOriginalBtn;
+    @Bind(R.id.button_facebook_sign_in)
+    ImageButton mBtnFbSignIn;
+    @Bind(R.id.button_google_sign_in)
+    ImageButton mBtnGoogleSignIn;
+    @Bind(R.id.button_sign_in_anonymous)
+    Button mBtnAnonymousSignIn;
 
     private GoogleApiClient mGoogleApiClient;
     private CallbackManager mCallbackManager;
 
     @Inject
     SignInBaseContract.Presenter mPresenter;
+
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -111,6 +122,40 @@ public class MainSignInActivity extends BaseActivity implements GoogleApiClient.
     public void onSignInFailed(String message) {
         logoutFacebook();
         DialogFactory.createSimpleNoTitleDialog(this, message).show();
+    }
+
+    @Override
+    public void showProgress(boolean show) {
+        if (mProgressDialog == null) {
+            mProgressDialog = DialogFactory
+                    .createProgressDialog(this, R.string.dialog_processing_title, R.string.dialog_processing_message);
+            mProgressDialog.setOnCancelListener(dialog -> {
+                dialog.dismiss();
+                setButtonFbEnable(true);
+                setButtonGoogleEnable(true);
+                setButtonSignInAnonymusEnable(true);
+            });
+        }
+        if (show) {
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void setButtonSignInAnonymusEnable(boolean enabled) {
+        mBtnAnonymousSignIn.setEnabled(enabled);
+    }
+
+    @Override
+    public void setButtonFbEnable(boolean enabled) {
+        mBtnFbSignIn.setEnabled(enabled);
+    }
+
+    @Override
+    public void setButtonGoogleEnable(boolean enabled) {
+        mBtnGoogleSignIn.setEnabled(enabled);
     }
 
     @Override

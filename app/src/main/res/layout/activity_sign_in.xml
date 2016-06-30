@@ -1,86 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".view.session.signin.SignInActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <View
+    <data>
+
+        <import type="android.util.TimeUtils" />
+
+        <import type="android.util.Patterns" />
+
+        <variable
+            name="email"
+            type="String" />
+
+        <variable
+            name="password"
+            type="String" />
+
+        <variable
+            name="presenter"
+            type="com.jokotech.babr.view.session.signin.SignInContract.Presenter" />
+    </data>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/login_background" />
+        tools:context=".view.session.signin.SignInActivity">
 
-    <ImageView
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_gravity="top|center_horizontal"
-        android:layout_marginBottom="48dp"
-        android:tint="@android:color/white"
-        app:srcCompat="@drawable/ic_launcher_orange" />
-
-    <LinearLayout
-        android:id="@+id/layout_sign_in"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
-        android:layout_marginTop="48dp"
-        android:orientation="vertical">
-
-        <EditText
-            android:id="@+id/input_username"
-            style="@style/Login.InputEditTextStyle"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginBottom="12dp"
-            android:drawableLeft="@drawable/ic_person"
-            android:drawableTint="@color/black_38"
-            android:hint="Username"
-            android:inputType="textEmailAddress"
-            android:nextFocusDown="@+id/input_password"
-            android:paddingLeft="6dp"
-            android:paddingStart="6dp" />
+            android:layout_height="match_parent"
+            android:background="@drawable/login_background" />
 
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginBottom="48dp"
+            android:tint="@android:color/white"
+            app:srcCompat="@drawable/ic_launcher_orange" />
 
-        <EditText
-            android:id="@+id/input_password"
-            style="@style/Login.InputEditTextStyle"
+        <LinearLayout
+            android:id="@+id/layout_sign_in"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginBottom="12dp"
-            android:drawableLeft="@drawable/ic_locked"
-            android:drawableTint="@color/black_38"
-            android:hint="Password"
-            android:imeOptions="actionDone"
-            android:inputType="textPassword"
-            android:nextFocusUp="@id/input_username"
-            android:paddingLeft="6dp"
-            android:paddingStart="6dp" />
-
-
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/button_sign_in"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bgr_green_button"
-            android:text="Sign in"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@android:color/white" />
-
-        <TextView
-            android:id="@+id/text_link_sign_up"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|right"
-            android:layout_marginTop="12dp"
-            android:text="No account yet? Sign up."
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@android:color/white" />
-    </LinearLayout>
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginTop="48dp"
+            android:orientation="vertical">
+
+            <com.jokotech.babr.view.widget.MuliEditText
+                android:id="@+id/input_email"
+                style="@style/Login.InputEditTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginBottom="8dp"
+                android:drawableLeft="@drawable/ic_email_24dp"
+                android:drawablePadding="4dp"
+                android:drawableTint="@color/black_38"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:nextFocusDown="@+id/input_password"
+                android:paddingLeft="8dp"
+                android:paddingStart="8dp"
+                android:text="@={email}" />
 
 
-</FrameLayout>
+            <com.jokotech.babr.view.widget.MuliEditText
+                android:id="@+id/input_password"
+                style="@style/Login.InputEditTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginBottom="8dp"
+                android:drawableLeft="@drawable/ic_locked"
+                android:drawablePadding="4dp"
+                android:drawableTint="@color/black_38"
+                android:hint="Password"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:nextFocusUp="@+id/input_email"
+                android:paddingLeft="8dp"
+                android:paddingStart="8dp"
+                android:text="@={password}" />
+
+
+            <com.jokotech.babr.view.widget.MuliButton
+                android:id="@+id/button_sign_in"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bgr_green_button"
+                android:onClick="@{() -> presenter.performSignIn(email, password)}"
+                android:text="Sign in"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@android:color/white" />
+
+            <com.jokotech.babr.view.widget.MuliTextView
+                android:id="@+id/text_forgot_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|right"
+                android:layout_marginTop="8dp"
+                android:text="Forgot your password?"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white" />
+
+            <com.jokotech.babr.view.widget.MuliTextView
+                android:id="@+id/text_link_sign_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|right"
+                android:layout_marginTop="8dp"
+                android:text="No account yet? Sign up."
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </FrameLayout>
+</layout>

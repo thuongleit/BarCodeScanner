@@ -29,25 +29,12 @@
         android:layout_marginTop="48dp"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/input_username"
-            style="@style/Login.InputEditTextStyle"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginBottom="12dp"
-            android:drawableLeft="@drawable/ic_person"
-            android:drawableTint="@color/black_38"
-            android:hint="Username"
-            android:nextFocusDown="@+id/input_email"
-            android:paddingLeft="6dp"
-            android:paddingStart="6dp" />
-
-        <EditText
+        <com.jokotech.babr.view.widget.MuliEditText
             android:id="@+id/input_email"
             style="@style/Login.InputEditTextStyle"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginBottom="12dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="8dp"
             android:drawableLeft="@drawable/ic_email_24dp"
             android:drawableTint="@color/black_38"
             android:hint="Email"
@@ -56,42 +43,55 @@
             android:paddingLeft="6dp"
             android:paddingStart="6dp" />
 
-        <EditText
+        <com.jokotech.babr.view.widget.MuliEditText
+            android:id="@+id/input_fullname"
+            style="@style/Login.InputEditTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="8dp"
+            android:drawableLeft="@drawable/ic_person"
+            android:drawableTint="@color/black_38"
+            android:hint="Username"
+            android:nextFocusDown="@+id/input_email"
+            android:paddingLeft="6dp"
+            android:paddingStart="6dp" />
+
+        <com.jokotech.babr.view.widget.MuliEditText
             android:id="@+id/input_password"
             style="@style/Login.InputEditTextStyle"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginBottom="12dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="8dp"
             android:drawableLeft="@drawable/ic_locked"
             android:drawableRight="@drawable/ic_visibility"
             android:drawableTint="@color/black_38"
             android:hint="Password"
             android:imeOptions="actionDone"
             android:inputType="textPassword"
-            android:nextFocusUp="@id/input_username"
+            android:nextFocusUp="@id/input_fullname"
             android:paddingLeft="6dp"
             android:paddingStart="6dp" />
 
 
-        <android.support.v7.widget.AppCompatButton
+        <com.jokotech.babr.view.widget.MuliButton
             android:id="@+id/button_sign_up"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="50dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/bgr_green_button"
             android:text="Create account"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@android:color/white" />
 
-        <TextView
+        <com.jokotech.babr.view.widget.MuliTextView
             android:id="@+id/text_link_sign_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|right"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:text="Already a member? Sign in."
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/white" />
     </LinearLayout>
 </FrameLayout>

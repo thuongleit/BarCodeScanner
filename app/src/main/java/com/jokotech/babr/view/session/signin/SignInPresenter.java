@@ -1,16 +1,13 @@
 package com.jokotech.babr.view.session.signin;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.jokotech.babr.view.session.base.User;
 
 import timber.log.Timber;
 
-/**
- * Created by thuongle on 12/30/15.
- */
 public class SignInPresenter implements SignInContract.Presenter {
 
     @NonNull
@@ -33,8 +30,7 @@ public class SignInPresenter implements SignInContract.Presenter {
             } else {
                 // User is signed out
                 Timber.d("onAuthStateChanged:signed_out");
-                //// TODO: 6/18/16 remove or not??
-                mView.onSignInFailed("");
+                //do nothing
             }
         };
     }
@@ -58,19 +54,26 @@ public class SignInPresenter implements SignInContract.Presenter {
     }
 
     @Override
-    public void signIn(User user) {
-        mView.showProgress(true);
-        mView.setSignInBtnEnable(false);
-        mAuth.signInWithEmailAndPassword(user.email, user.password)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        mView.onSignInSuccess();
-                    } else {
-                        Timber.e(task.getException(), "Failed in creating new user: %s", user.email);
-                        mView.onSignInFailed(task.getException().getMessage());
-                    }
-                    mView.showProgress(false);
-                    mView.setSignInBtnEnable(true);
-                });
+    public void performSignIn(@Nullable String email, @Nullable String password) {
+        if (mView.validateInput(email, password)) {
+            mView.showProgress(true);
+            mView.setSignInBtnEnable(false);
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            mView.onSignInSuccess();
+                        } else {
+                            Timber.e(task.getException(), "Failed in creating new user: %s", email);
+                            mView.onSignInFailed(task.getException().getMessage());
+                        }
+                        mView.showProgress(false);
+                        mView.setSignInBtnEnable(true);
+                    });
+        }
+    }
+
+    @Override
+    public void askForgotPassword(@Nullable String email) {
+
     }
 }

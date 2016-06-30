@@ -32,8 +32,7 @@ public class SignInBasePresenter implements SignInBaseContract.Presenter {
             } else {
                 // User is signed out
                 Timber.d("onAuthStateChanged:signed_out");
-                //// TODO: 6/18/16 remove or not??
-                mView.onSignInFailed("");
+                //do nothing
             }
         };
     }
@@ -58,11 +57,12 @@ public class SignInBasePresenter implements SignInBaseContract.Presenter {
 
     @Override
     public void signInWithFacebook(@NonNull AccessToken fbToken) {
+        mView.showProgress(true);
+        mView.setButtonFbEnable(false);
         AuthCredential credential = FacebookAuthProvider.getCredential(fbToken.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(task -> {
                     Timber.d("signInWithCredential:onComplete:" + task.isSuccessful());
-
                     // If sign in fails, display a message to the user. If sign in succeeds
                     // the auth state listener will be notified and logic to handle the
                     // signed in user can be handled in the listener.
@@ -70,12 +70,17 @@ public class SignInBasePresenter implements SignInBaseContract.Presenter {
                         Timber.w("signInWithCredential", task.getException());
                         mView.onSignInFailed("Authentication failed.");
                     }
+
+                    mView.showProgress(false);
+                    mView.setButtonFbEnable(true);
                 });
     }
 
     @Override
     public void signInWithGoogle(@NonNull GoogleSignInResult googleSignIn) {
         if (googleSignIn.isSuccess()) {
+            mView.showProgress(true);
+            mView.setButtonGoogleEnable(false);
             // Google Sign In was successful, authenticate with Firebase
             GoogleSignInAccount account = googleSignIn.getSignInAccount();
             Timber.d("firebaseAuthWithGoogle:" + account.getId());
@@ -91,6 +96,9 @@ public class SignInBasePresenter implements SignInBaseContract.Presenter {
                             Timber.w("signInWithCredential", task.getException());
                             mView.onSignInFailed("Authentication failed.");
                         }
+
+                        mView.showProgress(false);
+                        mView.setButtonGoogleEnable(true);
                     });
         } else {
             // Google Sign In failed, update UI appropriately
@@ -100,6 +108,8 @@ public class SignInBasePresenter implements SignInBaseContract.Presenter {
 
     @Override
     public void signInAnonymous() {
+        mView.showProgress(true);
+        mView.setButtonSignInAnonymusEnable(false);
         mAuth.signInAnonymously()
                 .addOnCompleteListener(task -> {
                     Timber.d("signInAnonymously:onComplete:" + task.isSuccessful());
@@ -111,6 +121,8 @@ public class SignInBasePresenter implements SignInBaseContract.Presenter {
                         Timber.w(task.getException(), "signInAnonymously");
                         mView.onSignInFailed(task.getException().getMessage());
                     }
+                    mView.showProgress(false);
+                    mView.setButtonSignInAnonymusEnable(true);
                 });
     }
 }

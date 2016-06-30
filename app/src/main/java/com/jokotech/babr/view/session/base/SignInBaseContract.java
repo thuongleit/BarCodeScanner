@@ -13,6 +13,14 @@ public interface SignInBaseContract {
         void onSignInSuccess();
 
         void onSignInFailed(String message);
+
+        void showProgress(boolean show);
+
+        void setButtonSignInAnonymusEnable(boolean enabled);
+
+        void setButtonFbEnable(boolean enabled);
+
+        void setButtonGoogleEnable(boolean enabled);
     }
 
     interface Presenter extends BasePresenter {
