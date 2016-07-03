@@ -19,7 +19,7 @@
         app:srcCompat="@drawable/ic_launcher_orange" />
 
 
-    <com.jokotech.babr.view.widget.MuliTextView
+    <com.whooo.babr.view.widget.MuliTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"

@@ -1,13 +1,13 @@
-package com.jokotech.babr;
+package com.whooo.babr;
 
 import android.app.Application;
 import android.support.annotation.Nullable;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
-import com.jokotech.babr.di.components.ApplicationComponent;
-import com.jokotech.babr.di.components.DaggerApplicationComponent;
-import com.jokotech.babr.di.modules.ApplicationModule;
+import com.whooo.babr.di.components.ApplicationComponent;
+import com.whooo.babr.di.components.DaggerApplicationComponent;
+import com.whooo.babr.di.modules.ApplicationModule;
 import com.parse.Parse;
 import com.raizlabs.android.dbflow.config.FlowManager;
 

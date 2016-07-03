@@ -19,7 +19,7 @@
 
         <variable
             name="presenter"
-            type="com.jokotech.babr.view.session.signin.SignInContract.Presenter" />
+            type="com.whooo.babr.view.session.signin.SignInContract.Presenter" />
     </data>
 
     <FrameLayout
@@ -50,7 +50,7 @@
             android:layout_marginTop="48dp"
             android:orientation="vertical">
 
-            <com.jokotech.babr.view.widget.MuliEditText
+            <com.whooo.babr.view.widget.MuliEditText
                 android:id="@+id/input_email"
                 style="@style/Login.InputEditTextStyle"
                 android:layout_width="match_parent"
@@ -67,7 +67,7 @@
                 android:text="@={email}" />
 
 
-            <com.jokotech.babr.view.widget.MuliEditText
+            <com.whooo.babr.view.widget.MuliEditText
                 android:id="@+id/input_password"
                 style="@style/Login.InputEditTextStyle"
                 android:layout_width="match_parent"
@@ -85,7 +85,7 @@
                 android:text="@={password}" />
 
 
-            <com.jokotech.babr.view.widget.MuliButton
+            <com.whooo.babr.view.widget.MuliButton
                 android:id="@+id/button_sign_in"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -97,7 +97,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@android:color/white" />
 
-            <com.jokotech.babr.view.widget.MuliTextView
+            <com.whooo.babr.view.widget.MuliTextView
                 android:id="@+id/text_forgot_password"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@android:color/white" />
 
-            <com.jokotech.babr.view.widget.MuliTextView
+            <com.whooo.babr.view.widget.MuliTextView
                 android:id="@+id/text_link_sign_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

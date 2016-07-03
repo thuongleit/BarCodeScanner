@@ -9,7 +9,7 @@ android {
     compileOptions.encoding = 'UTF-8' // write your encoding here
 
     defaultConfig {
-        applicationId "com.jokotech.babr"
+        applicationId "com.whooo.babr"
         vectorDrawables.useSupportLibrary = true
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
@@ -38,7 +38,7 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
-            signingConfig signingConfigs.debug
+//            signingConfig signingConfigs.debug
         }
     }
 
@@ -52,12 +52,12 @@ android {
     }
 
     signingConfigs {
-        debug {
-            storeFile rootProject.file('config/debug.keystore')
-            storePassword 'android'
-            keyAlias 'android'
-            keyPassword 'android'
-        }
+//        debug {
+//            storeFile rootProject.file('config/debug.keystore')
+//            storePassword 'android'
+//            keyAlias 'android'
+//            keyPassword 'android'
+//        }
     }
 
     dexOptions {

@@ -24,7 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <com.jokotech.babr.view.widget.DancingScriptTextView
+                <com.whooo.babr.view.widget.DancingScriptTextView
                     android:id="@+id/text_toolbar_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

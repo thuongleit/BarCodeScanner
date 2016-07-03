@@ -1,0 +1,118 @@
+package com.whooo.babr.view.scan;
+
+import android.text.TextUtils;
+
+import com.whooo.babr.data.DataManager;
+import com.whooo.babr.data.remote.amazon.model.AmazonProductResponse;
+import com.whooo.babr.view.base.BasePresenter;
+import com.whooo.babr.vo.Product;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.Subscriptions;
+
+/**
+ * Created by thuongle on 1/3/16.
+ */
+public class ProductLookupPresenter implements BasePresenter {
+
+    private final DataManager mDataManager;
+    private Subscription mSubscription = Subscriptions.empty();
+    private CompositeSubscription compositeSubscription = new CompositeSubscription();
+
+    @Inject
+    public ProductLookupPresenter(DataManager dataManager) {
+        mDataManager = dataManager;
+    }
+
+    public void execute(final String code) {
+//        mView.showProgress(true);
+//        mView.playRingtone();
+
+        Observable<List<Product>> observableUpcItemDb = mDataManager.getProductUpcItemDb(code);
+        Observable<List<Product>> observableBabr = mDataManager.getProductsBABR(code);
+        Observable<List<Product>> observableWalmartlabs = mDataManager.getProductWalmartlabs(code);
+        Observable<List<Product>> observableUpcDatabase = mDataManager.getProductUpcDatabase(code);
+        Observable<List<Product>> observableCheckoutScan = mDataManager.getProductsCheckoutScan(code);
+        Observable<List<Product>> observableSearchUpc = mDataManager.getProductSearchUpc(code);
+        Observable<AmazonProductResponse> observableAmazon = mDataManager.searchProductsInAmazon(code);
+
+        Observable<List<Product>> merge = Observable.merge(observableUpcItemDb, observableWalmartlabs, observableBabr, observableUpcDatabase,
+                observableCheckoutScan, observableSearchUpc);
+
+        compositeSubscription.add(Observable.combineLatest(merge, observableAmazon, this::setupData)
+                .first(data -> isHavingImage(data))
+                .subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object -> {
+                            if (object instanceof AmazonProductResponse) {
+                                AmazonProductResponse reponse = (AmazonProductResponse) object;
+//                                mView.onRequestSuccess(reponse);
+                            } else {
+                                List<Product> reponse = (List<Product>) object;
+//                                mView.onRequestSuccessList(reponse);
+                            }
+                            stopConcurrencyExe();
+
+                        }, e -> {
+                            if (e instanceof IOException) {
+//                                mView.onNetworkFailed();
+                            } else {
+//                                mView.onGeneralFailed(e.getMessage());
+                            }
+                        },
+                        () -> {
+//                            mView.showProgress(false)
+                        }));
+
+
+    }
+
+    private boolean isHavingImage(Object object) {
+        if (object instanceof AmazonProductResponse) {
+            return true;
+        } else {
+            List<Product> reponse = (List<Product>) object;
+            if (!TextUtils.isEmpty(reponse.get(0).imageUrl)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Object setupData(List<Product> products, AmazonProductResponse response) {
+        if (response.getProducts().size() > 0) {
+            return response;
+        } else {
+            return products;
+        }
+    }
+
+    private void stopConcurrencyExe() {
+        if (compositeSubscription != null) {
+            compositeSubscription.clear();
+        }
+    }
+
+    @Override
+    public void subscribe() {
+
+    }
+
+    @Override
+    public void unsubscribe() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+
+    }
+}
