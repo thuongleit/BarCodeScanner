@@ -16,13 +16,19 @@ public interface SignInContract {
 
         void setSignInBtnEnable(boolean enabled);
 
-        boolean validateInput(String email, String password);
+        boolean validateInput(@Nullable String email, @Nullable String password);
+
+        boolean validateInput(@Nullable String email);
+
+        void onResetPasswordSuccess();
+
+        void onResetPasswordFailed(String error);
     }
 
     interface Presenter extends BasePresenter {
 
         void performSignIn(@Nullable String email, @Nullable String password);
 
-        void askForgotPassword(@Nullable  String email);
+        void askForgotPassword(@Nullable String email);
     }
 }

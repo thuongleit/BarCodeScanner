@@ -11,9 +11,6 @@ import com.whooo.babr.di.modules.ApplicationModule;
 
 import timber.log.Timber;
 
-/**
- * Created by thuongle on 11/24/15.
- */
 public class BarApplication extends MultiDexApplication {
 
     static {

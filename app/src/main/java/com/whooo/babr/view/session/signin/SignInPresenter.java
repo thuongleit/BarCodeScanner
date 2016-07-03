@@ -74,6 +74,18 @@ public class SignInPresenter implements SignInContract.Presenter {
 
     @Override
     public void askForgotPassword(@Nullable String email) {
+        if (mView.validateInput(email)) {
+            mView.showProgress(true);
+            mAuth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            mView.onResetPasswordSuccess();
+                        } else {
+                            mView.onResetPasswordFailed(task.getException().getMessage());
+                        }
+                        mView.showProgress(false);
 
+                    });
+        }
     }
 }

@@ -14,6 +14,8 @@ public interface SignUpContract {
         void showProgress(boolean show);
 
         void setSignUpBtnEnable(boolean enabled);
+
+        boolean validateInput(String email, String fullname, String password);
     }
 
     interface Presenter extends BasePresenter {

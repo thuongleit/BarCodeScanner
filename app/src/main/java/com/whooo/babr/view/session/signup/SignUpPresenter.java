@@ -54,18 +54,20 @@ public class SignUpPresenter implements SignUpContract.Presenter {
 
     @Override
     public void createUser(String email, String fullname, String password) {
-        mView.showProgress(true);
-        mView.setSignUpBtnEnable(false);
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        mView.onSignUpSuccess();
-                    } else {
-                        Timber.e(task.getException(), "Failed in creating new user: %s", email);
-                        mView.onSignUpFailed(task.getException().getMessage());
-                    }
-                    mView.showProgress(false);
-                    mView.setSignUpBtnEnable(true);
-                });
+        if(mView.validateInput(email, fullname, password)) {
+            mView.showProgress(true);
+            mView.setSignUpBtnEnable(false);
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            mView.onSignUpSuccess();
+                        } else {
+                            Timber.e(task.getException(), "Failed in creating new user: %s", email);
+                            mView.onSignUpFailed(task.getException().getMessage());
+                        }
+                        mView.showProgress(false);
+                        mView.setSignUpBtnEnable(true);
+                    });
+        }
     }
 }

@@ -48,19 +48,13 @@ public class SignInActivity extends BaseActivity implements SignInContract.View,
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
+        initializeInjector();
         ActivitySignInBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_in);
         binding.setPresenter(mSignInPresenter);
 
         mBtnSignIn = binding.buttonSignIn;
         mInputEmail = binding.inputEmail;
         mInputPassword = binding.inputPassword;
-
-        DaggerSignInComponent
-                .builder()
-                .applicationComponent(getApp().getAppComponent())
-                .signInModule(new SignInModule(this))
-                .build()
-                .inject(this);
 
         binding.inputPassword.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -72,6 +66,15 @@ public class SignInActivity extends BaseActivity implements SignInContract.View,
 
         binding.textForgotPassword.setOnClickListener(this);
         binding.textLinkSignUp.setOnClickListener(this);
+    }
+
+    private void initializeInjector() {
+        DaggerSignInComponent
+                .builder()
+                .applicationComponent(getApp().getAppComponent())
+                .signInModule(new SignInModule(this))
+                .build()
+                .inject(this);
     }
 
     @Override
@@ -127,7 +130,7 @@ public class SignInActivity extends BaseActivity implements SignInContract.View,
     @Override
     public boolean validateInput(String email, String password) {
         boolean valid = true;
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (email == null || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             mInputEmail.setError(getString(R.string.error_invalid_email));
             mInputEmail.requestFocus();
             valid = false;
@@ -146,14 +149,34 @@ public class SignInActivity extends BaseActivity implements SignInContract.View,
     }
 
     @Override
+    public boolean validateInput(@Nullable String email) {
+        boolean valid = true;
+        if (email == null || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            mInputEmail.setError(getString(R.string.error_invalid_email));
+            mInputEmail.requestFocus();
+            valid = false;
+        } else {
+            mInputEmail.setError(null);
+        }
+        return valid;
+    }
+
+    @Override
+    public void onResetPasswordSuccess() {
+        DialogFactory.createGenericErrorDialog(this, "Reset password successful. Check your email for the instructor!").show();
+    }
+
+    @Override
+    public void onResetPasswordFailed(String error) {
+        DialogFactory.createGenericErrorDialog(this, error).show();
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.text_link_sign_up:
                 Intent intent = new Intent(this, SignUpActivity.class);
                 startActivityForResult(intent, REQUEST_SIGN_UP);
-                break;
-            case R.id.text_forgot_password:
-                mSignInPresenter.askForgotPassword(mInputEmail.getText().toString());
                 break;
         }
     }

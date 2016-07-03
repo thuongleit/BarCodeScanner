@@ -94,6 +94,7 @@
                 android:background="@drawable/bgr_green_button"
                 android:onClick="@{() -> presenter.performSignIn(email, password)}"
                 android:text="Sign in"
+                android:enabled="@{email.length > 0 &amp;&amp; password.length > 0}"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@android:color/white" />
 
@@ -104,6 +105,7 @@
                 android:layout_gravity="end|right"
                 android:layout_marginTop="8dp"
                 android:text="Forgot your password?"
+                android:onClick="@{() -> presenter.askForgotPassword(email)}"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@android:color/white" />
 
