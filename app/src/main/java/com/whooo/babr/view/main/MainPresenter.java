@@ -1,21 +1,40 @@
 package com.whooo.babr.view.main;
 
-import com.whooo.babr.data.DataManager;
+import android.support.annotation.NonNull;
 
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.Subscriptions;
+import com.google.repacked.antlr.v4.runtime.misc.Nullable;
+import com.whooo.babr.data.product.ProductRepository;
 
 public class MainPresenter implements MainContract.Presenter {
 
-    private  DataManager mDataManager;
-    private Subscription mSubscription = Subscriptions.empty();
+    private MainContract.View mView;
+    @NonNull
+    private final ProductRepository mProductRepository;
+    private Object products;
 
-    public MainPresenter() {
+    public MainPresenter(@Nullable MainContract.View view, @NonNull ProductRepository productRepository) {
+        mView = view;
+        mProductRepository = productRepository;
+    }
+
+    @Override
+    public void subscribe() {
+        getProducts();
+    }
+
+    @Override
+    public void unsubscribe() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        mView = null;
+    }
+
+    public void getProducts() {
+        mProductRepository
+                .getProducts();
     }
 
 //    public void getProducts() {
@@ -44,42 +63,27 @@ public class MainPresenter implements MainContract.Presenter {
 //                        , () -> mView.showProgress(false));
 //    }
 
-    public void getProductsNotCheckout(String listId) {
-        mSubscription = mDataManager
-                .getProductsCheckout(listId)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        products -> {
-                            if (products == null || products.isEmpty()) {
-//                                mView.showEmptyView();
-                            } else {
-//                                mView.showProducts(products);
-                            }
-                        },
-                        e -> {
-//                            mView.showProgress(false);
-                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
-//                                mView.onNetworkFailed();
-                            } else {
-//                                mView.onGeneralFailed(e.getMessage());
-                            }
-                        });
-//                        , () -> mView.showProgress(false));
-    }
-
-    @Override
-    public void subscribe() {
-
-    }
-
-    @Override
-    public void unsubscribe() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
+//    public void getProductsNotCheckout(String listId) {
+//        mSubscription = mDataManager
+//                .getProductsCheckout(listId)
+//                .subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(
+//                        products -> {
+//                            if (products == null || products.isEmpty()) {
+////                                mView.showEmptyView();
+//                            } else {
+////                                mView.showProducts(products);
+//                            }
+//                        },
+//                        e -> {
+////                            mView.showProgress(false);
+//                            if (e instanceof SocketTimeoutException || e instanceof UnknownHostException) {
+////                                mView.onNetworkFailed();
+//                            } else {
+////                                mView.onGeneralFailed(e.getMessage());
+//                            }
+//                        });
+////                        , () -> mView.showProgress(false));
+//    }
 }

@@ -1,9 +1,10 @@
-package com.whooo.babr.view.scan;
+package com.whooo.babr.view.scan.camera;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +12,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,11 +21,15 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.whooo.babr.R;
+import com.whooo.babr.databinding.ActivityCameraBinding;
 import com.whooo.babr.util.AppUtils;
 import com.whooo.babr.util.RevealBackgroundView;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
+import com.whooo.babr.view.scan.DaggerCameraComponent;
+import com.whooo.babr.view.scan.result.ScanView;
+import com.whooo.babr.view.scan.result.SearchResultActivity;
 import com.whooo.babr.view.widget.CameraPreview;
 import com.whooo.babr.view.widget.ViewFinderView;
 import com.whooo.babr.vo.Product;
@@ -37,26 +43,25 @@ import net.sourceforge.zbar.SymbolSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
+import javax.inject.Inject;
+
 import timber.log.Timber;
 
-public class CameraActivity extends BaseActivity implements ScanView, Camera.PreviewCallback {
-
-    public static final String EXTRA_DATA = "CameraActivity.EXTRA_PRODUCTS_DATA";
-    public static final String EXTRA_LOAD_USER_ID = "load_user_id";
+public class CameraActivity extends BaseActivity implements ScanView, Camera.PreviewCallback, CameraContract.View {
+    public static final String EXTRA_DATA = "exData";
+    public static final String EXTRA_LOAD_USER_ID = "exUserId";
     private static final int REQUEST_RESULT_ACTIVITY = 1;
 
-    @Bind(R.id.cameraPreview)
-    FrameLayout mCameraPreview;
-    @Bind(R.id.vRevealBackground)
-    RevealBackgroundView vRevealBackground;
-    @Bind(R.id.viewFinder)
-    ViewFinderView viewFinderView;
+    //views
+    private FrameLayout mCameraPreview;
+    private RevealBackgroundView mRevealBgr;
+    private Toolbar mToolbar;
+    private ViewFinderView mFinderView;
 
-    ProductLookupPresenter mProductLookupPresenter;
-    Context mContext;
+    @Inject
+    CameraPresenter mCameraPresenter;
 
+    private Context mContext;
     private CameraPreview mPreview;
     private Camera mCamera;
     private ImageScanner mScanner;
@@ -67,17 +72,43 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
     private ProgressDialog mProgressDialog;
 
     @Override
+    protected BasePresenter getPresenter() {
+        return mCameraPresenter;
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
+        ActivityCameraBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_camera);
 
-//        mSupportActionBar.setDisplayHomeAsUpEnabled(true);
+        initializeInjector();
+        setupViews(binding);
+        mContext = this;
 
         mAutoFocusHandler = new Handler();
         // Create and configure the ImageScanner;
         setupScanner();
         //Create and Configure Camera
         setupCamera();
+    }
+
+    private void setupViews(ActivityCameraBinding binding) {
+        mToolbar = binding.toolbar;
+        mCameraPreview = binding.preview;
+        mRevealBgr = binding.revealBgrView;
+        mFinderView = binding.viewFinder;
+
+        setSupportActionBar(mToolbar);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void initializeInjector() {
+        DaggerCameraComponent
+                .builder()
+                .applicationComponent(getApp().getAppComponent())
+                .cameraModule(new CameraModule(this))
+                .build()
+                .inject(this);
     }
 
     @Override
@@ -105,16 +136,6 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        ButterKnife.unbind(this);
-    }
-
-    @Override
-    protected BasePresenter getPresenter() {
-        return null;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -194,10 +215,6 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
         buildFailedDialog("You has been disconnected!").show();
     }
 
-    public void onGeneralFailed(String message) {
-        //  swistchToNextScan(message);
-    }
-
     private void setupScanner() {
         mScanner = new ImageScanner();
         mScanner.setConfig(0, Config.X_DENSITY, 3);
@@ -267,7 +284,7 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
                         String scanResult = sym.getData().trim();
 
                         //Use Below function to make a server call and complete request.
-                        mProductLookupPresenter.execute(scanResult);
+                        mCameraPresenter.execute(scanResult);
                         break;
                     }
                 }
@@ -315,5 +332,15 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
             reloadActivity();
         });
         return builder;
+    }
+
+    @Override
+    public void showNetworkError() {
+
+    }
+
+    @Override
+    public void showInAppError() {
+
     }
 }

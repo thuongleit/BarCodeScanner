@@ -1,10 +1,9 @@
-package com.whooo.babr.view.scan;
+package com.whooo.babr.view.scan.camera;
 
 import android.text.TextUtils;
 
 import com.whooo.babr.data.DataManager;
 import com.whooo.babr.data.remote.amazon.model.AmazonProductResponse;
-import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.vo.Product;
 
 import java.io.IOException;
@@ -19,17 +18,30 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
-/**
- * Created by thuongle on 1/3/16.
- */
-public class ProductLookupPresenter implements BasePresenter {
+public class CameraPresenter implements CameraContract.Presenter {
 
     private final DataManager mDataManager;
     private Subscription mSubscription = Subscriptions.empty();
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
+
+    @Override
+    public void subscribe() {
+
+    }
+
+    @Override
+    public void unsubscribe() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+
+    }
+
     @Inject
-    public ProductLookupPresenter(DataManager dataManager) {
+    public CameraPresenter(DataManager dataManager) {
         mDataManager = dataManager;
     }
 
@@ -99,20 +111,5 @@ public class ProductLookupPresenter implements BasePresenter {
         if (compositeSubscription != null) {
             compositeSubscription.clear();
         }
-    }
-
-    @Override
-    public void subscribe() {
-
-    }
-
-    @Override
-    public void unsubscribe() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
     }
 }

@@ -38,11 +38,11 @@
         <activity android:name="com.whooo.babr.view.qrgenerate.GenerateQR" />
 
         <activity
-            android:name="com.whooo.babr.view.scan.SearchResultActivity"
-            android:parentActivityName="com.whooo.babr.view.scan.CameraActivity">
+            android:name="com.whooo.babr.view.scan.result.SearchResultActivity"
+            android:parentActivityName="com.whooo.babr.view.scan.camera.CameraActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.whooo.babr.view.scan.CameraActivity" />
+                android:value="com.whooo.babr.view.scan.camera.CameraActivity" />
         </activity>
         <activity android:name="com.whooo.babr.view.history.HistoryActivity" />
         <activity android:name="com.whooo.babr.view.history.DetailActivity" />
@@ -76,7 +76,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name="com.whooo.babr.view.scan.CameraActivity"
+            android:name="com.whooo.babr.view.scan.camera.CameraActivity"
             android:parentActivityName="com.whooo.babr.view.main.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

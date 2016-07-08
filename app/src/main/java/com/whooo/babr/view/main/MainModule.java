@@ -17,6 +17,6 @@ public class MainModule {
     @PerActivity
     @Provides
     public MainContract.Presenter providePresenter(){
-        return new MainPresenter();
+        return new MainPresenter(null, null);
     }
 }

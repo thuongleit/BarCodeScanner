@@ -3,37 +3,21 @@ package com.whooo.babr.vo;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by thuongle on 11/23/15.
- */
+import com.google.firebase.database.IgnoreExtraProperties;
+
+@IgnoreExtraProperties
 public class Product implements Parcelable {
-    public String imageUrl;
     public String name;
-    public String upcA;
-    public String ean;
     public String country;
     public String manufacture;
-    public String model;
-    public String objectId;
-    public int quantity = 0;
     public String source;
+    public String upcA;
+    public String ean;
+    public String imageUrl;
+    public String model;
+    public int quantity = 0;
+    public String objectId;
     public String listId;
-
-    public Product() {
-    }
-
-    @Override
-    public String toString() {
-        StringBuffer info = new StringBuffer();
-
-        info
-                .append(upcA).append("\n")
-                .append(ean).append("\n")
-                .append(country).append("\n")
-                .append(manufacture).append("\n")
-                .append(model).append("\n");
-        return info.toString();
-    }
 
     @Override
     public int describeContents() {
@@ -42,39 +26,39 @@ public class Product implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.imageUrl);
         dest.writeString(this.name);
-        dest.writeString(this.upcA);
-        dest.writeString(this.ean);
         dest.writeString(this.country);
         dest.writeString(this.manufacture);
-        dest.writeString(this.model);
-        dest.writeString(this.objectId);
         dest.writeString(this.source);
-        dest.writeString(this.listId);
+        dest.writeString(this.upcA);
+        dest.writeString(this.ean);
+        dest.writeString(this.imageUrl);
+        dest.writeString(this.model);
         dest.writeInt(this.quantity);
+    }
 
+    public Product() {
     }
 
     protected Product(Parcel in) {
-        this.imageUrl = in.readString();
         this.name = in.readString();
-        this.upcA = in.readString();
-        this.ean = in.readString();
         this.country = in.readString();
         this.manufacture = in.readString();
-        this.model = in.readString();
-        this.objectId = in.readString();
         this.source = in.readString();
-        this.listId = in.readString();
+        this.upcA = in.readString();
+        this.ean = in.readString();
+        this.imageUrl = in.readString();
+        this.model = in.readString();
         this.quantity = in.readInt();
     }
 
     public static final Creator<Product> CREATOR = new Creator<Product>() {
+        @Override
         public Product createFromParcel(Parcel source) {
             return new Product(source);
         }
 
+        @Override
         public Product[] newArray(int size) {
             return new Product[size];
         }

@@ -1,4 +1,4 @@
-package com.whooo.babr.view.scan;
+package com.whooo.babr.view.scan.result;
 
 import android.os.Parcelable;
 

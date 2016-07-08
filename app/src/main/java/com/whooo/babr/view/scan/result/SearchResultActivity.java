@@ -1,4 +1,4 @@
-package com.whooo.babr.view.scan;
+package com.whooo.babr.view.scan.result;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -26,6 +26,7 @@ import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.main.MainActivity;
 import com.whooo.babr.view.product.ProductRecyclerAdapter;
+import com.whooo.babr.view.scan.camera.CameraActivity;
 import com.whooo.babr.view.widget.DividerItemDecoration;
 import com.whooo.babr.vo.Product;
 import com.pnikosis.materialishprogress.ProgressWheel;

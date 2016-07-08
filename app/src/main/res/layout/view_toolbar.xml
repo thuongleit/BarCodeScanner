@@ -27,7 +27,6 @@
             android:textStyle="bold" />
     </android.support.v7.widget.Toolbar>
 
-
     <com.quinny898.library.persistentsearch.SearchBox
         android:id="@+id/searchbox"
         android:layout_width="wrap_content"
@@ -37,7 +36,6 @@
         android:layout_marginRight="-6dp"
         android:layout_marginTop="-6dp"
         android:visibility="gone" />
-
 
 </RelativeLayout>
 
