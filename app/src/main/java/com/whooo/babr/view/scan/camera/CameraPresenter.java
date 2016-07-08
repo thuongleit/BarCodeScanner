@@ -1,12 +1,7 @@
 package com.whooo.babr.view.scan.camera;
 
-import android.os.Parcelable;
-
 import com.google.repacked.antlr.v4.runtime.misc.Nullable;
 import com.whooo.babr.data.product.ProductRepository;
-import com.whooo.babr.vo.Product;
-
-import java.util.List;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -59,15 +54,5 @@ public class CameraPresenter implements CameraContract.Presenter {
                 .subscribe();
 
         // TODO: 7/8/16 add action
-    }
-
-    @Override
-    public void onRequestSuccess(Parcelable parcelable) {
-
-    }
-
-    @Override
-    public void onRequestSuccessList(List<Product> parcelables) {
-
     }
 }
