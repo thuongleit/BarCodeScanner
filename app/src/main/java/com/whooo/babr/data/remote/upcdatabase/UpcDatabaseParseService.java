@@ -1,64 +1,52 @@
 package com.whooo.babr.data.remote.upcdatabase;
 
-import android.util.Log;
+import android.support.annotation.NonNull;
 
+import com.whooo.babr.data.product.ProductSource;
+import com.whooo.babr.data.remote.ParseService;
 import com.whooo.babr.vo.Product;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 import rx.Observable;
-import rx.Subscriber;
-import timber.log.Timber;
 
 @Singleton
-public class UpcDatabaseParseService {
+public class UpcDatabaseParseService implements ParseService {
+    private static final String API_KEY = "7f98df7128b330bb6041bd9741f58683";
+
+    private final RetrofitService mService;
 
     @Inject
-    public UpcDatabaseParseService() {
+    public UpcDatabaseParseService( UpcDatabaseParseService.RetrofitService service) {
+        mService = service;
     }
 
-    public Observable<Product> getProductUpcDatabase(final String code) {
-        return Observable.create(new Observable.OnSubscribe<Product>() {
-            @Override
-            public void call(Subscriber<? super Product> subscriber) {
-                Log.d("passedScanner", "getProductUpcDatabase" + code);
-                Product product = new Product();
-                Retrofit retrofit = new Retrofit.Builder()
-                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .baseUrl("http://api.upcdatabase.org/")
-                        .build();
+    @Override
+    public Observable<List<Product>> searchProductsByCode(@NonNull String code) {
+        return mService
+                .getProductUpcDatabase(API_KEY, code)
+                .filter(item -> item.valid)
+                .flatMap(item -> {
+                    Product product = new Product();
 
-                UpcDatabaseService upcDatabaseService = retrofit.create(UpcDatabaseService.class);
-                Call<UpcDatabase> observable = upcDatabaseService.getProductUpcDatabase(code);
-                observable.enqueue(new Callback<UpcDatabase>() {
-                    @Override
-                    public void onResponse(Call<UpcDatabase> call, Response<UpcDatabase> response) {
-                        UpcDatabase upcDatabase = response.body();
-                        if (upcDatabase != null && upcDatabase.getItemname() != null) {
-                            Timber.d(upcDatabase.getItemname());
-                            product.name = upcDatabase.getItemname();
-                            product.source = "upcdatabase.com";
-                            product.listId = "a";
-                            subscriber.onNext(product);
-                        }
-                        subscriber.onCompleted();
-                    }
+                    product.source = ProductSource.UPC_DATABASE.getDisplay();
+                    product.name = item.name;
+                    product.upcA = item.upc;
 
-                    @Override
-                    public void onFailure(Call<UpcDatabase> call, Throwable t) {
+                    return Observable.just(product);
+                })
+                .toList();
 
-                    }
-                });
+    }
 
-            }
-        });
+    public interface RetrofitService {
+
+        @GET("json/{api-key}/{code}")
+        Observable<Item> getProductUpcDatabase(@Path("api-key") String apiKey, @Path("code") String code);
     }
 }

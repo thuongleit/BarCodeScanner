@@ -46,13 +46,13 @@
     <string name="error_cannot_start_app">Cannot start the app now. Please try again later</string>
 
     <string name="text_sign_up_later">Sign up later</string>
-    <string name="dialog_login_as_guest_warning">Login as guest will store your products locally. If you want to save them in the cloud, login as your account instead.</string>
+    <string name="dialog_login_as_guest_warning">Login as guest will store your nodes locally. If you want to save them in the cloud, login as your account instead.</string>
     <string name="button_ok">OK</string>
     <string name="button_ignore">Ignore</string>
     <string name="dialog_internet_disconnnect_error">You has been disconnected!</string>
     <string name="dialog_authenticating">Authenticating…</string>
     <string name="error_in_same_password">Password must be same</string>
-    <string name="save_to_history">Are you sure to save all the products to history?</string>
+    <string name="save_to_history">Are you sure to save all the nodes to history?</string>
     <string name="server_client_id">859773034579-pgg8gdtqd3nmemgih9ha6auv2rhbhbjp.apps.googleusercontent.co</string>
     <string name="title_scan_result">Scan Result</string>
     <string name="text_create_account">Create account</string>
@@ -73,8 +73,8 @@
     <!-- Dialog message -->
     <string name="dialog_processing_title">Please wait…</string>
     <string name="dialog_processing_message">Task is progress…</string>
-    <string name="progress_text_please_wait">Please wait...</string>
-    <string name="progress_text_searching_products">Searching products...</string>
+    <string name="progress_text_please_wait">Please wait…</string>
+    <string name="progress_text_searching_products">Searching products…</string>
     <string name="dialog_action_scan_again">Scan Again</string>
     <string name="menu_action_flash_off">Flash [OFF]</string>
     <string name="menu_action_flash_on">Flash [ON]</string>

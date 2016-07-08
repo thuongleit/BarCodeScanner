@@ -11,9 +11,9 @@ import rx.Observable;
 
 public interface ProductRepository extends DataSource {
 
-    String CODE_NAME = "products";
+    String CODE_NAME = "nodes";
 
-    Observable<List<Product>> scanProducts(@NonNull String code);
+    Observable<List<Product>> searchProducts(@NonNull String code);
 
     Observable<List<Product>> getProducts();
 

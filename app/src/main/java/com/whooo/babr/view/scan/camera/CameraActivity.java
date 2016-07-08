@@ -160,9 +160,6 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
         switch (requestCode) {
             case REQUEST_RESULT_ACTIVITY:
                 if (resultCode == Activity.RESULT_OK) {
-                    Intent intent = getIntent();
-                    intent.putParcelableArrayListExtra(EXTRA_DATA, data.getParcelableArrayListExtra(ResultActivity.EXTRA_PRODUCTS_DATA));
-                    setResult(Activity.RESULT_OK, intent);
                     finish();
                 } else {
                     startScan();
@@ -191,18 +188,15 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
     }
 
     @Override
-    public void onRequestSuccess(Parcelable parcelable) {
+    public void onSearchSuccess(List<Product> products) {
         Intent intent = new Intent(mContext, ResultActivity.class);
-        intent.putExtra(ResultActivity.EXTRA_PRODUCTS_DATA, parcelable);
+        intent.putParcelableArrayListExtra(ResultActivity.EXTRA_DATA, (ArrayList<? extends Parcelable>) products);
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
     }
 
     @Override
-    public void onRequestSuccessList(List<Product> parcelables) {
-        Intent intent = new Intent(mContext, ResultActivity.class);
-        intent.putParcelableArrayListExtra(ResultActivity.EXTRA_PRODUCTS_DATA, (ArrayList<? extends Parcelable>) parcelables);
-        intent.putExtra(EXTRA_LOAD_USER_ID, true);
-        startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
+    public void onEmptyResponse() {
+        // TODO: 7/9/16 add action
     }
 
     @Override
