@@ -1,7 +1,5 @@
 package com.whooo.babr.view.scan.camera;
 
-import android.os.Parcelable;
-
 import com.google.repacked.antlr.v4.runtime.misc.Nullable;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.base.BaseView;
@@ -16,9 +14,9 @@ public interface CameraContract {
 
         void playRingtone();
 
-        void onRequestSuccess(Parcelable parcelable);
+        void onSearchSuccess(List<Product> products);
 
-        void onRequestSuccessList(List<Product> parcelables);
+        void onEmptyResponse();
     }
 
     interface Presenter extends BasePresenter {

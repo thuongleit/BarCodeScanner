@@ -1,70 +1,58 @@
 package com.whooo.babr.data.remote.searchupc;
 
-import android.util.Log;
+import android.support.annotation.NonNull;
 
+import com.whooo.babr.data.product.ProductSource;
+import com.whooo.babr.data.remote.ParseService;
 import com.whooo.babr.vo.Product;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 import rx.Observable;
-import rx.Subscriber;
 
 @Singleton
-public class SearchUpcParseService {
+public class SearchUpcParseService implements ParseService {
+    private static final String REQUEST_TYPE = "3";
+    private static final String ACCESS_TOKEN = "B26844C1-236A-4F4D-AB78-8676B1E3E0CA";
 
+    private final RetrofitService mService;
 
     @Inject
-    public SearchUpcParseService() {
+    public SearchUpcParseService(SearchUpcParseService.RetrofitService retrofitService) {
+        mService = retrofitService;
     }
 
-    public Observable<Product> getProductSearchUpc(final String code) {
-        return Observable.create(new Observable.OnSubscribe<Product>() {
-            @Override
-            public void call(Subscriber<? super Product> subscriber) {
-                Log.d("passedScanner", "getProductSearchUpc" + code);
-                Product product = new Product();
-                Retrofit retrofit = new Retrofit.Builder()
-                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .baseUrl("http://www.searchupc.com/handlers/")
-                        .build();
-                SearchUpcService upcService = retrofit.create(SearchUpcService.class);
-                Call<SearchUpc> observable = upcService.getProductSearchUpc(code);
+    @Override
+    public Observable<List<Product>> searchProductsByCode(@NonNull String code) {
+        return mService
+                .getProducts(REQUEST_TYPE, ACCESS_TOKEN, code)
+                .filter(item -> item.nodes != null && !item.nodes.isEmpty())
+                .flatMap(item -> Observable.from(item.nodes))
+                .flatMap(childNode -> {
+                    Product product = new Product();
+                    product.source = ProductSource.SEARCH_UPC.getDisplay();
+                    product.listId = "a";
 
-                observable.enqueue(new Callback<SearchUpc>() {
-                    @Override
-                    public void onResponse(Call<SearchUpc> call, Response<SearchUpc> response) {
-                        SearchUpc searchUpc = response.body();
-                        product.source = "searchupc.com";
-                        product.listId = "a";
+                    product.name = childNode.productName;
+                    product.imageUrl = childNode.imageUrl;
+                    product.upcA = code;
 
-                        if (searchUpc != null && searchUpc.get0() != null) {
-                            if (searchUpc.get0().getImageurl() != null) {
-                                product.imageUrl = searchUpc.get0().getImageurl();
-                            }
-                            if (searchUpc.get0().getProductname() != null) {
-                                product.name = searchUpc.get0().getProductname();
-                            }
-                            subscriber.onNext(product);
-                        }
-                        subscriber.onCompleted();
-                    }
+                    // TODO: 7/8/16 Store price, currency?
 
-                    @Override
-                    public void onFailure(Call<SearchUpc> call, Throwable t) {
-
-                    }
-                });
-            }
-        });
+                    return Observable.just(product);
+                })
+                .toSortedList();
     }
 
-
+    public interface RetrofitService {
+        @GET("upcsearch.ashx")
+        Observable<Item> getProducts(@Query("request_type") String requestType,
+                                     @Query("access_token") String accessToken,
+                                     @Query("upc") String code);
+    }
 }

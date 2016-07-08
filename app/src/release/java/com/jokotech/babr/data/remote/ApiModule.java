@@ -1,6 +1,5 @@
 package com.whooo.babr.data.remote;
 
-import com.whooo.babr.data.remote.amazon.AmazonService;
 import com.whooo.babr.data.remote.amazon.util.AmazonSignedRequestsHelper;
 
 import java.util.concurrent.TimeUnit;

@@ -12,7 +12,7 @@ import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.squareup.picasso.Picasso;
 import com.whooo.babr.R;
-import com.whooo.babr.data.remote.ParseService;
+import com.whooo.babr.data.remote.ParseServiceOK;
 import com.whooo.babr.vo.Product;
 
 import javax.inject.Inject;
@@ -34,7 +34,7 @@ public class BarViewActivity extends BaseActivity {
     TextView mTextBarcodeCountry;
 
     @Inject
-    ParseService mParseService;
+    ParseServiceOK mParseServiceOK;
 
     private Product mProduct;
 
@@ -69,7 +69,7 @@ public class BarViewActivity extends BaseActivity {
 
 //                if (ParseUser.getCurrentUser() != null) {
 //                    //put data to server
-//                    mParseService.saveProduct(mProduct);
+//                    mParseServiceOK.saveProduct(mProduct);
 //                }
 
                 intent.putExtra(EXTRA_PRODUCT, mProduct);

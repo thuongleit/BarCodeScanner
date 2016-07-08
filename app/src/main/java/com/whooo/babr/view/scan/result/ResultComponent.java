@@ -11,4 +11,5 @@ public interface ResultComponent {
 
     ResultContract.Presenter presenter();
 
+    void inject(ResultActivity activity);
 }

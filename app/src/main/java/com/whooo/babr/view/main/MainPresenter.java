@@ -45,11 +45,11 @@ public class MainPresenter implements MainContract.Presenter {
 //                .subscribeOn(Schedulers.newThread())
 //                .observeOn(AndroidSchedulers.mainThread())
 //                .subscribe(
-//                        products -> {
-//                            if (products == null || products.isEmpty()) {
+//                        nodes -> {
+//                            if (nodes == null || nodes.isEmpty()) {
 //                                mView.showEmptyView();
 //                            } else {
-//                                mView.showProducts(products);
+//                                mView.showProducts(nodes);
 //                            }
 //                        },
 //                        e -> {
@@ -69,11 +69,11 @@ public class MainPresenter implements MainContract.Presenter {
 //                .subscribeOn(Schedulers.newThread())
 //                .observeOn(AndroidSchedulers.mainThread())
 //                .subscribe(
-//                        products -> {
-//                            if (products == null || products.isEmpty()) {
+//                        nodes -> {
+//                            if (nodes == null || nodes.isEmpty()) {
 ////                                mView.showEmptyView();
 //                            } else {
-////                                mView.showProducts(products);
+////                                mView.showProducts(nodes);
 //                            }
 //                        },
 //                        e -> {

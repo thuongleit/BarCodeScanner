@@ -1,9 +1,7 @@
 package com.whooo.babr.data.product;
 
-import com.whooo.babr.config.Constant;
-import com.whooo.babr.data.remote.ParseService;
+import com.whooo.babr.data.remote.ParseServiceOK;
 import com.whooo.babr.data.remote.amazon.AmazonParseService;
-import com.whooo.babr.data.remote.amazon.util.AmazonSignedRequestsHelper;
 import com.whooo.babr.data.remote.searchupc.SearchUpcParseService;
 import com.whooo.babr.data.remote.upcdatabase.UpcDatabaseParseService;
 import com.whooo.babr.data.remote.upcitemdb.UpcItemDbParseService;
@@ -11,9 +9,6 @@ import com.whooo.babr.data.remote.walmartlabs.WalmartlabsParseService;
 import com.whooo.babr.vo.CheckoutHistory;
 import com.whooo.babr.vo.Product;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +26,7 @@ public class SearchService {
     private final UpcItemDbParseService mUpcItemDbService;
     private final UpcDatabaseParseService mUpcDatabaseService;
     private final AmazonParseService mAmazonService;
-    private final ParseService mAppService;
+    private final ParseServiceOK mAppService;
 
     @Inject
     public SearchService(SearchUpcParseService upcParseService,
@@ -39,7 +34,7 @@ public class SearchService {
                          UpcItemDbParseService upcItemDbService,
                          UpcDatabaseParseService upcDatabaseService,
                          AmazonParseService amazonService,
-                         ParseService service) {
+                         ParseServiceOK service) {
         this.mUpcService = upcParseService;
         this.mWalmartService = walmartService;
         this.mUpcItemDbService = upcItemDbService;
@@ -50,31 +45,16 @@ public class SearchService {
 
     public Observable<List<Product>> searchProducts(ProductSource source, String code) {
         switch (source) {
-            case UPC:
-                return mUpcService.getProductSearchUpc(code).toList();
+            case SEARCH_UPC:
+                return mUpcService.searchProductsByCode(code);
             case WALMART:
-                return mWalmartService.getProductWalmart(code).toList();
+                return mWalmartService.searchProductsByCode(code);
             case UPC_ITEM_DB:
-                return mUpcItemDbService.getUpcItemDbParseService(code).toList();
+                return mUpcItemDbService.searchProductsByCode(code);
             case UPC_DATABASE:
-                return mUpcDatabaseService.getProductUpcDatabase(code).toList();
+                return mUpcDatabaseService.searchProductsByCode(code);
             case AMAZON:
-                String signedUrl = null;
-                try {
-                    AmazonSignedRequestsHelper signer = AmazonSignedRequestsHelper.
-                            getInstance(Constant.AWS_ACCESS_KEY_ID, Constant.AWS_SECRET_KEY);
-                    signedUrl = signer.sign(code);
-                } catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException e) {
-                    // if the key is invalid due to a programming error
-                    throw new RuntimeException(e);
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                }
-
-                if (signedUrl != null) {
-                    return mAmazonService.parse(signedUrl).toList();
-                }
-                return Observable.empty();
+                return mAmazonService.searchProductsByCode(code);
             case IN_APP:
                 return mAppService.getProductBABR(code).toList();
             default:

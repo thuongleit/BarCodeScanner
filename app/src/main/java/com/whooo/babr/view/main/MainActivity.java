@@ -29,7 +29,7 @@ import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.whooo.babr.R;
-import com.whooo.babr.data.remote.ParseService;
+import com.whooo.babr.data.remote.ParseServiceOK;
 import com.whooo.babr.databinding.ActivityMainBinding;
 import com.whooo.babr.util.AppUtils;
 import com.whooo.babr.util.dialog.DialogFactory;
@@ -80,7 +80,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private List<Product> productList = new ArrayList<>();
     private ProgressDialog progressDialog;
     private String generateListId;
-    private ParseService parseService;
+    private ParseServiceOK parseServiceOK;
     private Subscription subscription;
     private Integer userId;
     private DeflaterOutputStream actionMode;
@@ -192,7 +192,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void saveProductToHistory() {
         generateListId = AppUtils.generateString(new Random(), "1254789dhfoendlf89ssofnd896541", 20);
 
-        parseService.saveListProductNoCheckout(productList, generateListId).subscribeOn(Schedulers.newThread())
+        parseServiceOK.saveListProductNoCheckout(productList, generateListId).subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
             productList.clear();
             showToast("Generator qr-code has saved to server!");
@@ -201,7 +201,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         checkoutHistory.listId = generateListId;
         checkoutHistory.name = AppUtils.gerenateDateFormat();
         checkoutHistory.size = productList.size();
-        parseService.saveProductHistory(checkoutHistory);
+        parseServiceOK.saveProductHistory(checkoutHistory);
 
         DialogQrcodeHistory qrcodeHistory = new DialogQrcodeHistory(mContext, generateListId);
         qrcodeHistory.show();
@@ -285,9 +285,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 progressDialog = DialogFactory.createProgressDialog(this, "", "Loading...");
                 progressDialog.show();
                 if (mRecyclerView.getAdapter() == null) {
-                    parseService.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+                    parseServiceOK.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
                             .subscribe(a -> {
-                                showToast("products has been saved!");
+                                showToast("nodes has been saved!");
 
                             });
                     subscription = Observable.timer(3, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
@@ -300,9 +300,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 } else {
 
 
-                    parseService.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+                    parseServiceOK.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
                             .subscribe(a -> {
-                                showToast("products has been saved!");
+                                showToast("nodes has been saved!");
                             });
                     subscription = Observable.timer(3, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
                             .subscribe(a -> {
@@ -428,7 +428,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             int currPos;
             for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
                 currPos = selectedItemPositions.get(i);
-                parseService.deleteProduct(productList.get(currPos).objectId);
+                parseServiceOK.deleteProduct(productList.get(currPos).objectId);
                 productList.remove(currPos);
                 ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteItem(currPos);
             }

@@ -1,25 +1,24 @@
 package com.whooo.babr.view.scan.result;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
-import android.widget.Toast;
 
-import com.pnikosis.materialishprogress.ProgressWheel;
 import com.whooo.babr.R;
-import com.whooo.babr.data.remote.amazon.model.AmazonProductResponse;
+import com.whooo.babr.databinding.ActivitySearchResultBinding;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.main.MainActivity;
@@ -29,106 +28,64 @@ import com.whooo.babr.view.widget.DividerItemDecoration;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
 public class ResultActivity extends BaseActivity implements ResultContract.View {
-    public static final String EXTRA_PRODUCTS_DATA = "exProductsData";
+    public static final String EXTRA_DATA = "EXTRA_DATA";
 
-    @Bind(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-    @Bind(R.id.progress_wheel)
-    ProgressWheel mProgressWheel;
-    @Bind(R.id.toolbar)
-    Toolbar mToolbar;
+    private RecyclerView mRecyclerView;
+    private Toolbar mToolbar;
 
     @Inject
-    ResultContract.Presenter mParsingPresenter;
+    ResultContract.Presenter mPresenter;
 
-    private ProductRecyclerAdapter mAdapter;
-    private int mCurrentParsingIndex = 0;
-    private Parcelable mData;
     private ArrayList<Product> mProducts = new ArrayList<>();
-    private List<Product> productListUserId = new ArrayList<>();
-    private List<Product> productList = new ArrayList<>();
-    private boolean isAmazon = false;
+    private Context mContext;
+
+    @Override
+    protected BasePresenter getPresenter() {
+        return mPresenter;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search_result);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle(R.string.title_scan_result);
+        ActivitySearchResultBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_search_result);
+
+        mContext = this;
+
+        injectViews(binding);
+        initializeInjectors();
+
+        mProducts = getIntent().getParcelableArrayListExtra(EXTRA_DATA);
+
+        if (mProducts == null) {
+            // TODO: 7/9/16 handle empty state
+        }
 
         setUpRecyclerView();
-
-        mData = getIntent().getParcelableExtra(EXTRA_PRODUCTS_DATA);
-        if (getIntent().getBooleanExtra(CameraActivity.EXTRA_LOAD_USER_ID, false)) {
-            productListUserId = getIntent().getParcelableArrayListExtra(EXTRA_PRODUCTS_DATA);
-            bindListView(productListUserId);
-        } else {
-            //check if the array contains product object
-            if (mData != null) {
-                if (mData instanceof Product) {
-                    bindView((Product) mData);
-                } else if (mData instanceof AmazonProductResponse) {
-                    AmazonProductResponse amazonProductResponse = (AmazonProductResponse) mData;
-                    mParsingPresenter.getProducts(amazonProductResponse.getProducts().get(mCurrentParsingIndex).getDetailPageURL());
-                }
-            }
-        }
-
-
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ButterKnife.unbind(this);
+    private void initializeInjectors() {
+        DaggerResultComponent
+                .builder()
+                .applicationComponent(getApp().getAppComponent())
+                .resultModule(new ResultModule(this))
+                .build()
+                .inject(this);
     }
 
-    @Override
-    protected BasePresenter getPresenter() {
-        return null;
+    private void injectViews(ActivitySearchResultBinding binding) {
+        mToolbar = binding.toolbar;
+        mRecyclerView = binding.recyclerView;
+
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    public void onNetworkFailed() {
-        Toast.makeText(ResultActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
-    }
 
-    public void onGeneralFailed(String message) {
-    }
-
-    public void onParseSuccess(Product product) {
-        if (product != null) {
-            bindView(product);
-            AmazonProductResponse productResponse = (AmazonProductResponse) this.mData;
-            if (mCurrentParsingIndex < productResponse.getProducts().size()) {
-                mCurrentParsingIndex++;
-                mParsingPresenter.getProducts(productResponse.getProducts().get(mCurrentParsingIndex).getDetailPageURL());
-            }
-        }
-    }
-
-    public void showProcess(boolean show) {
-        if (show) {
-            mProgressWheel.setVisibility(View.VISIBLE);
-            mRecyclerView.setVisibility(View.GONE);
-        } else {
-            mProgressWheel.setVisibility(View.GONE);
-            mRecyclerView.setVisibility(View.VISIBLE);
-        }
-        isAmazon = true;
-
-    }
-
-    @OnClick(R.id.button_toolbar_save)
     public void save() {
 //        if (!mConfig.isIsDontShow()) {
 //            new AlertDialog.Builder(this, R.style.MyAlertDialogAppCompatStyle)
@@ -162,13 +119,13 @@ public class ResultActivity extends BaseActivity implements ResultContract.View 
     private void startResult() {
         if (!getIntent().getBooleanExtra(CameraActivity.EXTRA_LOAD_USER_ID, false)) {
             Intent intent = getIntent();
-            intent.putParcelableArrayListExtra(EXTRA_PRODUCTS_DATA, mProducts);
+            intent.putParcelableArrayListExtra(EXTRA_DATA, mProducts);
             setResult(Activity.RESULT_OK, intent);
             finish();
         } else {
             Intent intent = new Intent(ResultActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.putParcelableArrayListExtra(EXTRA_PRODUCTS_DATA, mProducts);
+            intent.putParcelableArrayListExtra(EXTRA_DATA, mProducts);
             setResult(Activity.RESULT_OK, intent);
             finish();
         }
@@ -182,6 +139,7 @@ public class ResultActivity extends BaseActivity implements ResultContract.View 
         setUpItemTouchHelper();
         setUpAnimationDecoratorHelper();
 
+        mRecyclerView.setAdapter(new ProductRecyclerAdapter(this, mProducts));
     }
 
     private void setUpItemTouchHelper() {
@@ -324,39 +282,6 @@ public class ResultActivity extends BaseActivity implements ResultContract.View 
             }
 
         });
-    }
-
-
-    private void bindListView(List<Product> product) {
-        mProgressWheel.stopSpinning();
-        mProgressWheel.setVisibility(View.GONE);
-        mRecyclerView.setVisibility(View.VISIBLE);
-        productList.addAll(product);
-        if (mAdapter == null) {
-            mProducts.addAll(product);
-            mAdapter = new ProductRecyclerAdapter(this, mProducts);
-            mRecyclerView.setAdapter(mAdapter);
-        } else {
-            mAdapter.addItems(product);
-        }
-    }
-
-    private void bindView(Product product) {
-        if (!isAmazon) {
-            mProgressWheel.stopSpinning();
-            mProgressWheel.setVisibility(View.GONE);
-            mRecyclerView.setVisibility(View.VISIBLE);
-        }
-
-        productList.add(product);
-        if (mAdapter == null) {
-            mProducts.add(product);
-            mAdapter = new ProductRecyclerAdapter(this, mProducts);
-            mRecyclerView.setAdapter(mAdapter);
-            // mRecyclerView.setItemAnimator(new FeedItemAnimator());
-        } else {
-            mAdapter.addItem(product);
-        }
     }
 
     @Override

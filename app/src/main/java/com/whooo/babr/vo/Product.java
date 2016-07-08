@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
-public class Product implements Parcelable {
+public class Product implements Parcelable, Comparable {
     public String name;
     public String country;
     public String manufacture;
@@ -63,4 +63,13 @@ public class Product implements Parcelable {
             return new Product[size];
         }
     };
+
+    @Override
+    public int compareTo(Object another) {
+        if (another instanceof Product) {
+            Product that = (Product) another;
+            return this.name.compareTo(that.name);
+        }
+        return 0;
+    }
 }

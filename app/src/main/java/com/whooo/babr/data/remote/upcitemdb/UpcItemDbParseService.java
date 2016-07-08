@@ -1,78 +1,54 @@
 package com.whooo.babr.data.remote.upcitemdb;
 
-import android.util.Log;
+import android.support.annotation.NonNull;
 
-import com.whooo.babr.data.remote.upcitemdb.model.Item;
-import com.whooo.babr.data.remote.upcitemdb.model.UpcItemDb;
+import com.whooo.babr.data.product.ProductSource;
+import com.whooo.babr.data.remote.ParseService;
 import com.whooo.babr.vo.Product;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 import rx.Observable;
-import rx.Subscriber;
 
 @Singleton
-public class UpcItemDbParseService {
+public class UpcItemDbParseService implements ParseService {
+
+    private final RetrofitService mService;
 
     @Inject
-    public UpcItemDbParseService() {
+    public UpcItemDbParseService( UpcItemDbParseService.RetrofitService service) {
+        mService = service;
     }
 
-    public Observable<Product> getUpcItemDbParseService(final String code) {
-        return Observable.create(new Observable.OnSubscribe<Product>() {
-            @Override
-            public void call(Subscriber<? super Product> subscriber) {
+    @Override
+    public Observable<List<Product>> searchProductsByCode(@NonNull String code) {
+        return mService
+                .getProducts(code)
+                .filter(item -> item.nodes != null && !item.nodes.isEmpty())
+                .flatMap(item -> Observable.from(item.nodes))
+                .flatMap(childNode -> {
+                    Product product = new Product();
 
-                Log.d("passedScanner", "getUpcItemDbParseService" + code);
-
-                Product product = new Product();
-                Retrofit retrofit = new Retrofit.Builder()
-                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .baseUrl("https://api.upcitemdb.com/")
-                        .build();
-
-                UpcItemDbService upcDatabaseService = retrofit.create(UpcItemDbService.class);
-                Call<UpcItemDb> observable = upcDatabaseService.getProductUpcItemDb(code);
-                observable.enqueue(new Callback<UpcItemDb>() {
-                    @Override
-                    public void onResponse(Call<UpcItemDb> call, Response<UpcItemDb> response) {
-                        UpcItemDb upcItemDb = response.body();
-                        if (upcItemDb != null && upcItemDb.getItems() != null && !upcItemDb.getItems().isEmpty()) {
-                            Item item = upcItemDb.getItems().get(0);
-                            if (upcItemDb.getCode().equals("OK")) {
-                                product.source = "upcitemdb.com";
-                                product.listId = "a";
-                                product.name = item.getTitle();
-                                if (item.getImages().size() > 0)
-                                    product.imageUrl = item.getImages().get(0);
-                                product.ean = item.getEan();
-                                product.manufacture = item.getBrand();
-                                product.model = item.getModel();
-                                product.upcA = item.getUpc();
-                                subscriber.onNext(product);
-                                subscriber.onCompleted();
-                            }
-                        }
-                        subscriber.onCompleted();
+                    product.source = ProductSource.UPC_ITEM_DB.getDisplay();
+                    product.listId = "a";
+                    product.name = childNode.title;
+                    product.ean = childNode.ean;
+                    product.upcA = childNode.upc;
+                    if (!childNode.images.isEmpty()) {
+                        product.imageUrl = childNode.images.get(0);
                     }
-
-                    @Override
-                    public void onFailure(Call<UpcItemDb> call, Throwable t) {
-
-                    }
-                });
-
-            }
-        });
+                    return Observable.just(product);
+                })
+                .toSortedList();
     }
 
-
+    public interface RetrofitService {
+        @GET("prod/trial/lookup")
+        Observable<Item> getProducts(@Query("upc") String code);
+    }
 }
