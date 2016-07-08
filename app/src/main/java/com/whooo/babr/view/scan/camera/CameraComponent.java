@@ -9,4 +9,6 @@ import dagger.Component;
 @Component(modules = CameraModule.class, dependencies = ApplicationComponent.class)
 public interface CameraComponent {
     void inject(CameraActivity activity);
+
+    CameraContract.Presenter presenter();
 }

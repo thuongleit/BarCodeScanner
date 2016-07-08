@@ -12,9 +12,6 @@ import javax.inject.Singleton;
 
 import rx.Observable;
 
-/**
- * Created by thuongle on 1/31/16.
- */
 @Singleton
 public class ParseService {
 

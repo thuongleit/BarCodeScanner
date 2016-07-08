@@ -27,9 +27,7 @@ import com.whooo.babr.util.RevealBackgroundView;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
-import com.whooo.babr.view.scan.DaggerCameraComponent;
-import com.whooo.babr.view.scan.result.ScanView;
-import com.whooo.babr.view.scan.result.SearchResultActivity;
+import com.whooo.babr.view.scan.result.ResultActivity;
 import com.whooo.babr.view.widget.CameraPreview;
 import com.whooo.babr.view.widget.ViewFinderView;
 import com.whooo.babr.vo.Product;
@@ -47,7 +45,7 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-public class CameraActivity extends BaseActivity implements ScanView, Camera.PreviewCallback, CameraContract.View {
+public class CameraActivity extends BaseActivity implements CameraContract.View, Camera.PreviewCallback {
     public static final String EXTRA_DATA = "exData";
     public static final String EXTRA_LOAD_USER_ID = "exUserId";
     private static final int REQUEST_RESULT_ACTIVITY = 1;
@@ -59,7 +57,7 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
     private ViewFinderView mFinderView;
 
     @Inject
-    CameraPresenter mCameraPresenter;
+    CameraContract.Presenter mCameraPresenter;
 
     private Context mContext;
     private CameraPreview mPreview;
@@ -71,6 +69,21 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
     private boolean mFlash = false;
     private ProgressDialog mProgressDialog;
 
+    private Runnable mDoAutoFocus = new Runnable() {
+        public void run() {
+            if (mCamera != null && mPreviewing) {
+                mCamera.autoFocus(mAutoFocusCB);
+            }
+        }
+    };
+
+    // Mimic continuous auto-focusing
+    private Camera.AutoFocusCallback mAutoFocusCB = new Camera.AutoFocusCallback() {
+        public void onAutoFocus(boolean success, Camera camera) {
+            mAutoFocusHandler.postDelayed(mDoAutoFocus, 1000);
+        }
+    };
+
     @Override
     protected BasePresenter getPresenter() {
         return mCameraPresenter;
@@ -80,35 +93,16 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityCameraBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_camera);
+        mContext = this;
 
         initializeInjector();
         setupViews(binding);
-        mContext = this;
 
         mAutoFocusHandler = new Handler();
         // Create and configure the ImageScanner;
         setupScanner();
         //Create and Configure Camera
         setupCamera();
-    }
-
-    private void setupViews(ActivityCameraBinding binding) {
-        mToolbar = binding.toolbar;
-        mCameraPreview = binding.preview;
-        mRevealBgr = binding.revealBgrView;
-        mFinderView = binding.viewFinder;
-
-        setSupportActionBar(mToolbar);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-    }
-
-    private void initializeInjector() {
-        DaggerCameraComponent
-                .builder()
-                .applicationComponent(getApp().getAppComponent())
-                .cameraModule(new CameraModule(this))
-                .build()
-                .inject(this);
     }
 
     @Override
@@ -136,22 +130,22 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_camera, menu);
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_flash) {
             if (mFlash) {
-                Toast.makeText(mContext, "Flash [OFF]", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.menu_action_flash_off, Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.ic_flash_off);
                 mFlash = false;
             } else {
-                Toast.makeText(mContext, "Flash [ON]", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.menu_action_flash_on, Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.ic_flash_on);
                 mFlash = true;
             }
@@ -167,7 +161,7 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
             case REQUEST_RESULT_ACTIVITY:
                 if (resultCode == Activity.RESULT_OK) {
                     Intent intent = getIntent();
-                    intent.putParcelableArrayListExtra(EXTRA_DATA, data.getParcelableArrayListExtra(SearchResultActivity.EXTRA_PRODUCTS_DATA));
+                    intent.putParcelableArrayListExtra(EXTRA_DATA, data.getParcelableArrayListExtra(ResultActivity.EXTRA_PRODUCTS_DATA));
                     setResult(Activity.RESULT_OK, intent);
                     finish();
                 } else {
@@ -180,7 +174,8 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
     @Override
     public void showProgress(boolean show) {
         if (mProgressDialog == null) {
-            mProgressDialog = DialogFactory.createProgressDialog(mContext, "", "Searching...");
+            mProgressDialog = DialogFactory.createProgressDialog(mContext, R.string.progress_text_please_wait,
+                    R.string.progress_text_searching_products);
         }
 
         if (show) {
@@ -197,22 +192,46 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
 
     @Override
     public void onRequestSuccess(Parcelable parcelable) {
-        Intent intent = new Intent(mContext, SearchResultActivity.class);
-        intent.putExtra(SearchResultActivity.EXTRA_PRODUCTS_DATA, parcelable);
+        Intent intent = new Intent(mContext, ResultActivity.class);
+        intent.putExtra(ResultActivity.EXTRA_PRODUCTS_DATA, parcelable);
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
     }
 
-
     @Override
     public void onRequestSuccessList(List<Product> parcelables) {
-        Intent intent = new Intent(mContext, SearchResultActivity.class);
-        intent.putParcelableArrayListExtra(SearchResultActivity.EXTRA_PRODUCTS_DATA, (ArrayList<? extends Parcelable>) parcelables);
+        Intent intent = new Intent(mContext, ResultActivity.class);
+        intent.putParcelableArrayListExtra(ResultActivity.EXTRA_PRODUCTS_DATA, (ArrayList<? extends Parcelable>) parcelables);
         intent.putExtra(EXTRA_LOAD_USER_ID, true);
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
     }
 
-    public void onNetworkFailed() {
-        buildFailedDialog("You has been disconnected!").show();
+    @Override
+    public void showNetworkError() {
+        buildFailedDialog(getString(R.string.error_connection_lost_message)).show();
+    }
+
+    @Override
+    public void showInAppError() {
+        buildFailedDialog(getString(R.string.dialog_error_general_message)).show();
+    }
+
+    private void setupViews(ActivityCameraBinding binding) {
+        mToolbar = binding.toolbar;
+        mCameraPreview = binding.preview;
+        mRevealBgr = binding.revealBgrView;
+        mFinderView = binding.viewFinder;
+
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void initializeInjector() {
+        DaggerCameraComponent
+                .builder()
+                .applicationComponent(getApp().getAppComponent())
+                .cameraModule(new CameraModule(this))
+                .build()
+                .inject(this);
     }
 
     private void setupScanner() {
@@ -222,7 +241,7 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
     }
 
     private void setupCamera() {
-        mPreview = new CameraPreview(mContext, this, autoFocusCB);
+        mPreview = new CameraPreview(mContext, this, mAutoFocusCB);
         mCameraPreview.addView(mPreview);
     }
 
@@ -247,7 +266,7 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
     /**
      * A safe way to get an instance of the Camera object.
      */
-    public static Camera getCameraInstance() {
+    private Camera getCameraInstance() {
         Camera c = null;
 
         try {
@@ -258,7 +277,7 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
         return c;
     }
 
-    public void cancelRequest() {
+    private void cancelRequest() {
         Toast.makeText(mContext, "Camera unavailable", Toast.LENGTH_LONG).show();
         mCameraPreview.setVisibility(View.GONE);
     }
@@ -279,68 +298,38 @@ public class CameraActivity extends BaseActivity implements ScanView, Camera.Pre
                 for (Symbol sym : syms) {
                     String symData = sym.getData();
                     if (!TextUtils.isEmpty(symData)) {
-                        Timber.i("Scan Code Result %s", sym.getComponents());
-
-                        String scanResult = sym.getData().trim();
+                        Timber.d("Scan Code Result %s", sym.getComponents());
+                        String code = sym.getData().trim();
 
                         //Use Below function to make a server call and complete request.
-                        mCameraPresenter.execute(scanResult);
+                        mCameraPresenter.searchProducts(code);
                         break;
                     }
                 }
             }
         } catch (Exception e) {
             Timber.e(e, "Failed in getting qr code from server");
-//            DialogFactory.createTryAgainDialog(mContext, "Cannot query this QR Code from server. Please try again", (dialog, which) -> {
-//                dialog.dismiss();
-//                reloadActivity();
-//            });
+            buildFailedDialog("Problem in scanning with camera. Please try again.").show();
         }
     }
-
-    private Runnable doAutoFocus = new Runnable() {
-        public void run() {
-            if (mCamera != null && mPreviewing) {
-                mCamera.autoFocus(autoFocusCB);
-            }
-        }
-    };
-
-    // Mimic continuous auto-focusing
-    Camera.AutoFocusCallback autoFocusCB = new Camera.AutoFocusCallback() {
-        public void onAutoFocus(boolean success, Camera camera) {
-            mAutoFocusHandler.postDelayed(doAutoFocus, 1000);
-        }
-    };
 
     @NonNull
     private AlertDialog.Builder buildFailedDialog(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle(getResources().getString(R.string.dialog_error_title)).setMessage(message);
-        builder.setPositiveButton("Scan Again", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.dialog_action_scan_again), (dialog, which) -> {
             dialog.dismiss();
             startScan();
         });
-        builder.setNegativeButton("Cancel", (dialog, which) -> {
+        builder.setNegativeButton(getString(R.string.dialog_action_cancel), (dialog, which) -> {
             dialog.dismiss();
             setResult(Activity.RESULT_CANCELED);
             finish();
         });
-        builder.setCancelable(true);
         builder.setOnCancelListener(dialog -> {
             dialog.dismiss();
             reloadActivity();
         });
         return builder;
-    }
-
-    @Override
-    public void showNetworkError() {
-
-    }
-
-    @Override
-    public void showInAppError() {
-
     }
 }

@@ -16,9 +16,26 @@ public class FirebaseProductRepository implements ProductRepository {
 
     @NonNull
     private final DatabaseReference mDbRef;
+    @NonNull
+    private final SearchService mSearchService;
 
-    public FirebaseProductRepository(@NonNull DatabaseReference dbRef) {
+    public FirebaseProductRepository(@NonNull DatabaseReference dbRef,
+                                     @NonNull SearchService searchService) {
         mDbRef = dbRef;
+        mSearchService = searchService;
+    }
+
+    @Override
+    public Observable<List<Product>> scanProducts(@NonNull String code) {
+
+        return Observable.merge(
+                mSearchService.searchProducts(ProductSource.UPC, code),
+                mSearchService.searchProducts(ProductSource.AMAZON, code),
+                mSearchService.searchProducts(ProductSource.IN_APP, code),
+                mSearchService.searchProducts(ProductSource.UPC_DATABASE, code),
+                mSearchService.searchProducts(ProductSource.UPC_ITEM_DB, code),
+                mSearchService.searchProducts(ProductSource.WALMART, code)
+        );
     }
 
     @Override

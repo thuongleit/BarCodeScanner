@@ -9,7 +9,6 @@ import android.view.MenuItem;
 
 import com.whooo.babr.R;
 import com.whooo.babr.config.Config;
-import com.whooo.babr.data.DataManager;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
@@ -23,8 +22,6 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class HistoryActivity extends BaseActivity {
 
@@ -35,8 +32,7 @@ public class HistoryActivity extends BaseActivity {
 
     @Inject
     Config mConfig;
-    @Inject
-    DataManager mDataManager;
+//    DataManager mDataManager;
 
     private ArrayList<CheckoutHistory> productHistories = new ArrayList<>();
     private AdapterHistory adapterHistory;
@@ -70,14 +66,14 @@ public class HistoryActivity extends BaseActivity {
 
         mRecyclerView.setAdapter(adapterHistory);
 
-        subscription = mDataManager.getProductsHistory()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(list -> {
-                    progressDialog.dismiss();
-                    productHistories.addAll(list);
-                    adapterHistory.addItems(productHistories);
-                });
+//        subscription = mDataManager.getProductsHistory()
+//                .subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(list -> {
+//                    progressDialog.dismiss();
+//                    productHistories.addAll(list);
+//                    adapterHistory.addItems(productHistories);
+//                });
 
     }
 

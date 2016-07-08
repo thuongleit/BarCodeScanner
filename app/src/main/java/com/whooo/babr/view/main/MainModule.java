@@ -1,5 +1,6 @@
 package com.whooo.babr.view.main;
 
+import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.di.PerActivity;
 
 import dagger.Module;
@@ -14,9 +15,9 @@ public class MainModule {
         mView = view;
     }
 
-    @PerActivity
     @Provides
-    public MainContract.Presenter providePresenter(){
-        return new MainPresenter(null, null);
+    @PerActivity
+    public MainContract.Presenter providePresenter(ProductRepository productRespository) {
+        return new MainPresenter(mView, productRespository);
     }
 }

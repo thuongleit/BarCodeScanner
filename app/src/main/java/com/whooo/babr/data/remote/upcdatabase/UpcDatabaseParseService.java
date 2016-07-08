@@ -17,9 +17,6 @@ import rx.Observable;
 import rx.Subscriber;
 import timber.log.Timber;
 
-/**
- * Created by ThongLe on 3/19/2016.
- */
 @Singleton
 public class UpcDatabaseParseService {
 

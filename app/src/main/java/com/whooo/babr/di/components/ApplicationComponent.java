@@ -7,7 +7,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.squareup.picasso.Picasso;
 import com.whooo.babr.config.Config;
-import com.whooo.babr.data.DataManager;
+import com.whooo.babr.data.product.ProductRepository;
+import com.whooo.babr.data.product.SearchService;
 import com.whooo.babr.data.remote.ApiModule;
 import com.whooo.babr.di.ApplicationScope;
 import com.whooo.babr.di.modules.ApplicationModule;
@@ -25,16 +26,15 @@ public interface ApplicationComponent {
     @ApplicationScope
     Context context();
 
-
-    DataManager dataManager();
-
     Config config();
-
-    void inject(DataManager manager);
 
     Picasso picasso();
 
     FirebaseAuth firebaseAuth();
 
     DatabaseReference firebaseDbRef();
+
+    SearchService searchService();
+
+    ProductRepository productRepository();
 }

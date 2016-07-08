@@ -10,23 +10,18 @@ import android.view.MenuItem;
 import com.whooo.babr.R;
 import com.whooo.babr.config.Config;
 import com.whooo.babr.config.Constant;
-import com.whooo.babr.data.DataManager;
+import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
-import com.whooo.babr.view.product.ProductRecyclerAdapter;
 import com.whooo.babr.view.widget.DividerItemDecoration;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
 
-import javax.inject.Inject;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class DetailActivity extends BaseActivity {
     @Bind(R.id.recycler_view)
@@ -34,10 +29,8 @@ public class DetailActivity extends BaseActivity {
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Inject
     Config mConfig;
-    @Inject
-    DataManager mDataManager;
+    ProductRepository mDataManager;
 
     private ArrayList<Product> productHistories = new ArrayList<>();
     private ProgressDialog progressDialog;
@@ -69,17 +62,6 @@ public class DetailActivity extends BaseActivity {
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
 
 
-        subscription = mDataManager.getProductsCheckout(listId)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(list -> {
-                    progressDialog.dismiss();
-                    productHistories.addAll(list);
-                    if ((mRecyclerView.getAdapter()) == null) {
-                        RecyclerView.Adapter adapter = new ProductRecyclerAdapter(this, productHistories);
-                        mRecyclerView.setAdapter(adapter);
-                    }
-                });
 
 
     }

@@ -1,7 +1,6 @@
 package com.whooo.babr.view.scan.result;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,8 +17,8 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.Toast;
 
+import com.pnikosis.materialishprogress.ProgressWheel;
 import com.whooo.babr.R;
-import com.whooo.babr.config.Config;
 import com.whooo.babr.data.remote.amazon.model.AmazonProductResponse;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
@@ -29,16 +27,17 @@ import com.whooo.babr.view.product.ProductRecyclerAdapter;
 import com.whooo.babr.view.scan.camera.CameraActivity;
 import com.whooo.babr.view.widget.DividerItemDecoration;
 import com.whooo.babr.vo.Product;
-import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SearchResultActivity extends BaseActivity implements ParsingView {
+public class ResultActivity extends BaseActivity implements ResultContract.View {
     public static final String EXTRA_PRODUCTS_DATA = "exProductsData";
 
     @Bind(R.id.recycler_view)
@@ -48,8 +47,8 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
-    ParsingPresenter mParsingPresenter;
-    Config mConfig;
+    @Inject
+    ResultContract.Presenter mParsingPresenter;
 
     private ProductRecyclerAdapter mAdapter;
     private int mCurrentParsingIndex = 0;
@@ -80,7 +79,7 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
                     bindView((Product) mData);
                 } else if (mData instanceof AmazonProductResponse) {
                     AmazonProductResponse amazonProductResponse = (AmazonProductResponse) mData;
-                    mParsingPresenter.parse(amazonProductResponse.getProducts().get(mCurrentParsingIndex).getDetailPageURL());
+                    mParsingPresenter.getProducts(amazonProductResponse.getProducts().get(mCurrentParsingIndex).getDetailPageURL());
                 }
             }
         }
@@ -92,7 +91,6 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
     protected void onDestroy() {
         super.onDestroy();
         ButterKnife.unbind(this);
-        mParsingPresenter.detachView();
     }
 
     @Override
@@ -101,25 +99,23 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
     }
 
     public void onNetworkFailed() {
-        Toast.makeText(SearchResultActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+        Toast.makeText(ResultActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
     }
 
     public void onGeneralFailed(String message) {
     }
 
-    @Override
     public void onParseSuccess(Product product) {
         if (product != null) {
             bindView(product);
             AmazonProductResponse productResponse = (AmazonProductResponse) this.mData;
             if (mCurrentParsingIndex < productResponse.getProducts().size()) {
                 mCurrentParsingIndex++;
-                mParsingPresenter.parse(productResponse.getProducts().get(mCurrentParsingIndex).getDetailPageURL());
+                mParsingPresenter.getProducts(productResponse.getProducts().get(mCurrentParsingIndex).getDetailPageURL());
             }
         }
     }
 
-    @Override
     public void showProcess(boolean show) {
         if (show) {
             mProgressWheel.setVisibility(View.VISIBLE);
@@ -134,32 +130,32 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
 
     @OnClick(R.id.button_toolbar_save)
     public void save() {
-        if (!mConfig.isIsDontShow()) {
-            new AlertDialog.Builder(this, R.style.MyAlertDialogAppCompatStyle)
-                    .setTitle("Option")
-                    .setMessage(getString(R.string.choose_image))
-                    .setPositiveButton("Always select all", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mConfig.putIsDontShow(true);
-                            startResult();
-                        }
-                    }).setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                    startResult();
-                }
-            }).setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            }).show();
-
-        } else {
-            startResult();
-        }
+//        if (!mConfig.isIsDontShow()) {
+//            new AlertDialog.Builder(this, R.style.MyAlertDialogAppCompatStyle)
+//                    .setTitle("Option")
+//                    .setMessage(getString(R.string.choose_image))
+//                    .setPositiveButton("Always select all", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            mConfig.putIsDontShow(true);
+//                            startResult();
+//                        }
+//                    }).setNegativeButton("OK", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//
+//                    startResult();
+//                }
+//            }).setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    dialog.dismiss();
+//                }
+//            }).show();
+//
+//        } else {
+        startResult();
+//        }
     }
 
 
@@ -170,7 +166,7 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
             setResult(Activity.RESULT_OK, intent);
             finish();
         } else {
-            Intent intent = new Intent(SearchResultActivity.this, MainActivity.class);
+            Intent intent = new Intent(ResultActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.putParcelableArrayListExtra(EXTRA_PRODUCTS_DATA, mProducts);
             setResult(Activity.RESULT_OK, intent);
@@ -198,9 +194,9 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
 
             private void init() {
                 background = new ColorDrawable(Color.RED);
-                xMark = ContextCompat.getDrawable(SearchResultActivity.this, R.drawable.ic_delete_sweep_white_24dp);
+                xMark = ContextCompat.getDrawable(ResultActivity.this, R.drawable.ic_delete_sweep_white_24dp);
                 xMark.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
-                xMarkMargin = (int) SearchResultActivity.this.getResources().getDimension(R.dimen.card_corner_radius);
+                xMarkMargin = (int) ResultActivity.this.getResources().getDimension(R.dimen.card_corner_radius);
                 initiated = true;
             }
 
@@ -361,5 +357,15 @@ public class SearchResultActivity extends BaseActivity implements ParsingView {
         } else {
             mAdapter.addItem(product);
         }
+    }
+
+    @Override
+    public void showNetworkError() {
+
+    }
+
+    @Override
+    public void showInAppError() {
+
     }
 }

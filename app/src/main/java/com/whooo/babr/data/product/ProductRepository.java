@@ -1,5 +1,7 @@
 package com.whooo.babr.data.product;
 
+import android.support.annotation.NonNull;
+
 import com.whooo.babr.data.DataSource;
 import com.whooo.babr.vo.Product;
 
@@ -9,7 +11,9 @@ import rx.Observable;
 
 public interface ProductRepository extends DataSource {
 
-    String PRODUCT_INSTANCE = "products";
+    String CODE_NAME = "products";
+
+    Observable<List<Product>> scanProducts(@NonNull String code);
 
     Observable<List<Product>> getProducts();
 

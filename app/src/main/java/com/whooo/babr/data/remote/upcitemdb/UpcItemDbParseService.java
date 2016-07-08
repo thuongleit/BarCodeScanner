@@ -18,9 +18,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.Subscriber;
 
-/**
- * Created by ThongLe on 3/19/2016.
- */
 @Singleton
 public class UpcItemDbParseService {
 

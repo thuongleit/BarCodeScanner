@@ -1,29 +1,28 @@
 package com.whooo.babr.view.scan.camera;
 
-import android.text.TextUtils;
+import android.os.Parcelable;
 
-import com.whooo.babr.data.DataManager;
-import com.whooo.babr.data.remote.amazon.model.AmazonProductResponse;
+import com.google.repacked.antlr.v4.runtime.misc.Nullable;
+import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.vo.Product;
 
-import java.io.IOException;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
 public class CameraPresenter implements CameraContract.Presenter {
 
-    private final DataManager mDataManager;
+    private CameraContract.View mView;
+    private final ProductRepository mRepository;
     private Subscription mSubscription = Subscriptions.empty();
-    private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
+    public CameraPresenter(CameraContract.View mView, ProductRepository repository) {
+        this.mView = mView;
+        mRepository = repository;
+    }
 
     @Override
     public void subscribe() {
@@ -32,84 +31,43 @@ public class CameraPresenter implements CameraContract.Presenter {
 
     @Override
     public void unsubscribe() {
-
+        if (mSubscription != null) {
+            mSubscription.unsubscribe();
+        }
     }
 
     @Override
     public void onDestroy() {
+        mView = null;
+        mSubscription = null;
+    }
+
+    @Override
+    public void searchProducts(@Nullable String code) {
+        // TODO: 7/8/16 check NPE
+
+        unsubscribe();
+        mView.showProgress(true);
+        mView.playRingtone();
+
+        mSubscription = mRepository
+                .scanProducts(code)
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .first()
+                .subscribe();
+
+        // TODO: 7/8/16 add action
+    }
+
+    @Override
+    public void onRequestSuccess(Parcelable parcelable) {
 
     }
 
-    @Inject
-    public CameraPresenter(DataManager dataManager) {
-        mDataManager = dataManager;
-    }
+    @Override
+    public void onRequestSuccessList(List<Product> parcelables) {
 
-    public void execute(final String code) {
-//        mView.showProgress(true);
-//        mView.playRingtone();
-
-        Observable<List<Product>> observableUpcItemDb = mDataManager.getProductUpcItemDb(code);
-        Observable<List<Product>> observableBabr = mDataManager.getProductsBABR(code);
-        Observable<List<Product>> observableWalmartlabs = mDataManager.getProductWalmartlabs(code);
-        Observable<List<Product>> observableUpcDatabase = mDataManager.getProductUpcDatabase(code);
-        Observable<List<Product>> observableCheckoutScan = mDataManager.getProductsCheckoutScan(code);
-        Observable<List<Product>> observableSearchUpc = mDataManager.getProductSearchUpc(code);
-        Observable<AmazonProductResponse> observableAmazon = mDataManager.searchProductsInAmazon(code);
-
-        Observable<List<Product>> merge = Observable.merge(observableUpcItemDb, observableWalmartlabs, observableBabr, observableUpcDatabase,
-                observableCheckoutScan, observableSearchUpc);
-
-        compositeSubscription.add(Observable.combineLatest(merge, observableAmazon, this::setupData)
-                .first(data -> isHavingImage(data))
-                .subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object -> {
-                            if (object instanceof AmazonProductResponse) {
-                                AmazonProductResponse reponse = (AmazonProductResponse) object;
-//                                mView.onRequestSuccess(reponse);
-                            } else {
-                                List<Product> reponse = (List<Product>) object;
-//                                mView.onRequestSuccessList(reponse);
-                            }
-                            stopConcurrencyExe();
-
-                        }, e -> {
-                            if (e instanceof IOException) {
-//                                mView.onNetworkFailed();
-                            } else {
-//                                mView.onGeneralFailed(e.getMessage());
-                            }
-                        },
-                        () -> {
-//                            mView.showProgress(false)
-                        }));
-
-
-    }
-
-    private boolean isHavingImage(Object object) {
-        if (object instanceof AmazonProductResponse) {
-            return true;
-        } else {
-            List<Product> reponse = (List<Product>) object;
-            if (!TextUtils.isEmpty(reponse.get(0).imageUrl)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Object setupData(List<Product> products, AmazonProductResponse response) {
-        if (response.getProducts().size() > 0) {
-            return response;
-        } else {
-            return products;
-        }
-    }
-
-    private void stopConcurrencyExe() {
-        if (compositeSubscription != null) {
-            compositeSubscription.clear();
-        }
     }
 }

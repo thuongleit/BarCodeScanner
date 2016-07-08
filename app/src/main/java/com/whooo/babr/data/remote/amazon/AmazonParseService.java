@@ -15,9 +15,6 @@ import javax.inject.Singleton;
 import rx.Observable;
 import timber.log.Timber;
 
-/**
- * Created by thuongle on 2/25/16.
- */
 @Singleton
 public class AmazonParseService {
 
