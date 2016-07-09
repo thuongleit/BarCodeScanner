@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.whooo.babr">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -37,13 +38,6 @@
         <activity android:name="com.whooo.babr.view.AppIntroActivity" />
         <activity android:name="com.whooo.babr.view.qrgenerate.GenerateQR" />
 
-        <activity
-            android:name="com.whooo.babr.view.scan.result.ResultActivity"
-            android:parentActivityName="com.whooo.babr.view.scan.camera.CameraActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.whooo.babr.view.scan.camera.CameraActivity" />
-        </activity>
         <activity android:name="com.whooo.babr.view.history.HistoryActivity" />
         <activity android:name="com.whooo.babr.view.history.DetailActivity" />
 
@@ -76,13 +70,23 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name="com.whooo.babr.view.scan.camera.CameraActivity"
+            android:name="com.whooo.babr.view.scan.CameraActivity"
             android:label="Scan barcode"
             android:parentActivityName="com.whooo.babr.view.main.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.whooo.babr.view.main.MainActivity" />
         </activity>
+
+        <activity
+            android:name="com.whooo.babr.view.scan.ResultActivity"
+            android:label="Searching Result"
+            android:parentActivityName="com.whooo.babr.view.scan.CameraActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.whooo.babr.view.scan.CameraActivity" />
+        </activity>
+
         <activity
             android:name="com.whooo.babr.view.product.BarViewActivity"
             android:parentActivityName="com.whooo.babr.view.main.MainActivity">

@@ -18,7 +18,7 @@
  * API Version: 2009-03-31
  */
 
-package com.whooo.babr.data.remote.amazon.util;
+package com.whooo.babr.data.remote.amazon;
 
 import android.net.Uri;
 
@@ -167,6 +167,7 @@ public class AmazonSignedRequestsHelper {
         String url = uriBuilder.authority(ENDPOINT)
                 .appendQueryParameter("AWSAccessKeyId", Constant.AWS_ACCESS_KEY_ID)
                 .appendQueryParameter("AssociateTag", Constant.AWS_ASSOCIATE_TAG)
+                .appendQueryParameter("ResponseGroup", "Images")
                 .appendQueryParameter("Operation", "ItemSearch")
                 .appendQueryParameter("Availability", "Available")
                 .appendQueryParameter("Keywords", keyword)

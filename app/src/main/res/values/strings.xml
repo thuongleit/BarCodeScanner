@@ -78,5 +78,6 @@
     <string name="dialog_action_scan_again">Scan Again</string>
     <string name="menu_action_flash_off">Flash [OFF]</string>
     <string name="menu_action_flash_on">Flash [ON]</string>
+    <string name="menu_action_save">Save</string>
 
 </resources>

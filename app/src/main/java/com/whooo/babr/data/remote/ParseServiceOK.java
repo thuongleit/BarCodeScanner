@@ -105,7 +105,7 @@ public class ParseServiceOK {
     }
 
     public Observable<Product> getProductsCheckout(String listId) {
-        return null;
+        return Observable.empty();
 //        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId()).whereEqualTo("listId", listId);
 //        return Observable.create(new Observable.OnSubscribe<Product>() {
 //            @Override
@@ -146,7 +146,7 @@ public class ParseServiceOK {
     }
 
     public Observable<Product> getProductsCheckoutScan(String listId) {
-        return null;
+        return Observable.empty();
 //        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("listId", listId);
 //        return Observable.create(new Observable.OnSubscribe<Product>() {
 //            @Override
@@ -188,7 +188,7 @@ public class ParseServiceOK {
 
 
     public Observable<Product> getProducts() {
-        return null;
+        return Observable.empty();
 //        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
 //        return Observable.create(new Observable.OnSubscribe<Product>() {
 //            @Override
@@ -251,11 +251,11 @@ public class ParseServiceOK {
 //                });
 //            }
 //        });
-        return null;
+        return Observable.empty();
     }
 
     public Observable<Product> getProductBABR(String id) {
-        return null;
+        return Observable.empty();
 //        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", id);
 //        return Observable.create(new Observable.OnSubscribe<Product>() {
 //            @Override

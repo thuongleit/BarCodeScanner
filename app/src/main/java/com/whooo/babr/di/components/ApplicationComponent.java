@@ -10,6 +10,7 @@ import com.whooo.babr.config.Config;
 import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.data.product.SearchService;
 import com.whooo.babr.data.remote.ApiModule;
+import com.whooo.babr.data.remote.ParseServiceOK;
 import com.whooo.babr.data.remote.amazon.AmazonParseService;
 import com.whooo.babr.data.remote.searchupc.SearchUpcParseService;
 import com.whooo.babr.data.remote.upcdatabase.UpcDatabaseParseService;
@@ -62,5 +63,7 @@ public interface ApplicationComponent {
     UpcItemDbParseService upcItemDbParseService();
 
     WalmartlabsParseService walmartParseService();
+
+    ParseServiceOK appService();
 
 }

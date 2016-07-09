@@ -1,4 +1,4 @@
-package com.whooo.babr.view.scan.camera;
+package com.whooo.babr.view.scan;
 
 import com.google.repacked.antlr.v4.runtime.misc.Nullable;
 import com.whooo.babr.data.product.ProductRepository;

@@ -1,4 +1,4 @@
-package com.whooo.babr.view.scan.camera;
+package com.whooo.babr.view.scan;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -27,7 +27,6 @@ import com.whooo.babr.util.RevealBackgroundView;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
-import com.whooo.babr.view.scan.result.ResultActivity;
 import com.whooo.babr.view.widget.CameraPreview;
 import com.whooo.babr.view.widget.ViewFinderView;
 import com.whooo.babr.vo.Product;
@@ -47,7 +46,6 @@ import timber.log.Timber;
 
 public class CameraActivity extends BaseActivity implements CameraContract.View, Camera.PreviewCallback {
     public static final String EXTRA_DATA = "exData";
-    public static final String EXTRA_LOAD_USER_ID = "exUserId";
     private static final int REQUEST_RESULT_ACTIVITY = 1;
 
     //views
@@ -160,6 +158,7 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
         switch (requestCode) {
             case REQUEST_RESULT_ACTIVITY:
                 if (resultCode == Activity.RESULT_OK) {
+                    setResult(Activity.RESULT_OK, data);
                     finish();
                 } else {
                     startScan();
@@ -197,6 +196,7 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
     @Override
     public void onEmptyResponse() {
         // TODO: 7/9/16 add action
+        DialogFactory.createGenericErrorDialog(mContext, "No products found. Try another barcode.").show();
     }
 
     @Override

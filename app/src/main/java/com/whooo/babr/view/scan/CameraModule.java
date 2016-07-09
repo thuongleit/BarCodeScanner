@@ -1,4 +1,4 @@
-package com.whooo.babr.view.scan.camera;
+package com.whooo.babr.view.scan;
 
 import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.di.PerActivity;
@@ -7,11 +7,11 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class CameraModule {
+class CameraModule {
 
     private final CameraContract.View mView;
 
-    public CameraModule(CameraContract.View view) {
+    CameraModule(CameraContract.View view) {
         mView = view;
     }
 
