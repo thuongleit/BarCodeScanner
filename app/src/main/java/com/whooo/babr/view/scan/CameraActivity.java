@@ -172,7 +172,9 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
         switch (requestCode) {
             case REQUEST_RESULT_ACTIVITY:
                 if (resultCode == Activity.RESULT_OK) {
-                    setResult(Activity.RESULT_OK, data);
+                    Intent intent = getIntent();
+                    intent.putParcelableArrayListExtra(EXTRA_DATA, data.getParcelableArrayListExtra(ResultActivity.EXTRA_DATA));
+                    setResult(Activity.RESULT_OK, intent);
                     finish();
                 } else {
                     startScan();
