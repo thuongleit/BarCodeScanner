@@ -20,4 +20,6 @@ public interface Constant {
     String KEY_WALMARTLABS = "walmartlabs";
     String KEY_LIST_ID = "list_id";
 
+    String ARG_REVEAL_START_LOCATION = "reveal_start_location";
+
 }

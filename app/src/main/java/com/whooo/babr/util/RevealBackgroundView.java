@@ -21,7 +21,7 @@ public class RevealBackgroundView extends View {
     public static final int STATE_FINISHED = 2;
 
     private static final Interpolator INTERPOLATOR = new AccelerateInterpolator();
-    private static final int FILL_TIME = 1000;
+    private static final int FILL_TIME = 2000;
 
     private int state = STATE_NOT_STARTED;
 

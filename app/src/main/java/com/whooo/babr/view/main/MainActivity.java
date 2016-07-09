@@ -108,8 +108,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     .request(Manifest.permission.CAMERA)
                     .subscribe(granted -> {
                         if (granted) { // Always true pre-M
+                            int[] startingLocation = new int[2];
+                            v.getLocationOnScreen(startingLocation);
+                            startingLocation[0] += v.getWidth() / 2;
+
                             Intent intent = new Intent(mContext, CameraActivity.class);
-                            startActivityForResult(intent, REQUEST_CAMERA);
+                            //startActivityForResult(intent, REQUEST_CAMERA);
+                            CameraActivity.startCameraActivityFromLocation(startingLocation,intent,this);
                         } else {
                             showToast("You must allow to use camera to access this function");
                         }
