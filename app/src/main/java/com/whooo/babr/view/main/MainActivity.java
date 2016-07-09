@@ -32,14 +32,13 @@ import com.whooo.babr.R;
 import com.whooo.babr.data.remote.ParseServiceOK;
 import com.whooo.babr.databinding.ActivityMainBinding;
 import com.whooo.babr.util.AppUtils;
-import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.util.dialog.DialogQrcodeHistory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.history.HistoryActivity;
 import com.whooo.babr.view.product.ProductRecyclerAdapter;
 import com.whooo.babr.view.qrgenerate.GenerateQR;
-import com.whooo.babr.view.scan.camera.CameraActivity;
+import com.whooo.babr.view.scan.CameraActivity;
 import com.whooo.babr.view.session.signin.SignInActivity;
 import com.whooo.babr.view.widget.DividerItemDecoration;
 import com.whooo.babr.vo.CheckoutHistory;
@@ -77,7 +76,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private Context mContext;
 
     private boolean mDoubleBackToExitPressedOnce = false;
-    private List<Product> productList = new ArrayList<>();
+    private List<Product> mProducts = new ArrayList<>();
     private ProgressDialog progressDialog;
     private String generateListId;
     private ParseServiceOK parseServiceOK;
@@ -167,7 +166,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (id == R.id.action_camera) {
 
 
-            if (productList.size() >= 1) {
+            if (mProducts.size() >= 1) {
 
                 new AlertDialog.Builder(this, R.style.MyAlertDialogAppCompatStyle)
                         .setMessage(getResources().getString(R.string.save_to_history))
@@ -192,15 +191,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void saveProductToHistory() {
         generateListId = AppUtils.generateString(new Random(), "1254789dhfoendlf89ssofnd896541", 20);
 
-        parseServiceOK.saveListProductNoCheckout(productList, generateListId).subscribeOn(Schedulers.newThread())
+        parseServiceOK.saveListProductNoCheckout(mProducts, generateListId).subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
-            productList.clear();
+            mProducts.clear();
             showToast("Generator qr-code has saved to server!");
         });
         CheckoutHistory checkoutHistory = new CheckoutHistory();
         checkoutHistory.listId = generateListId;
         checkoutHistory.name = AppUtils.gerenateDateFormat();
-        checkoutHistory.size = productList.size();
+        checkoutHistory.size = mProducts.size();
         parseServiceOK.saveProductHistory(checkoutHistory);
 
         DialogQrcodeHistory qrcodeHistory = new DialogQrcodeHistory(mContext, generateListId);
@@ -280,36 +279,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
             ArrayList<Product> products = data.getParcelableArrayListExtra(CameraActivity.EXTRA_DATA);
-            if (products.size() >= 1) {
-                productList.addAll(products);
-                progressDialog = DialogFactory.createProgressDialog(this, "", "Loading...");
-                progressDialog.show();
-                if (mRecyclerView.getAdapter() == null) {
-                    parseServiceOK.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(a -> {
-                                showToast("nodes has been saved!");
-
-                            });
-                    subscription = Observable.timer(3, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(a -> {
-                                progressDialog.dismiss();
-                                reloadActivity();
-
-                            });
-
+            if (products != null && !products.isEmpty()) {
+                RecyclerView.Adapter adapter = mRecyclerView.getAdapter();
+                if (adapter == null) {
+                    mProducts = products;
+                    mRecyclerView.setAdapter(new ProductRecyclerAdapter(mContext, mProducts));
                 } else {
-
-
-                    parseServiceOK.saveListProduct(products).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(a -> {
-                                showToast("nodes has been saved!");
-                            });
-                    subscription = Observable.timer(3, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(a -> {
-                                progressDialog.dismiss();
-                                reloadActivity();
-
-                            });
+                    ((ProductRecyclerAdapter) adapter).addItems(products);
                 }
             }
         }
@@ -371,13 +347,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     public void showProducts(List<Product> products) {
-        productList.addAll(products);
+        mProducts.addAll(products);
 
         RecyclerView.Adapter adapter = new ProductRecyclerAdapter(MainActivity.this, new ArrayList<>());
         mRecyclerView.setAdapter(adapter);
         ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
-
-
     }
 
     private void setupReCyclerView() {
@@ -428,8 +402,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             int currPos;
             for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
                 currPos = selectedItemPositions.get(i);
-                parseServiceOK.deleteProduct(productList.get(currPos).objectId);
-                productList.remove(currPos);
+                parseServiceOK.deleteProduct(mProducts.get(currPos).objectId);
+                mProducts.remove(currPos);
                 ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteItem(currPos);
             }
 

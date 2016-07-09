@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import com.whooo.babr.config.Constant;
 import com.whooo.babr.data.remote.ParseService;
-import com.whooo.babr.data.remote.amazon.util.AmazonSignedRequestsHelper;
 import com.whooo.babr.vo.Product;
 
 import org.jsoup.Jsoup;

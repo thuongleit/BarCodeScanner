@@ -29,12 +29,12 @@ public class SearchService {
     private final ParseServiceOK mAppService;
 
     @Inject
-    public SearchService(SearchUpcParseService upcParseService,
-                         WalmartlabsParseService walmartService,
-                         UpcItemDbParseService upcItemDbService,
-                         UpcDatabaseParseService upcDatabaseService,
-                         AmazonParseService amazonService,
-                         ParseServiceOK service) {
+    SearchService(SearchUpcParseService upcParseService,
+                  WalmartlabsParseService walmartService,
+                  UpcItemDbParseService upcItemDbService,
+                  UpcDatabaseParseService upcDatabaseService,
+                  AmazonParseService amazonService,
+                  ParseServiceOK service) {
         this.mUpcService = upcParseService;
         this.mWalmartService = walmartService;
         this.mUpcItemDbService = upcItemDbService;
@@ -43,7 +43,7 @@ public class SearchService {
         this.mAppService = service;
     }
 
-    public Observable<List<Product>> searchProducts(ProductSource source, String code) {
+    Observable<List<Product>> searchProducts(ProductSource source, String code) {
         switch (source) {
             case SEARCH_UPC:
                 return mUpcService.searchProductsByCode(code);

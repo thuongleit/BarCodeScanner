@@ -27,13 +27,10 @@ import java.util.Locale;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-/**
- * Created by thuongle on 11/24/15.
- */
 public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecyclerAdapter.ViewHolder> {
 
     private final Context context;
-    private final List<Product> values;
+    private final List<Product> mProducts;
     private final List<Product> valuesPendingRemoval = new ArrayList<>();
     private List<Product> listSearch = new ArrayList<>();
     private SparseBooleanArray selectedItems;
@@ -49,7 +46,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
 
     public ProductRecyclerAdapter(Context context, List<Product> values) {
         this.context = context;
-        this.values = values;
+        this.mProducts = values;
         this.listSearch.addAll(values);
         selectedItems = new SparseBooleanArray();
     }
@@ -63,7 +60,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Product product = values.get(position);
+        Product product = mProducts.get(position);
 
         holder.bindView(product, holder.getAdapterPosition());
         holder.itemView.setActivated(selectedItems.get(position, false));
@@ -71,38 +68,38 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
 
     @Override
     public int getItemCount() {
-        return (values == null) ? 0 : values.size();
+        return (mProducts == null) ? 0 : mProducts.size();
     }
 
     public void addItem(Product product) {
-        this.values.add(product);
-        notifyItemInserted(values.size());
+        this.mProducts.add(product);
+        notifyItemInserted(mProducts.size());
     }
 
     public void addItems(List<Product> products) {
-        this.values.clear();
-        this.values.addAll(products);
-        notifyItemRangeInserted(0, values.size());
+        int oldIndex = mProducts.size();
+        this.mProducts.addAll(products);
+        notifyItemRangeInserted(oldIndex, mProducts.size());
     }
 
     public void deleteItem(int position) {
-        Product product = values.get(position);
+        Product product = mProducts.get(position);
         if (valuesPendingRemoval.contains(product)) {
             valuesPendingRemoval.remove(product);
         }
-        if (values.contains(product)) {
-            this.values.remove(position);
+        if (mProducts.contains(product)) {
+            this.mProducts.remove(position);
             notifyItemRemoved(position);
         }
     }
 
     public void deleteAll() {
-        this.values.clear();
+        this.mProducts.clear();
         notifyDataSetChanged();
     }
 
     public boolean isPendingRemoval(int position) {
-        Product product = values.get(position);
+        Product product = mProducts.get(position);
         return valuesPendingRemoval.contains(product);
     }
 
@@ -163,16 +160,13 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
                 itemView.setBackgroundColor(Color.RED);
                 btnUndo.setVisibility(View.VISIBLE);
 
-                btnUndo.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Runnable pendingRemovalRunnable = pendingRunnables.get(product);
-                        pendingRunnables.remove(product);
-                        if (pendingRemovalRunnable != null)
-                            handler.removeCallbacks(pendingRemovalRunnable);
-                        valuesPendingRemoval.remove(product);
-                        notifyItemChanged(values.indexOf(product));
-                    }
+                btnUndo.setOnClickListener(v -> {
+                    Runnable pendingRemovalRunnable = pendingRunnables.get(product);
+                    pendingRunnables.remove(product);
+                    if (pendingRemovalRunnable != null)
+                        handler.removeCallbacks(pendingRemovalRunnable);
+                    valuesPendingRemoval.remove(product);
+                    notifyItemChanged(mProducts.indexOf(product));
                 });
             } else {
 
@@ -206,14 +200,14 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
     }
 
     public void pendingRemoval(int position) {
-        final Product item = values.get(position);
+        final Product item = mProducts.get(position);
         if (!valuesPendingRemoval.contains(item)) {
             valuesPendingRemoval.add(item);
             notifyItemChanged(position);
             Runnable pendingRemovalRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    deleteItem(values.indexOf(item));
+                    deleteItem(mProducts.indexOf(item));
                 }
             };
             handler.postDelayed(pendingRemovalRunnable, PENDING_REMOVAL_TIMEOUT);
@@ -224,13 +218,13 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
 
     public void filter(String textSearch) {
         textSearch = textSearch.toLowerCase(Locale.getDefault());
-        values.clear();
+        mProducts.clear();
         if (textSearch.length() == 0) {
-            values.addAll(listSearch);
+            mProducts.addAll(listSearch);
         } else {
             for (Product product : listSearch) {
                 if (product.name != null && product.name.toLowerCase(Locale.getDefault()).contains(textSearch)) {
-                    values.add(product);
+                    mProducts.add(product);
                 }
             }
         }

@@ -1,4 +1,4 @@
-package com.whooo.babr.view.scan.camera;
+package com.whooo.babr.view.scan;
 
 import com.google.repacked.antlr.v4.runtime.misc.Nullable;
 import com.whooo.babr.view.base.BasePresenter;
@@ -7,7 +7,7 @@ import com.whooo.babr.vo.Product;
 
 import java.util.List;
 
-public interface CameraContract {
+interface CameraContract {
     interface View extends BaseView {
 
         void showProgress(boolean show);
