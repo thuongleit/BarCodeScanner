@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.List;
 
 @JsonDeserialize(using = ItemDeserializer.class)
-public class Item {
+class Item {
 
     public List<Child> nodes;
 
@@ -19,7 +19,7 @@ public class Item {
         this.nodes = nodes;
     }
 
-    public class Child {
+    class Child {
 
         @JsonProperty("productname")
         String productName;
@@ -42,7 +42,7 @@ public class Item {
         @JsonProperty("storename")
         String storeName;
 
-        public Child() {
+        Child() {
         }
     }
 }

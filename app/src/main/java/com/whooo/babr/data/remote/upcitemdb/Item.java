@@ -52,19 +52,6 @@ class Item {
 
         public Child() {
         }
-
-        public Child(String ean, String upc, String title, String description, String brand, String model, String dimension, String weight, String currency, List<String> images) {
-            this.ean = ean;
-            this.upc = upc;
-            this.title = title;
-            this.description = description;
-            this.brand = brand;
-            this.model = model;
-            this.dimension = dimension;
-            this.weight = weight;
-            this.currency = currency;
-            this.images = images;
-        }
     }
 }
 
