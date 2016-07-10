@@ -48,10 +48,11 @@ class CameraPresenter implements CameraContract.Presenter {
 
         mSubscription = mRepository
                 .searchProducts(code)
+                .filter(products -> products != null && !products.isEmpty())
+                .first()
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .first()
                 .subscribe(products -> {
                             if (products.isEmpty()) {
                                 mView.onEmptyResponse();

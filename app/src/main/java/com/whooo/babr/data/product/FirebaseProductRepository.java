@@ -28,16 +28,14 @@ public class FirebaseProductRepository implements ProductRepository {
     @Override
     public Observable<List<Product>> searchProducts(@NonNull String code) {
 
-//        return Observable.merge(
-//                mSearchService.searchProducts(ProductSource.SEARCH_UPC, code),
-//                mSearchService.searchProducts(ProductSource.AMAZON, code),
+        return Observable.merge(
+                mSearchService.searchProducts(ProductSource.SEARCH_UPC, code),
+                mSearchService.searchProducts(ProductSource.AMAZON, code),
 //                mSearchService.searchProducts(ProductSource.IN_APP, code),
-//                mSearchService.searchProducts(ProductSource.UPC_DATABASE, code)
-//                mSearchService.searchProducts(ProductSource.UPC_ITEM_DB, code),
-//                mSearchService.searchProducts(ProductSource.WALMART, code)
-//        );
-
-        return mSearchService.searchProducts(ProductSource.AMAZON, code);
+                mSearchService.searchProducts(ProductSource.UPC_DATABASE, code),
+                mSearchService.searchProducts(ProductSource.UPC_ITEM_DB, code),
+                mSearchService.searchProducts(ProductSource.WALMART, code)
+        );
     }
 
     @Override
