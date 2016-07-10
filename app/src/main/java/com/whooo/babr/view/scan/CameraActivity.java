@@ -49,13 +49,12 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import timber.log.Timber;
 
-public class CameraActivity extends BaseActivity implements CameraContract.View, Camera.PreviewCallback, RevealBackgroundView.OnStateChangeListener {
+public class CameraActivity extends BaseActivity implements CameraContract.View, Camera.PreviewCallback{
     public static final String EXTRA_DATA = "exData";
     private static final int REQUEST_RESULT_ACTIVITY = 1;
 
     //views
     private FrameLayout mCameraPreview;
-    private RevealBackgroundView mRevealBgr;
     private Toolbar mToolbar;
     private ViewFinderView mFinderView;
     private FrameLayout mParentPreview;
@@ -105,11 +104,8 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
         ActivityCameraBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_camera);
         mContext = this;
 
-
-
         initializeInjector();
         setupViews(binding);
-        setupRevealBackground(savedInstanceState);
         mAutoFocusHandler = new Handler();
         // Create and configure the ImageScanner;
         setupScanner();
@@ -228,12 +224,12 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
     private void setupViews(ActivityCameraBinding binding) {
         mToolbar = binding.toolbar;
         mCameraPreview = binding.preview;
-        mRevealBgr = binding.revealBgrView;
         mFinderView = binding.viewFinder;
         //mParentPreview = binding.;
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
     private void initializeInjector() {
@@ -342,54 +338,5 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
             reloadActivity();
         });
         return builder;
-    }
-    private void setupRevealBackground(Bundle savedInstanceState) {
-        mRevealBgr.setOnStateChangeListener(this);
-        if (savedInstanceState == null) {
-            final int[] startingLocation = getIntent().getIntArrayExtra(Constant.ARG_REVEAL_START_LOCATION);
-            mRevealBgr.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    mRevealBgr.getViewTreeObserver().removeOnPreDrawListener(this);
-                    mRevealBgr.startFromLocation(startingLocation);
-                    return true;
-                }
-            });
-        } else {
-            mRevealBgr.setToFinishedFrame();
-            // userPhotosAdapter.setLockedAnimations(true);
-        }
-    }
-
-    public static void startCameraActivityFromLocation(int[] startingLocation, Intent intent, Activity startingActivity) {
-        intent.putExtra(Constant.ARG_REVEAL_START_LOCATION, startingLocation);
-        startingActivity.startActivityForResult(intent, REQUEST_CAMERA);
-    }
-
-    @Override
-    public void onStateChange(int state) {
-        if (RevealBackgroundView.STATE_FINISHED == state) {
-            mToolbar.setVisibility(View.VISIBLE);
-            mCameraPreview.setVisibility(View.VISIBLE);
-            mFinderView.setVisibility(View.VISIBLE);
-
-            animateStateFinish();
-        }else {
-            mToolbar.setVisibility(View.INVISIBLE);
-            mCameraPreview.setVisibility(View.INVISIBLE);
-            mFinderView.setVisibility(View.INVISIBLE);
-
-        }
-    }
-
-    private void animateStateFinish() {
-        mToolbar.setTranslationY(-mToolbar.getHeight());
-        mCameraPreview.setTranslationY(-mCameraPreview.getHeight());
-        mFinderView.setTranslationY(-mFinderView.getHeight());
-
-        mToolbar.animate().translationY(0).setDuration(300).setInterpolator(INTERPOLATOR);
-        mCameraPreview.animate().translationY(0).setDuration(300).setStartDelay(100).setInterpolator(INTERPOLATOR);
-        mFinderView.animate().translationY(0).setDuration(300).setStartDelay(200).setInterpolator(INTERPOLATOR);
-
     }
 }

@@ -18,6 +18,7 @@ import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,6 +34,7 @@ import com.whooo.babr.data.remote.ParseServiceOK;
 import com.whooo.babr.databinding.ActivityMainBinding;
 import com.whooo.babr.util.AppUtils;
 import com.whooo.babr.util.dialog.DialogQrcodeHistory;
+import com.whooo.babr.util.swipe.ItemTouchHelperCallback;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.history.HistoryActivity;
@@ -68,7 +70,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private NavigationView mNavigationView;
     private ProgressWheel mProgressWheel;
     private SearchBox searchBox;
-    private FloatingActionButton fabScan;
+    private FloatingActionButton mFabScan;
     private Toolbar mToolbar;
 
     @Inject
@@ -78,11 +80,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private boolean mDoubleBackToExitPressedOnce = false;
     private List<Product> mProducts = new ArrayList<>();
     private ProgressDialog progressDialog;
-    private String generateListId;
+    private String mGenerateListId;
     private ParseServiceOK parseServiceOK;
     private Subscription subscription;
     private Integer userId;
     private DeflaterOutputStream actionMode;
+    private ItemTouchHelper mItemTouchHelper;
+    private ProductRecyclerAdapter mAdapter;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -101,7 +105,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setupNavigationView();
         setupReCyclerView();
 
-        fabScan.setOnClickListener(v -> {
+        mFabScan.setOnClickListener(v -> {
             // Must be done during an initialization phase like onCreate
             RxPermissions.getInstance(this)
                     .request(Manifest.permission.CAMERA)
@@ -112,8 +116,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                             startingLocation[0] += v.getWidth() / 2;
 
                             Intent intent = new Intent(mContext, CameraActivity.class);
-                            //startActivityForResult(intent, REQUEST_CAMERA);
-                            CameraActivity.startCameraActivityFromLocation(startingLocation,intent,this);
+                            startActivityForResult(intent, REQUEST_CAMERA);
                         } else {
                             showToast("You must allow to use camera to access this function");
                         }
@@ -132,7 +135,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mDrawerLayout = binding.drawerLayout;
         mRecyclerView = binding.appBarMainView.recyclerView;
         mProgressWheel = binding.appBarMainView.progressWheel;
-        fabScan = binding.appBarMainView.fabScan;
+        mFabScan = binding.appBarMainView.fabScan;
 
         binding.setPresenter(mPresenter);
     }
@@ -189,20 +192,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void saveProductToHistory() {
-        generateListId = AppUtils.generateString(new Random(), "1254789dhfoendlf89ssofnd896541", 20);
+        mGenerateListId = AppUtils.generateString(new Random(), "1254789dhfoendlf89ssofnd896541", 20);
 
-        parseServiceOK.saveListProductNoCheckout(mProducts, generateListId).subscribeOn(Schedulers.newThread())
+        parseServiceOK.saveListProductNoCheckout(mProducts, mGenerateListId).subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
             mProducts.clear();
             showToast("Generator qr-code has saved to server!");
         });
         CheckoutHistory checkoutHistory = new CheckoutHistory();
-        checkoutHistory.listId = generateListId;
+        checkoutHistory.listId = mGenerateListId;
         checkoutHistory.name = AppUtils.gerenateDateFormat();
         checkoutHistory.size = mProducts.size();
         parseServiceOK.saveProductHistory(checkoutHistory);
 
-        DialogQrcodeHistory qrcodeHistory = new DialogQrcodeHistory(mContext, generateListId);
+        DialogQrcodeHistory qrcodeHistory = new DialogQrcodeHistory(mContext, mGenerateListId);
         qrcodeHistory.show();
 
         ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteAll();
@@ -280,15 +283,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
             ArrayList<Product> products = data.getParcelableArrayListExtra(CameraActivity.EXTRA_DATA);
             if (products != null && !products.isEmpty()) {
-                RecyclerView.Adapter adapter = mRecyclerView.getAdapter();
-                if (adapter == null) {
-                    mProducts = products;
-                    mRecyclerView.setAdapter(new ProductRecyclerAdapter(mContext, mProducts));
-                } else {
-                    ((ProductRecyclerAdapter) adapter).addItems(products);
-                }
+             //   mProducts.addAll(products);
+                mAdapter.addItems(products);
+                setupWithItemTouch();
+
             }
         }
+    }
+
+    private void setupWithItemTouch() {
+        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(mAdapter, this);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     @Override
@@ -348,19 +354,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public void showProducts(List<Product> products) {
         mProducts.addAll(products);
-
-        RecyclerView.Adapter adapter = new ProductRecyclerAdapter(MainActivity.this, new ArrayList<>());
-        mRecyclerView.setAdapter(adapter);
-        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).addItems(products);
+        mAdapter.addItems(products);
     }
 
     private void setupReCyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST));
         mRecyclerView.setHasFixedSize(true);
-        // mRecyclerView.setItemAnimator(new FeedItemAnimator());
-
+        mAdapter = new ProductRecyclerAdapter(this, mProducts);
+        mRecyclerView.setAdapter(mAdapter);
+        setupWithItemTouch();
     }
+
 
     private void setupNavigationView() {
         mDrawerLayout.setScrimColor(Color.TRANSPARENT);

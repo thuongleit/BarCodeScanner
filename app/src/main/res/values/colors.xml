@@ -17,6 +17,7 @@
     <color name="msgr_material_item_pressed_dark">#4dffffff</color>
     <color name="msgr_material_ripple_mask">#ffffffff</color>
     <color name="msgr_material_edge_effect">@color/colorPrimaryDark</color>
+    <color name="red500">#db4437</color>
 
     <color name="colorPrimaryDarkTheme">#4a4959</color>
     <color name="colorPrimaryDarkDarkTheme">#525065</color>
