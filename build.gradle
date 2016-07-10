@@ -3,16 +3,15 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
-        maven { url 'https://maven.fabric.io/public' }
         maven { url "https://jitpack.io" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
         maven { url "https://clojars.org/repo/" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.0'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
-        classpath 'io.fabric.tools:gradle:1.21.2'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'me.tatarka:gradle-retrolambda:3.2.4'
+        classpath 'com.google.gms:google-services:3.0.0'
     }
 }
 
@@ -20,7 +19,6 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
-        maven { url 'https://maven.fabric.io/public' }
         maven { url "https://jitpack.io" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
         maven { url "https://clojars.org/repo/" }
@@ -29,4 +27,47 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+ext {
+    versionCode            = 1
+    versionName            = '1.0'
+
+    minSdkVersion          = 15
+    targetSdkVersion       = 23
+    compileSdkVersion      = 23
+    buildToolsVersion      = '24.0.0'
+
+    playServices           = '9.2.0'
+    supportLibs            = '23.4.0'
+    guavaVersion           = '18.0'
+    dagger                 = '2.2'
+    javaxInject            = '1'
+    javaxAnnotationApi     = '1.2'
+    rxJava                 = '1.1.3'
+    rxAndroid              = '1.1.0'
+    okHttp                 = '3.2.0'
+    retrofit               = '2.0.0'
+    jackson                = '2.6.2'
+    autoValue              = '1.1'
+    butterKnife            = '7.0.1'
+    timber                 = '4.1.1'
+    espresso               = '2.2.1'
+    stetho                 = '1.3.0'
+    leakCanary             = '1.3.1'
+    paperwork              = '1.2.4'
+    icepick                = '3.1.0'
+    nimble                 = '0.5.1'
+    picasso                = '2.5.2'
+    picassoOkHttpDownloader= '1.0.2'
+    videoPlayerManager     = '0.2.0'
+    exoPlayer              = 'r1.5.6'
+    dbFlow                 = '3.0.0-beta5'
+
+    junit                  = '4.12'
+    assertJ                = '1.7.1'
+    equalsVerifier         = '1.7.5'
+    mockito                = '1.10.19'
+    supportTestRunner      = '0.4.1'
+    robolectric            = '3.0'
 }

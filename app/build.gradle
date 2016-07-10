@@ -1,21 +1,20 @@
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 apply from: '../config/quality.gradle'
-apply from: '../config/dependencies.gradle'
 
 android {
-    compileSdkVersion app.compileSdk
-    buildToolsVersion app.buildTools
-
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
     compileOptions.encoding = 'UTF-8' // write your encoding here
 
     defaultConfig {
-        applicationId app.applicationId
+        applicationId "com.whooo.babr"
         vectorDrawables.useSupportLibrary = true
-        minSdkVersion app.minSdk
-        targetSdkVersion app.targetSdk
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
         aaptOptions {
             additionalParameters "--no-version-vectors"
         }
@@ -24,14 +23,22 @@ android {
 
         // Enabling multidex support.
         multiDexEnabled true
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
         release {
             minifyEnabled false
-            proguardFile getDefaultProguardFile('proguard-android.txt')
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
         }
         debug {
-            signingConfig signingConfigs.debug
+            minifyEnabled false
+            // Uses new built-in shrinker http://tools.android.com/tech-docs/new-build-system/built-in-shrinker
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+//            signingConfig signingConfigs.debug
         }
     }
 
@@ -45,15 +52,16 @@ android {
     }
 
     signingConfigs {
-        debug {
-            storeFile rootProject.file('config/debug.keystore')
-            storePassword 'android'
-            keyAlias 'android'
-            keyPassword 'android'
-        }
+//        debug {
+//            storeFile rootProject.file('config/debug.keystore')
+//            storePassword 'android'
+//            keyAlias 'android'
+//            keyPassword 'android'
+//        }
     }
 
     dexOptions {
+        incremental true
         javaMaxHeapSize "4g"
     }
 
@@ -85,85 +93,83 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    dependencies {
-        compile fileTree(dir: 'libs', include: ['*.jar'])
-        // Reactive
-        compile libraries.rxJava
-        compile libraries.rxAndroid
-
-        // Dagger 2
-        compile libraries.dagger
-        apt libraries.daggerCompiler
-        provided 'javax.annotation:jsr250-api:1.0'
-
-        // Retrofit
-        compile libraries.retrofit
-        compile libraries.retrofitJacksonConverter
-        compile libraries.retrofitRxJavaAdapter
-        compile libraries.retrofitGsonConverter
-        compile(libraries.retrofitSimpleXmlConverter) {
-            exclude group: 'xpp3', module: 'xpp3'
-            exclude group: 'stax', module: 'stax-api'
-            exclude group: 'stax', module: 'stax'
-        }
-        //parsing html
-        compile 'org.jsoup:jsoup:1.7.3'
-
-        //support libraries
-        compile libraries.supportAppCompat
-        compile(libraries.supportDesign)
-        compile libraries.supportRecyclerView
-        compile libraries.supportCardView
-
-        //utils
-        compile libraries.butterKnife
-        compile libraries.timber
-        compile libraries.picasso
-        compile libraries.picassoOkHttpDownloader
-
-        // saving view state
-        compile libraries.icepick
-        apt libraries.icepickCompiler
-
-        //DBFlow
-        compile libraries.dbFlowCore
-        compile libraries.dbFlow
-        apt libraries.dbFlowProcessor
-
-        compile libraries.parseCore
-        compile libraries.parseBolts
-
-        compile(libraries.crashlytics) {
-            transitive = true;
-        }
-        compile libraries.eventbus
-
-        compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
-        compile 'com.pnikosis:materialish-progress:1.7'
-        compile 'com.quinny898.library.persistentsearch:library:1.1.0-SNAPSHOT'
-        compile 'com.github.kenglxn.QRGen:javase:2.1.0'
-        compile 'com.miguelcatalan:materialsearchview:1.4.0'
-        compile 'com.github.paolorotolo:appintro:3.3.0'
-        compile 'com.nineoldandroids:library:2.4.0'
-        compile 'com.bignerdranch.android:recyclerview-multiselect:0.2'
-        compile 'com.getbase:floatingactionbutton:1.10.1'
-        compile project (':material-login')
-        compile 'com.android.support:multidex:1.0.0'
-        //material login
-
-        compile 'com.android.support:multidex:1.0.0'
-
-        // debug tools
-        debugCompile libraries.okHttpLoggingInterceptor
-        debugCompile libraries.stetho
-        debugCompile libraries.stethoOkHttp
-        debugCompile libraries.leakCanary
-
-        testCompile libraries.junit
-        testCompile libraries.robolectric
-        testCompile libraries.assertJ
-        testCompile libraries.equalsVerifier
-        testCompile libraries.mockitoCore
+    dataBinding {
+        enabled = true
     }
 }
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    // App's dependencies, including test
+    //support libraries
+    compile "com.android.support:appcompat-v7:$rootProject.supportLibs"
+    compile "com.android.support:design:$rootProject.supportLibs"
+    compile "com.android.support:recyclerview-v7:$rootProject.supportLibs"
+    compile "com.android.support:cardview-v7:$rootProject.supportLibs"
+    //firebase
+    compile "com.google.firebase:firebase-core:$rootProject.playServices" //analytics
+    compile "com.google.firebase:firebase-database:$rootProject.playServices"
+    compile "com.google.firebase:firebase-storage:$rootProject.playServices"
+    compile "com.google.firebase:firebase-auth:$rootProject.playServices"
+    compile "com.google.firebase:firebase-config:$rootProject.playServices"
+    compile "com.google.firebase:firebase-crash:$rootProject.playServices"
+
+    //google play services
+    compile "com.google.android.gms:play-services-auth:$rootProject.playServices"
+    //rx
+    compile "io.reactivex:rxjava:$rootProject.rxJava"
+    compile "io.reactivex:rxandroid:$rootProject.rxAndroid"
+    //dagger
+    compile "com.google.dagger:dagger:$rootProject.dagger"
+    apt "com.google.dagger:dagger-compiler:$rootProject.dagger"
+    provided 'javax.annotation:jsr250-api:1.0'
+    //retrofit
+    compile "com.squareup.retrofit2:retrofit:$rootProject.retrofit"
+    compile "com.squareup.retrofit2:converter-jackson:$rootProject.retrofit"
+    compile "com.squareup.retrofit2:adapter-rxjava:$rootProject.retrofit"
+    compile ("com.squareup.retrofit2:converter-simplexml:$rootProject.retrofit"){
+        exclude group: 'xpp3', module: 'xpp3'
+        exclude group: 'stax', module: 'stax-api'
+        exclude group: 'stax', module: 'stax'
+    }
+    //utils
+    compile "com.jakewharton:butterknife:$rootProject.butterKnife"
+    compile "com.jakewharton.timber:timber:$rootProject.timber"
+    compile "com.squareup.picasso:picasso:$rootProject.picasso"
+    compile "com.jakewharton.picasso:picasso2-okhttp3-downloader:$rootProject.picassoOkHttpDownloader"
+    // saving view state
+    compile "frankiesardo:icepick:$rootProject.icepick"
+    apt "frankiesardo:icepick:$rootProject.icepick"
+    apt "com.google.guava:guava:$rootProject.guavaVersion"
+    //facebook
+    compile 'com.facebook.android:facebook-android-sdk:4.3.0'
+    compile 'com.pnikosis:materialish-progress:1.7'
+    //should remove because this lib is too large
+    compile 'com.nineoldandroids:library:2.4.0'
+    //should remove because this lib is too large
+    compile 'com.daimajia.slider:library:1.1.5@aar'
+    compile 'com.miguelcatalan:materialsearchview:1.4.0'
+    compile "org.greenrobot:eventbus:3.0.0"
+
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
+    compile 'com.pnikosis:materialish-progress:1.7'
+    compile 'com.quinny898.library.persistentsearch:library:1.1.0-SNAPSHOT'
+    compile 'com.github.kenglxn.QRGen:javase:2.1.0'
+    compile 'com.miguelcatalan:materialsearchview:1.4.0'
+    compile 'com.github.paolorotolo:appintro:3.3.0'
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.bignerdranch.android:recyclerview-multiselect:0.2'
+    compile 'com.getbase:floatingactionbutton:1.10.1'
+    compile 'com.android.support:multidex:1.0.1'
+
+    // debug tools
+    debugCompile "com.squareup.okhttp3:logging-interceptor:$rootProject.okHttp"
+    debugCompile "com.facebook.stetho:stetho:$rootProject.stetho"
+    debugCompile "com.facebook.stetho:stetho-okhttp3:$rootProject.stetho"
+    debugCompile "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanary"
+    testCompile 'junit:junit:4.12'
+}
+
+apply plugin: 'com.google.gms.google-services'
 

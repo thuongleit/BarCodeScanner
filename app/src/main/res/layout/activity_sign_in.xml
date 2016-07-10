@@ -1,28 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/login_background">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <shem.com.materiallogin.MaterialLoginView
-        android:id="@+id/login_view"
+    <data>
+
+        <import type="android.util.TimeUtils" />
+
+        <import type="android.util.Patterns" />
+
+        <variable
+            name="email"
+            type="String" />
+
+        <variable
+            name="password"
+            type="String" />
+
+        <variable
+            name="presenter"
+            type="com.whooo.babr.view.session.signin.SignInContract.Presenter" />
+    </data>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:loginActionText="Login"
-        app:loginHint="Email"
-        app:registerHint="Email"
-        app:registerIcon="@drawable/ic_person_add"
-        app:registerTitle="Join Us" />
+        tools:context=".view.session.signin.SignInActivity">
 
-    <TextView
-        android:id="@+id/text_login_as_guest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="20dp"
-        android:text="@string/text_sign_up_later"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@android:color/white" />
-</FrameLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/login_background" />
 
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginBottom="48dp"
+            android:tint="@android:color/white"
+            app:srcCompat="@drawable/ic_launcher_orange" />
+
+        <LinearLayout
+            android:id="@+id/layout_sign_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginTop="48dp"
+            android:orientation="vertical">
+
+            <com.whooo.babr.view.widget.MuliEditText
+                android:id="@+id/input_email"
+                style="@style/Login.InputEditTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginBottom="8dp"
+                android:drawableLeft="@drawable/ic_email_24dp"
+                android:drawablePadding="4dp"
+                android:drawableTint="@color/black_38"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:nextFocusDown="@+id/input_password"
+                android:paddingLeft="8dp"
+                android:paddingStart="8dp"
+                android:text="@={email}" />
+
+
+            <com.whooo.babr.view.widget.MuliEditText
+                android:id="@+id/input_password"
+                style="@style/Login.InputEditTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginBottom="8dp"
+                android:drawableLeft="@drawable/ic_locked"
+                android:drawablePadding="4dp"
+                android:drawableTint="@color/black_38"
+                android:hint="Password"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:nextFocusUp="@+id/input_email"
+                android:paddingLeft="8dp"
+                android:paddingStart="8dp"
+                android:text="@={password}" />
+
+
+            <com.whooo.babr.view.widget.MuliButton
+                android:id="@+id/button_sign_in"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bgr_green_button"
+                android:onClick="@{() -> presenter.performSignIn(email, password)}"
+                android:text="Sign in"
+                android:enabled="@{email.length > 0 &amp;&amp; password.length > 0}"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@android:color/white" />
+
+            <com.whooo.babr.view.widget.MuliTextView
+                android:id="@+id/text_forgot_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|right"
+                android:layout_marginTop="8dp"
+                android:text="Forgot your password?"
+                android:onClick="@{() -> presenter.askForgotPassword(email)}"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white" />
+
+            <com.whooo.babr.view.widget.MuliTextView
+                android:id="@+id/text_link_sign_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|right"
+                android:layout_marginTop="8dp"
+                android:text="No account yet? Sign up."
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </FrameLayout>
+</layout>

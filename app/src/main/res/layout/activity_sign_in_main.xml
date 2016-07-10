@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.session.signin.SignInActivity">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/login_background" />
+
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="48dp"
+        android:tint="@android:color/white"
+        app:srcCompat="@drawable/ic_launcher_orange" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="12dp"
+        android:orientation="vertical">
+
+        <com.whooo.babr.view.widget.MuliTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="12dp"
+            android:text="Connect with"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/layout_button_sign_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="12dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/button_facebook_sign_in"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/ring"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_facebook_logo" />
+
+            <ImageButton
+                android:id="@+id/button_google_sign_in"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/ring"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_google_logo" />
+
+            <ImageButton
+                android:id="@+id/button_email_sign_in"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginLeft="12dp"
+                android:background="@drawable/ring"
+                android:padding="10dp"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_email" />
+        </LinearLayout>
+
+        <com.whooo.babr.view.widget.MuliTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:text="Or"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/white" />
+
+        <com.whooo.babr.view.widget.MuliButton
+            android:id="@+id/button_sign_in_anonymous"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bgr_green_button"
+            android:paddingLeft="36dp"
+            android:paddingRight="36dp"
+            android:text="Try it out"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/fb_original_btn"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+
+    <!--<com.google.android.gms.common.SignInButton-->
+        <!--android:id="@+id/google_original_btn"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="0dp" />-->
+</FrameLayout>

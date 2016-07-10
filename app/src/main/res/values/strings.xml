@@ -2,7 +2,7 @@
     <string name="app_name">BABR</string>
     <string name="action_settings">Settings</string>
     <string name="text.action_search">Search</string>
-
+    <string name="facebook_app_id">1574504719509849</string>
     <integer name="viewfinder_border_width">4</integer>
     <integer name="viewfinder_border_length">60</integer>
     <string name="title_activity_main2">Main2Activity</string>
@@ -46,12 +46,38 @@
     <string name="error_cannot_start_app">Cannot start the app now. Please try again later</string>
 
     <string name="text_sign_up_later">Sign up later</string>
-    <string name="dialog_login_as_guest_warning">Login as guest will store your products locally. If you want to save them in the cloud, login as your account instead.</string>
+    <string name="dialog_login_as_guest_warning">Login as guest will store your nodes locally. If you want to save them in the cloud, login as your account instead.</string>
     <string name="button_ok">OK</string>
     <string name="button_ignore">Ignore</string>
     <string name="dialog_internet_disconnnect_error">You has been disconnected!</string>
-    <string name="dialog_authenticating">Authenticating...</string>
+    <string name="dialog_authenticating">Authenticating…</string>
     <string name="error_in_same_password">Password must be same</string>
-    <string name="save_to_history">Are you sure to save all the products to history?</string>
+    <string name="save_to_history">Are you sure to save all the nodes to history?</string>
+    <string name="server_client_id">859773034579-pgg8gdtqd3nmemgih9ha6auv2rhbhbjp.apps.googleusercontent.co</string>
+    <string name="title_scan_result">Scan Result</string>
+    <string name="text_create_account">Create account</string>
+    <string name="icons_made_by_freepik_www_flaticon_com_is_licensed_by_creative_commons_by_3_0">Icons made by Freepik www.flaticon.com is licensed by Creative Commons BY 3.0</string>
+    <string name="email">email</string>
+    <string name="required_symbol">(*)</string>
+    <string name="full_name">full name</string>
+    <string name="password">password</string>
+    <string name="log_in">Log In</string>
+
+    <!-- Error messages-->
+    <string name="error_connection_lost_title">Oh no!</string>
+    <string name="error_connection_lost_message">No Internet found. Check your connection and try again.</string>
+    <string name="error_generic_error_title">Sorry!</string>
+    <string name="error_generic_error_message">There seems to be a problem. Please try again or send feedback to us to get help.</string>
+    <string name="dialog_action_send_feedback">Send feedback</string>
+    <string name="error_login_facebook_failed">There was a problem logging Facebook. Please try again!</string>
+    <!-- Dialog message -->
+    <string name="dialog_processing_title">Please wait…</string>
+    <string name="dialog_processing_message">Task is progress…</string>
+    <string name="progress_text_please_wait">Please wait…</string>
+    <string name="progress_text_searching_products">Searching products…</string>
+    <string name="dialog_action_scan_again">Scan Again</string>
+    <string name="menu_action_flash_off">Flash [OFF]</string>
+    <string name="menu_action_flash_on">Flash [ON]</string>
+    <string name="menu_action_save">Save</string>
 
 </resources>

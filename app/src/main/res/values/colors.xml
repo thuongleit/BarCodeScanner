@@ -17,6 +17,8 @@
     <color name="msgr_material_item_pressed_dark">#4dffffff</color>
     <color name="msgr_material_ripple_mask">#ffffffff</color>
     <color name="msgr_material_edge_effect">@color/colorPrimaryDark</color>
+    <color name="red500">#db4437</color>
+    <color name="snackbar_undo">#BCAAA4</color>
 
     <color name="colorPrimaryDarkTheme">#4a4959</color>
     <color name="colorPrimaryDarkDarkTheme">#525065</color>
@@ -81,4 +83,5 @@
     <color name="transparent">#00000000</color>
     <color name="black_overlay">#81000000</color>
     <color name="white_overlay">#8efff2f2</color>
+    <color name="hightlight_item_select">#90CAF9</color>
 </resources>
