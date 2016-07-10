@@ -7,11 +7,13 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.whooo.babr.R;
 import com.whooo.babr.databinding.ActivitySearchResultBinding;
+import com.whooo.babr.util.swipe.ItemTouchHelperCallback;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.product.ProductRecyclerAdapter;
@@ -27,6 +29,9 @@ public class ResultActivity extends BaseActivity {
     private Toolbar mToolbar;
 
     private ArrayList<Product> mProducts = new ArrayList<>();
+    private ProductRecyclerAdapter mAdapter;
+
+    private ItemTouchHelper mItemTouchHelper;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -79,8 +84,12 @@ public class ResultActivity extends BaseActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
+        mAdapter=new ProductRecyclerAdapter(this, mProducts);
+        mRecyclerView.setAdapter(mAdapter);
 
-        mRecyclerView.setAdapter(new ProductRecyclerAdapter(this, mProducts));
+        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(mAdapter,this);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     private void save() {

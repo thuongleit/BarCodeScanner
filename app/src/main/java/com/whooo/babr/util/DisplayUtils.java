@@ -2,6 +2,7 @@ package com.whooo.babr.util;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.view.Display;
 import android.view.WindowManager;
@@ -36,6 +37,10 @@ public class DisplayUtils {
             }
         }
         return orientation;
+    }
+
+    public static int dpToPx(int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
 }

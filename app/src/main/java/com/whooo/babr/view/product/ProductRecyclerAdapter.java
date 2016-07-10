@@ -3,6 +3,8 @@ package com.whooo.babr.view.product;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
@@ -16,6 +18,9 @@ import android.widget.TextView;
 
 import com.whooo.babr.R;
 import com.whooo.babr.util.RoundedTransformation;
+import com.whooo.babr.util.TypefacesUtils;
+import com.whooo.babr.util.swipe.ItemTouchHelperAdapter;
+import com.whooo.babr.util.swipe.ItemTouchHelperViewHolder;
 import com.whooo.babr.vo.Product;
 import com.squareup.picasso.Picasso;
 
@@ -27,21 +32,14 @@ import java.util.Locale;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecyclerAdapter.ViewHolder> {
+public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecyclerAdapter.ViewHolder> implements ItemTouchHelperAdapter {
 
     private final Context context;
     private final List<Product> mProducts;
-    private final List<Product> valuesPendingRemoval = new ArrayList<>();
     private List<Product> listSearch = new ArrayList<>();
     private SparseBooleanArray selectedItems;
-    private boolean isUndoOn = true;
-    private Handler handler = new Handler();
-    private HashMap<Product, Runnable> pendingRunnables = new HashMap<>();
-    private static final int PENDING_REMOVAL_TIMEOUT = 2000;
+    private View mRootView;
 
-    public boolean isUndoOn() {
-        return true;
-    }
 
 
     public ProductRecyclerAdapter(Context context, List<Product> values) {
@@ -55,6 +53,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.view_item_recycler_bar_view, parent, false);
+        mRootView=view;
         return new ViewHolder(view);
     }
 
@@ -79,14 +78,11 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
     public void addItems(List<Product> products) {
         int oldIndex = mProducts.size();
         this.mProducts.addAll(products);
-        notifyItemRangeInserted(oldIndex, mProducts.size());
+          notifyItemRangeInserted(oldIndex, mProducts.size());
     }
 
     public void deleteItem(int position) {
         Product product = mProducts.get(position);
-        if (valuesPendingRemoval.contains(product)) {
-            valuesPendingRemoval.remove(product);
-        }
         if (mProducts.contains(product)) {
             this.mProducts.remove(position);
             notifyItemRemoved(position);
@@ -98,10 +94,6 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         notifyDataSetChanged();
     }
 
-    public boolean isPendingRemoval(int position) {
-        Product product = mProducts.get(position);
-        return valuesPendingRemoval.contains(product);
-    }
 
 
     public List<Integer> getSelectedItems() {
@@ -112,25 +104,49 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         return items;
     }
 
-    public void toggleSelection(int pos) {
-        if (selectedItems.get(pos, false)) {
-            selectedItems.delete(pos);
-        } else {
-            selectedItems.put(pos, true);
-        }
-        notifyItemChanged(pos);
-    }
-
     public void clearSelections() {
         selectedItems.clear();
         notifyDataSetChanged();
     }
 
-    public int getSelectedItemCount() {
-        return selectedItems.size();
+    @Override
+    public void onItemMove(int fromPosition, int toPosition) {
+
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public void onItemDismiss(final int position) {
+        final Product product = new Product();
+            product.name = mProducts.get(position).name;
+        product.manufacture = mProducts.get(position).manufacture;
+        product.country = mProducts.get(position).country;
+        product.source = mProducts.get(position).source;
+        product.imageUrl = mProducts.get(position).imageUrl;
+
+        deleteItem(position);
+
+        final Snackbar snackbar = Snackbar.make(mRootView, "Item deteted", Snackbar.LENGTH_LONG)
+                .setActionTextColor(ContextCompat.getColor(context, R.color.white))
+                .setAction("Undo", view -> {
+                    mProducts.add(position, product);
+                    notifyItemInserted(position);
+                });
+
+        View snackbarView = snackbar.getView();
+        snackbarView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
+        TextView tvSnack = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        TextView tvSnackAction = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_action);
+        tvSnack.setTextColor(Color.WHITE);
+        tvSnack.setTypeface(TypefacesUtils.getRobotoMedium(context));
+        tvSnackAction.setTypeface(TypefacesUtils.getRobotoMedium(context));
+        snackbar.show();
+        Handler handler=new Handler();
+        handler.postDelayed(()->{
+            snackbar.dismiss();
+        },2500);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder{
 
         @Bind(R.id.image_bar_view)
         ImageView imageBarView;
@@ -144,8 +160,6 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         TextView textSource;
         @Bind(R.id.item_recycler_container)
         RelativeLayout container;
-        @Bind(R.id.undo_button)
-        Button btnUndo;
 
 
         public ViewHolder(View view) {
@@ -154,25 +168,6 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         }
 
         public void bindView(Product product, int position) {
-
-            if (valuesPendingRemoval.contains(product)) {
-                container.setVisibility(View.GONE);
-                itemView.setBackgroundColor(Color.RED);
-                btnUndo.setVisibility(View.VISIBLE);
-
-                btnUndo.setOnClickListener(v -> {
-                    Runnable pendingRemovalRunnable = pendingRunnables.get(product);
-                    pendingRunnables.remove(product);
-                    if (pendingRemovalRunnable != null)
-                        handler.removeCallbacks(pendingRemovalRunnable);
-                    valuesPendingRemoval.remove(product);
-                    notifyItemChanged(mProducts.indexOf(product));
-                });
-            } else {
-
-                itemView.setBackgroundColor(Color.WHITE);
-                btnUndo.setVisibility(View.GONE);
-                btnUndo.setOnClickListener(null);
 
                 if (!TextUtils.isEmpty(product.name)) {
                     textBarcodeTitle.setText(product.name);
@@ -193,25 +188,18 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
                     Picasso.with(context).load(product.imageUrl).centerCrop().fit().transform(new RoundedTransformation()).into(imageBarView);
                 }
 
-            }
+
         }
 
 
-    }
+        @Override
+        public void onItemSelected(Context context) {
+            container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
+        }
 
-    public void pendingRemoval(int position) {
-        final Product item = mProducts.get(position);
-        if (!valuesPendingRemoval.contains(item)) {
-            valuesPendingRemoval.add(item);
-            notifyItemChanged(position);
-            Runnable pendingRemovalRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    deleteItem(mProducts.indexOf(item));
-                }
-            };
-            handler.postDelayed(pendingRemovalRunnable, PENDING_REMOVAL_TIMEOUT);
-            pendingRunnables.put(item, pendingRemovalRunnable);
+        @Override
+        public void onItemClear(Context context) {
+            container.setBackgroundColor(ContextCompat.getColor(context,R.color.white));
         }
     }
 

@@ -97,13 +97,4 @@
 
         </RelativeLayout>
 
-        <Button
-            android:id="@+id/undo_button"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:text="Undo"
-            android:textAllCaps="true"
-            android:textColor="@android:color/white" />
     </FrameLayout>

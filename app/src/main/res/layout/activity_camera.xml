@@ -8,10 +8,6 @@
         android:layout_height="match_parent"
         tools:context=".view.scan.CameraActivity">
 
-        <com.whooo.babr.util.RevealBackgroundView
-            android:id="@+id/reveal_bgr_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
 
         <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
