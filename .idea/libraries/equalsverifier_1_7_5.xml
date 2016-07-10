@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="equalsverifier-1.7.5">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/nl.jqno.equalsverifier/equalsverifier/1.7.5/fad2c8ed3bdc354a40fdf09e07fe31c4397d401b/equalsverifier-1.7.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/nl.jqno.equalsverifier/equalsverifier/1.7.5/34094e1a0ec8fcefc3bbe77729aee51c1b97bf51/equalsverifier-1.7.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
