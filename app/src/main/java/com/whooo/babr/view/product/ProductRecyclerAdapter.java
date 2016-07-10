@@ -62,7 +62,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         Product product = mProducts.get(position);
 
         holder.bindView(product, holder.getAdapterPosition());
-        holder.itemView.setActivated(selectedItems.get(position, false));
+    //    holder.itemView.setActivated(selectedItems.get(position, false));
     }
 
     @Override
@@ -133,7 +133,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
                 });
 
         View snackbarView = snackbar.getView();
-        snackbarView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
+        snackbarView.setBackgroundColor(ContextCompat.getColor(context, R.color.snackbar_undo));
         TextView tvSnack = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
         TextView tvSnackAction = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_action);
         tvSnack.setTextColor(Color.WHITE);
@@ -194,7 +194,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
 
         @Override
         public void onItemSelected(Context context) {
-            container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
+            container.setBackgroundColor(ContextCompat.getColor(context, R.color.hightlight_item_select));
         }
 
         @Override
