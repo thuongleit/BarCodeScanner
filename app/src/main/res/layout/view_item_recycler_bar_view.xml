@@ -10,8 +10,10 @@
             android:id="@+id/item_recycler_container"
             android:layout_width="match_parent"
             android:layout_height="140dp"
-            android:background="@drawable/selector_item_clickable"
-            android:padding="@dimen/item_content_padding">
+            android:padding="@dimen/item_content_padding"
+            android:background="@color/white">
+            <!--android:background="@drawable/selector_item_clickable"-->
+
 
             <ImageView
                 android:id="@+id/image_bar_view"

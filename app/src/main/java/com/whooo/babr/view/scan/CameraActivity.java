@@ -107,6 +107,7 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
         initializeInjector();
         setupViews(binding);
         mAutoFocusHandler = new Handler();
+       // mCameraPresenter.searchProducts("631839");
         // Create and configure the ImageScanner;
         setupScanner();
         //Create and Configure Camera
