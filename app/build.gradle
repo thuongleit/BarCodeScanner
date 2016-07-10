@@ -127,15 +127,12 @@ dependencies {
     //retrofit
     compile "com.squareup.retrofit2:retrofit:$rootProject.retrofit"
     compile "com.squareup.retrofit2:converter-jackson:$rootProject.retrofit"
-    compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofit"
     compile "com.squareup.retrofit2:adapter-rxjava:$rootProject.retrofit"
     compile ("com.squareup.retrofit2:converter-simplexml:$rootProject.retrofit"){
         exclude group: 'xpp3', module: 'xpp3'
         exclude group: 'stax', module: 'stax-api'
         exclude group: 'stax', module: 'stax'
     }
-    //parsing html
-    compile 'org.jsoup:jsoup:1.7.3'
     //utils
     compile "com.jakewharton:butterknife:$rootProject.butterKnife"
     compile "com.jakewharton.timber:timber:$rootProject.timber"
@@ -153,7 +150,6 @@ dependencies {
     //should remove because this lib is too large
     compile 'com.daimajia.slider:library:1.1.5@aar'
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
-    compile 'com.android.support:multidex:1.0.1'
     compile "org.greenrobot:eventbus:3.0.0"
 
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'

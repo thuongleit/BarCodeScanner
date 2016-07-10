@@ -37,7 +37,7 @@ public class FirebaseProductRepository implements ProductRepository {
 //                mSearchService.searchProducts(ProductSource.WALMART, code)
 //        );
 
-        return mSearchService.searchProducts(ProductSource.UPC_ITEM_DB, code);
+        return mSearchService.searchProducts(ProductSource.AMAZON, code);
     }
 
     @Override

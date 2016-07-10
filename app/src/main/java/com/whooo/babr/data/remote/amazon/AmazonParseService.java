@@ -5,14 +5,9 @@ import android.support.annotation.Nullable;
 
 import com.whooo.babr.config.Constant;
 import com.whooo.babr.data.remote.ParseService;
+import com.whooo.babr.data.remote.amazon.model.AmazonApisResponse;
 import com.whooo.babr.vo.Product;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -32,7 +27,7 @@ public class AmazonParseService implements ParseService {
     private final RetrofitService mService;
 
     @Inject
-    public AmazonParseService( AmazonParseService.RetrofitService service) {
+    public AmazonParseService(AmazonParseService.RetrofitService service) {
         mService = service;
     }
 
@@ -46,8 +41,17 @@ public class AmazonParseService implements ParseService {
                     .flatMap(response -> Observable.just(response.rootItem))
                     .filter(rootItem -> rootItem != null && rootItem.products != null && !rootItem.products.isEmpty())
                     .flatMap(rootItem -> Observable.from(rootItem.products))
-                    .filter(amazonProduct -> amazonProduct.detailPageURL != null && amazonProduct.detailPageURL.length() > 0)
-                    .flatMap(this::parseProductFromSite)
+                    .filter(amazonProduct -> amazonProduct.attributes != null && amazonProduct.image != null)
+                    .flatMap(amazonProduct -> {
+                        Product product = new Product();
+
+                        product.name = amazonProduct.attributes.title;
+                        product.upcA = amazonProduct.attributes.upc;
+                        product.imageUrl = amazonProduct.image.url;
+                        product.manufacture = amazonProduct.attributes.manufacturer;
+
+                        return Observable.just(product);
+                    })
                     .toSortedList();
         }
         return Observable.empty();
@@ -69,61 +73,61 @@ public class AmazonParseService implements ParseService {
         return signedUrl;
     }
 
-    private Observable<Product> parseProductFromSite(AmazonProduct amazonProduct) {
-        Product product = new Product();
-        try {
-            Document document = Jsoup.connect(amazonProduct.detailPageURL).get();
-
-            //check if item is valid or not
-            Elements spanElements = document.select("span");
-            for (Element element : spanElements) {
-                String idElement = element.attr("id");
-                if ("productTitle".equals(idElement)) {
-                    String productTitle = element.text();
-                    product.name = productTitle;
-                    product.source = "amazon.com";
-                    product.listId = "a";
-                }
-            }
-
-            //parsing product image
-            Elements divElements = document.select("div");
-            for (Element element : divElements) {
-                String id = element.attr("id");
-                if ("leftCol".equals(id)) {
-                    element.getAllElements();
-                    Elements imgElements = element.getElementsByTag("img");
-                    if (imgElements != null && !imgElements.isEmpty()) {
-                        for (Element imgElement : imgElements) {
-                            String img = imgElement.attr("data-a-dynamic-image");
-                            if (!"".equals(img)) {
-                                String url = img.substring(img.indexOf("http://"), img.indexOf(".jpg")) + ".jpg";
-                                if (url.matches(IMAGE_URL_PATTERN)) {
-                                    product.imageUrl = url;
-                                } else {
-                                    url = img.substring(img.indexOf("http://"), img.indexOf(".jpeg")) + ".jpeg";
-                                    if (url.matches(IMAGE_URL_PATTERN)) {
-                                        product.imageUrl = url;
-                                    } else {
-                                        url = img.substring(img.indexOf("http://"), img.indexOf(".png")) + ".png";
-                                        if (url.matches(IMAGE_URL_PATTERN)) {
-                                            product.imageUrl = url;
-                                        }
-
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (IOException e) {
-            return Observable.empty();
-        }
-
-        return Observable.just(product);
-    }
+//    private Observable<Product> parseProductFromSite(AmazonProduct amazonProduct) {
+//        Product product = new Product();
+//        try {
+//            Document document = Jsoup.connect(amazonProduct.detailPageURL).get();
+//
+//            //check if item is valid or not
+//            Elements spanElements = document.select("span");
+//            for (Element element : spanElements) {
+//                String idElement = element.attr("id");
+//                if ("productTitle".equals(idElement)) {
+//                    String productTitle = element.text();
+//                    product.name = productTitle;
+//                    product.source = "amazon.com";
+//                    product.listId = "a";
+//                }
+//            }
+//
+//            //parsing product image
+//            Elements divElements = document.select("div");
+//            for (Element element : divElements) {
+//                String id = element.attr("id");
+//                if ("leftCol".equals(id)) {
+//                    element.getAllElements();
+//                    Elements imgElements = element.getElementsByTag("img");
+//                    if (imgElements != null && !imgElements.isEmpty()) {
+//                        for (Element imgElement : imgElements) {
+//                            String img = imgElement.attr("data-a-dynamic-image");
+//                            if (!"".equals(img)) {
+//                                String url = img.substring(img.indexOf("http://"), img.indexOf(".jpg")) + ".jpg";
+//                                if (url.matches(IMAGE_URL_PATTERN)) {
+//                                    product.imageUrl = url;
+//                                } else {
+//                                    url = img.substring(img.indexOf("http://"), img.indexOf(".jpeg")) + ".jpeg";
+//                                    if (url.matches(IMAGE_URL_PATTERN)) {
+//                                        product.imageUrl = url;
+//                                    } else {
+//                                        url = img.substring(img.indexOf("http://"), img.indexOf(".png")) + ".png";
+//                                        if (url.matches(IMAGE_URL_PATTERN)) {
+//                                            product.imageUrl = url;
+//                                        }
+//
+//                                    }
+//                                }
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        } catch (IOException e) {
+//            return Observable.empty();
+//        }
+//
+//        return Observable.just(product);
+//    }
 
     public interface RetrofitService {
         @GET
