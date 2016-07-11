@@ -40,8 +40,6 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
     private SparseBooleanArray selectedItems;
     private View mRootView;
 
-
-
     public ProductRecyclerAdapter(Context context, List<Product> values) {
         this.context = context;
         this.mProducts = values;

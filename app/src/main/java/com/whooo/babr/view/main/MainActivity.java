@@ -2,14 +2,17 @@ package com.whooo.babr.view.main;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -30,8 +33,10 @@ import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.whooo.babr.R;
+import com.whooo.babr.config.Constant;
 import com.whooo.babr.data.remote.ParseServiceOK;
 import com.whooo.babr.databinding.ActivityMainBinding;
+import com.whooo.babr.databinding.MainViewHandlerWrapper;
 import com.whooo.babr.util.AppUtils;
 import com.whooo.babr.util.dialog.DialogQrcodeHistory;
 import com.whooo.babr.util.swipe.ItemTouchHelperCallback;
@@ -87,6 +92,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private DeflaterOutputStream actionMode;
     private ItemTouchHelper mItemTouchHelper;
     private ProductRecyclerAdapter mAdapter;
+    private static ActivityMainBinding mBinding;
+    private static MainViewHandlerWrapper mViewHandler=new MainViewHandlerWrapper();
 
     @Override
     protected BasePresenter getPresenter() {
@@ -96,14 +103,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mContext = this;
 
         initializeInjector();
-        injectViews(binding);
+        injectViews(mBinding);
 
         setupNavigationView();
         setupReCyclerView();
+
+        registerCheckNetwork();
 
         mFabScan.setOnClickListener(v -> {
             // Must be done during an initialization phase like onCreate
@@ -125,6 +134,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
     }
 
+    private void registerCheckNetwork() {
+        if (!AppUtils.isInternetOn(this)) {
+            observableViewHandler(3,"Network error");
+        }
+    }
+
     private void showToast(String message) {
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
     }
@@ -138,6 +153,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mFabScan = binding.appBarMainView.fabScan;
 
         binding.setPresenter(mPresenter);
+        observableViewHandler(1,"Empty Product");
+        binding.setViewhandler(mViewHandler);
+
+
+    }
+
+    private static void observableViewHandler(int type, String message) {
+        mViewHandler.setTypeId(type);
+        mViewHandler.setTextViewHandler(message);
     }
 
     private void initializeInjector() {
@@ -427,11 +451,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void showNetworkError() {
-
+        observableViewHandler(3,"Network error");
     }
 
     @Override
     public void showInAppError() {
-
+        observableViewHandler(3,"General Error");
     }
+
 }

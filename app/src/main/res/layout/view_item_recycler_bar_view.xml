@@ -5,7 +5,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-
         <RelativeLayout
             android:id="@+id/item_recycler_container"
             android:layout_width="match_parent"
