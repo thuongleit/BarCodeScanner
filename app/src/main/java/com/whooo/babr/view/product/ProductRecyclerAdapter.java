@@ -11,7 +11,6 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -25,7 +24,6 @@ import com.whooo.babr.vo.Product;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,19 +37,21 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
     private List<Product> listSearch = new ArrayList<>();
     private SparseBooleanArray selectedItems;
     private View mRootView;
+    private SwipeProductListener mSwipeProductListener;
 
-    public ProductRecyclerAdapter(Context context, List<Product> values) {
+    public ProductRecyclerAdapter(Context context, List<Product> values, SwipeProductListener mSwipeProductListener) {
         this.context = context;
         this.mProducts = values;
         this.listSearch.addAll(values);
         selectedItems = new SparseBooleanArray();
+        this.mSwipeProductListener = mSwipeProductListener;
     }
 
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.view_item_recycler_bar_view, parent, false);
-        mRootView=view;
+        mRootView = view;
         return new ViewHolder(view);
     }
 
@@ -60,7 +60,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         Product product = mProducts.get(position);
 
         holder.bindView(product, holder.getAdapterPosition());
-    //    holder.itemView.setActivated(selectedItems.get(position, false));
+        //    holder.itemView.setActivated(selectedItems.get(position, false));
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
     public void addItems(List<Product> products) {
         int oldIndex = mProducts.size();
         this.mProducts.addAll(products);
-          notifyItemRangeInserted(oldIndex, mProducts.size());
+        notifyItemRangeInserted(oldIndex, mProducts.size());
     }
 
     public void deleteItem(int position) {
@@ -91,7 +91,6 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         this.mProducts.clear();
         notifyDataSetChanged();
     }
-
 
 
     public List<Integer> getSelectedItems() {
@@ -115,11 +114,12 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
     @Override
     public void onItemDismiss(final int position) {
         final Product product = new Product();
-            product.name = mProducts.get(position).name;
+        product.name = mProducts.get(position).name;
         product.manufacture = mProducts.get(position).manufacture;
         product.country = mProducts.get(position).country;
         product.source = mProducts.get(position).source;
         product.imageUrl = mProducts.get(position).imageUrl;
+        product.objectId=mProducts.get(position).objectId;
 
         deleteItem(position);
 
@@ -138,13 +138,14 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         tvSnack.setTypeface(TypefacesUtils.getRobotoMedium(context));
         tvSnackAction.setTypeface(TypefacesUtils.getRobotoMedium(context));
         snackbar.show();
-        Handler handler=new Handler();
-        handler.postDelayed(()->{
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
             snackbar.dismiss();
-        },2500);
+            mSwipeProductListener.onSwipeProduct(position, product);
+        }, 2500);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
 
         @Bind(R.id.image_bar_view)
         ImageView imageBarView;
@@ -167,24 +168,24 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
 
         public void bindView(Product product, int position) {
 
-                if (!TextUtils.isEmpty(product.name)) {
-                    textBarcodeTitle.setText(product.name);
-                }
-                if (!TextUtils.isEmpty(product.manufacture)) {
-                    textBarcodeManufacture.setText(product.manufacture);
-                } else {
-                    textBarcodeManufacture.setVisibility(View.GONE);
-                }
-                if (!TextUtils.isEmpty(product.country)) {
-                    textBarcodeCountry.setText(product.country);
-                } else {
-                    textBarcodeCountry.setVisibility(View.GONE);
-                }
-                textSource.setText(product.source);
+            if (!TextUtils.isEmpty(product.name)) {
+                textBarcodeTitle.setText(product.name);
+            }
+            if (!TextUtils.isEmpty(product.manufacture)) {
+                textBarcodeManufacture.setText(product.manufacture);
+            } else {
+                textBarcodeManufacture.setVisibility(View.GONE);
+            }
+            if (!TextUtils.isEmpty(product.country)) {
+                textBarcodeCountry.setText(product.country);
+            } else {
+                textBarcodeCountry.setVisibility(View.GONE);
+            }
+            textSource.setText(product.source);
 
-                if (!TextUtils.isEmpty(product.imageUrl)) {
-                    Picasso.with(context).load(product.imageUrl).centerCrop().fit().transform(new RoundedTransformation()).into(imageBarView);
-                }
+            if (!TextUtils.isEmpty(product.imageUrl)) {
+                Picasso.with(context).load(product.imageUrl).centerCrop().fit().transform(new RoundedTransformation()).into(imageBarView);
+            }
 
 
         }
@@ -197,7 +198,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
 
         @Override
         public void onItemClear(Context context) {
-            container.setBackgroundColor(ContextCompat.getColor(context,R.color.white));
+            container.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
         }
     }
 
@@ -218,4 +219,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
 
     }
 
+    public interface SwipeProductListener {
+        void onSwipeProduct(int position, Product product);
+    }
 }

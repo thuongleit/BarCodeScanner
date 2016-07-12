@@ -22,7 +22,7 @@ import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
 
-public class ResultActivity extends BaseActivity {
+public class ResultActivity extends BaseActivity implements ProductRecyclerAdapter.SwipeProductListener {
     public static final String EXTRA_DATA = "EXTRA_DATA";
 
     private RecyclerView mRecyclerView;
@@ -84,7 +84,7 @@ public class ResultActivity extends BaseActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
-        mAdapter=new ProductRecyclerAdapter(this, mProducts);
+        mAdapter=new ProductRecyclerAdapter(this, mProducts,this);
         mRecyclerView.setAdapter(mAdapter);
 
         ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(mAdapter,this);
@@ -97,5 +97,10 @@ public class ResultActivity extends BaseActivity {
         intent.putParcelableArrayListExtra(EXTRA_DATA, mProducts);
         setResult(Activity.RESULT_OK, intent);
         finish();
+    }
+
+    @Override
+    public void onSwipeProduct(int position, Product product) {
+
     }
 }

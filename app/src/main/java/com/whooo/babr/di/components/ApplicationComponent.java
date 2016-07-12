@@ -18,6 +18,7 @@ import com.whooo.babr.data.remote.upcitemdb.UpcItemDbParseService;
 import com.whooo.babr.data.remote.walmartlabs.WalmartlabsParseService;
 import com.whooo.babr.di.ApplicationScope;
 import com.whooo.babr.di.modules.ApplicationModule;
+import com.whooo.babr.util.FirebaseUtils;
 
 import javax.inject.Singleton;
 
@@ -66,4 +67,7 @@ public interface ApplicationComponent {
 
     ParseServiceOK appService();
 
+//    FirebaseUtils firebaseUtils();
+//
+//    void inject(FirebaseUtils firebaseUtils);
 }

@@ -21,12 +21,21 @@ public class Config {
     private static final String PREF_NAME_HISTORY = "PREF_NAME_HISTORY";
     private static final String PREF_KEY_SIGN_IN_TYPE = "PREF_KEY_SIGN_IN_TYPE";
     private static final String PREF_KEY_SIGN_IN_USER = "PREF_KEY_SIGN_IN_USER";
+    private static final String PREF_KEY_USER_ID = "PREF_KEY_USER_ID";
 
     private final SharedPreferences mSharedPreferences;
 
     @Inject
     public Config(@ApplicationScope Context context) {
         mSharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
+    }
+
+    public void putUserId(String userId) {
+        mSharedPreferences.edit().putString(PREF_KEY_USER_ID, userId).apply();
+    }
+
+    public String getUserId() {
+        return mSharedPreferences.getString(PREF_KEY_USER_ID, "");
     }
 
     public boolean isFirstRun() {

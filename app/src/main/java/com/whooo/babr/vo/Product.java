@@ -18,6 +18,21 @@ public class Product implements Parcelable, Comparable {
     public int quantity = 0;
     public String objectId;
     public String listId;
+    public String userId;
+
+    public Product(String name, String country, String manufacture, String source, String upcA, String ean, String imageUrl, String model, int quantity, String objectId, String userId) {
+        this.name = name;
+        this.country = country;
+        this.manufacture = manufacture;
+        this.source = source;
+        this.upcA = upcA;
+        this.ean = ean;
+        this.imageUrl = imageUrl;
+        this.model = model;
+        this.quantity = quantity;
+        this.userId = userId;
+        this.objectId = objectId;
+    }
 
     @Override
     public int describeContents() {

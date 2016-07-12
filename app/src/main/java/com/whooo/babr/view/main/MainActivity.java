@@ -22,12 +22,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.firebase.crash.FirebaseCrash;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
@@ -38,6 +45,7 @@ import com.whooo.babr.data.remote.ParseServiceOK;
 import com.whooo.babr.databinding.ActivityMainBinding;
 import com.whooo.babr.databinding.MainViewHandlerWrapper;
 import com.whooo.babr.util.AppUtils;
+import com.whooo.babr.util.FirebaseUtils;
 import com.whooo.babr.util.dialog.DialogQrcodeHistory;
 import com.whooo.babr.util.swipe.ItemTouchHelperCallback;
 import com.whooo.babr.view.base.BaseActivity;
@@ -52,7 +60,9 @@ import com.whooo.babr.vo.CheckoutHistory;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.DeflaterOutputStream;
@@ -65,7 +75,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, MainContract.View,
-        ActionMode.Callback {
+        ActionMode.Callback, ProductRecyclerAdapter.SwipeProductListener {
 
     private static final int REQUEST_CAMERA = 1;
     public static final String USER_ID_EXTRA = "user_id_extra";
@@ -93,7 +103,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private ItemTouchHelper mItemTouchHelper;
     private ProductRecyclerAdapter mAdapter;
     private static ActivityMainBinding mBinding;
-    private static MainViewHandlerWrapper mViewHandler=new MainViewHandlerWrapper();
+    private static MainViewHandlerWrapper mViewHandler = new MainViewHandlerWrapper();
 
     @Override
     protected BasePresenter getPresenter() {
@@ -113,6 +123,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setupReCyclerView();
 
         registerCheckNetwork();
+
+        //mPresenter.getProducts();
 
         mFabScan.setOnClickListener(v -> {
             // Must be done during an initialization phase like onCreate
@@ -134,9 +146,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mPresenter.getProducts();
+}
+
     private void registerCheckNetwork() {
         if (!AppUtils.isInternetOn(this)) {
-            observableViewHandler(3,"Network error");
+            observableViewHandler(3, "Network error");
         }
     }
 
@@ -153,7 +171,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mFabScan = binding.appBarMainView.fabScan;
 
         binding.setPresenter(mPresenter);
-        observableViewHandler(1,"Empty Product");
+        observableViewHandler(0, "Empty Product");
         binding.setViewhandler(mViewHandler);
 
 
@@ -216,18 +234,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void saveProductToHistory() {
-        mGenerateListId = AppUtils.generateString(new Random(), "1254789dhfoendlf89ssofnd896541", 20);
+        mGenerateListId = AppUtils.generateString(new Random(), "1254789dhfoendlf89ssofnd8965412312sda2wdsds212asdsa21dad", 20);
 
-        parseServiceOK.saveListProductNoCheckout(mProducts, mGenerateListId).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
-            mProducts.clear();
-            showToast("Generator qr-code has saved to server!");
-        });
+//        parseServiceOK.saveListProductNoCheckout(mProducts, mGenerateListId).subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
+//            mProducts.clear();
+//            showToast("Generator qr-code has saved to server!");
+//        });
         CheckoutHistory checkoutHistory = new CheckoutHistory();
         checkoutHistory.listId = mGenerateListId;
         checkoutHistory.name = AppUtils.gerenateDateFormat();
         checkoutHistory.size = mProducts.size();
-        parseServiceOK.saveProductHistory(checkoutHistory);
+
+        mPresenter.saveProductsHistory(checkoutHistory,mProducts);
+        mProducts.clear();
+       showToast("Generator qr-code has saved to server!");
 
         DialogQrcodeHistory qrcodeHistory = new DialogQrcodeHistory(mContext, mGenerateListId);
         qrcodeHistory.show();
@@ -307,10 +328,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
             ArrayList<Product> products = data.getParcelableArrayListExtra(CameraActivity.EXTRA_DATA);
             if (products != null && !products.isEmpty()) {
-             //   mProducts.addAll(products);
-                mAdapter.addItems(products);
-                setupWithItemTouch();
 
+                DatabaseReference productRef = FirebaseUtils.getProductsRef();
+                for (Product p : products) {
+                    String newProductKey = productRef.push().getKey();
+                    p.objectId = newProductKey;
+                }
+                mAdapter.addItems(products);
+                mPresenter.saveProducts(products);
+                setupWithItemTouch();
             }
         }
     }
@@ -347,15 +373,31 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
             case R.id.nav_generate:
 
-                if (userId != null) {
+//                if (userId != null) {
+//
+//                    Intent intentGenerate = new Intent(MainActivity.this, GenerateQR.class);
+//                    intentGenerate.putExtra(USER_ID_EXTRA, userId);
+//                    startActivity(intentGenerate);
+//
+//                } else {
+//                    showToast("You must SignIn!");
+//                }
+                if (mProducts.size() >= 1) {
 
-                    Intent intentGenerate = new Intent(MainActivity.this, GenerateQR.class);
-                    intentGenerate.putExtra(USER_ID_EXTRA, userId);
-                    startActivity(intentGenerate);
+                    new AlertDialog.Builder(this, R.style.MyAlertDialogAppCompatStyle)
+                            .setMessage(getResources().getString(R.string.save_to_history))
+                            .setTitle("Option")
+                            .setNegativeButton("OK", ((dialog, which) -> {
+                                saveProductToHistory();
+                            })).setPositiveButton("Cancle", ((dialog1, which1) -> {
+                        dialog1.dismiss();
+                    })).show();
+
 
                 } else {
-                    showToast("You must SignIn!");
+                    showToast("You don't have any item!");
                 }
+
                 break;
             case R.id.nav_history:
                 startActivity(new Intent(this, HistoryActivity.class));
@@ -385,7 +427,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST));
         mRecyclerView.setHasFixedSize(true);
-        mAdapter = new ProductRecyclerAdapter(this, mProducts);
+        mAdapter = new ProductRecyclerAdapter(this, mProducts, this);
         mRecyclerView.setAdapter(mAdapter);
         setupWithItemTouch();
     }
@@ -451,12 +493,50 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void showNetworkError() {
-        observableViewHandler(3,"Network error");
+        observableViewHandler(3, "Network error");
     }
 
     @Override
     public void showInAppError() {
-        observableViewHandler(3,"General Error");
+        observableViewHandler(3, "General Error");
     }
 
+    @Override
+    public void onLoadProductsSuccess(List<Product> products) {
+      mAdapter.addItems(products);
+    }
+
+    @Override
+    public void onSaveProductsSuccess() {
+        showToast("onSaveProductsSuccess");
+    }
+
+    @Override
+    public void onRemoveProductsSuccess() {
+        showToast("onRemoveProductsSuccess");
+    }
+
+
+    @Override
+    public void onSwipeProduct(int position, Product product) {
+        mPresenter.removeProducts(product);
+
+//        DatabaseReference userRef = FirebaseUtils.getUserProductsRef();
+//        DatabaseReference productRef = FirebaseUtils.getProductsRef();
+//        userRef.child(product.objectId).addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.exists()) {
+//                    userRef.child(product.objectId).removeValue();
+//                    productRef.child(product.objectId).removeValue();
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+    }
 }

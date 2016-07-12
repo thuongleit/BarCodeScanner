@@ -13,11 +13,13 @@
         android:id="@+id/action_search"
         android:orderInCategory="100"
         android:icon="@drawable/ic_search_white_24dp"
+        android:title="Search"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_camera"
         android:orderInCategory="100"
         android:icon="@drawable/ic_send_white_24dp"
+        android:title="History"
         app:showAsAction="always"/>
 </menu>

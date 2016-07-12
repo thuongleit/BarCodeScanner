@@ -3,6 +3,7 @@ package com.whooo.babr.data.product;
 import android.support.annotation.NonNull;
 
 import com.whooo.babr.data.DataSource;
+import com.whooo.babr.vo.CheckoutHistory;
 import com.whooo.babr.vo.Product;
 
 import java.util.List;
@@ -17,5 +18,9 @@ public interface ProductRepository extends DataSource {
 
     Observable<List<Product>> getProducts();
 
-    Observable<Boolean> saveProducts(Product... products);
+    Observable<Boolean> saveProducts(List<Product> products);
+
+    Observable<Boolean> removeProduct(Product product);
+
+    Observable<Boolean> saveProductsHistory(CheckoutHistory history, List<Product> products);
 }
