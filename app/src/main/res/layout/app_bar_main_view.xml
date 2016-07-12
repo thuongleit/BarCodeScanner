@@ -7,6 +7,16 @@
         <variable
             name="presenter"
             type="com.whooo.babr.view.main.MainContract.Presenter" />
+
+        <variable
+            name="viewhandler"
+            type="com.whooo.babr.databinding.MainViewHandlerWrapper" />
+
+        <import
+            alias="v"
+            type="android.view.View" />
+
+
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -28,9 +38,32 @@
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
         </android.support.design.widget.AppBarLayout>
 
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="@{viewhandler.typeId>0?v.VISIBLE:v.GONE}">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewhandler.textViewHandler}"
+                    android:gravity="center"
+                    />
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{viewhandler.typeId==0?v.VISIBLE:v.GONE}"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <android.support.v7.widget.RecyclerView
@@ -56,8 +89,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_marginBottom="@dimen/fab_margin"
-            android:layout_marginRight="@dimen/fab_margin"
             android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginRight="@dimen/fab_margin"
             android:src="@drawable/ic_camera_enhance_white_24dp"
             app:backgroundTint="@color/colorAccent"
             app:borderWidth="0dp"

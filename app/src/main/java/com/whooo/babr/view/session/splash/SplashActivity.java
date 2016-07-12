@@ -1,11 +1,15 @@
 package com.whooo.babr.view.session.splash;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.whooo.babr.R;
+import com.whooo.babr.config.Constant;
+import com.whooo.babr.util.AppUtils;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.main.MainActivity;
@@ -31,6 +35,12 @@ public class SplashActivity extends BaseActivity implements SplashContract.View 
                 .splashModule(new SplashModule(this))
                 .build()
                 .inject(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 
     @Override
