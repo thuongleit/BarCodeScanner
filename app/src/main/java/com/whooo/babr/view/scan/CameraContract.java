@@ -1,6 +1,7 @@
 package com.whooo.babr.view.scan;
 
-import com.google.repacked.antlr.v4.runtime.misc.Nullable;
+import android.support.annotation.Nullable;
+
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.base.BaseView;
 import com.whooo.babr.vo.Product;

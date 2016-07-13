@@ -1,12 +1,14 @@
 package com.whooo.babr.view.main;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import com.google.repacked.antlr.v4.runtime.misc.Nullable;
+import com.google.firebase.FirebaseNetworkException;
 import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.vo.CheckoutHistory;
 import com.whooo.babr.vo.Product;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
@@ -49,22 +51,29 @@ class MainPresenter implements MainContract.Presenter {
     @Override
     public void getProducts() {
         unsubscribe();
-        mViewModel.setIsLoading();
-//        mSubscriptions.add(
-//                mProductRepository
-//                        .getProducts()
-//                        .subscribeOn(Schedulers.io())
-//                        .observeOn(AndroidSchedulers.mainThread())
-//                        .unsubscribeOn(Schedulers.io())
-//                        .subscribe(mViewModel::setData,
-//                                e -> {
-//                                    if (e instanceof FirebaseNetworkException) {
-//                                        mViewModel.setNetworkError();
-//                                    } else {
-//                                        mView.requestFailed(e.getMessage());
-//                                    }
-//                                }));
+        mViewModel.setLoading();
+        mSubscriptions.add(
+                mProductRepository
+                        .getProducts()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .unsubscribeOn(Schedulers.io())
+                        .subscribe(products -> {
+                                    if (products.isEmpty()) {
+                                        mView.onEmptyResponse();
+                                    }
+                                    mViewModel.setData(products);
+                                },
+                                e -> {
+                                    mViewModel.setData(new ArrayList<>());
+                                    if (e instanceof FirebaseNetworkException) {
+                                        mView.showNetworkError();
+                                    } else {
+                                        mView.requestFailed(e.getMessage());
+                                    }
+                                }));
     }
+
 
     @Override
     public void saveProducts(List<Product> products) {

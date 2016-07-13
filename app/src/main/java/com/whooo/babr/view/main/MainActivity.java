@@ -22,6 +22,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
@@ -74,6 +76,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private List<Product> mProducts = new ArrayList<>();
     private String mGenerateListId;
     private ItemTouchHelper mItemTouchHelper;
+    private FrameLayout mLayoutContent;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -88,10 +91,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         initializeInjector();
 
         DataBindingUtil.setDefaultComponent(getApp().getAppComponent());
+        injectViews(binding);
+
         binding.setPresenter(mPresenter);
         binding.setViewmodel(mPresenter.getViewModel());
-
-        injectViews(binding);
     }
 
     private void setupFab() {
@@ -128,6 +131,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mDrawerLayout = binding.drawerLayout;
         mRecyclerView = binding.appBarMainView.recyclerView;
         mFabScan = binding.appBarMainView.fabScan;
+        mLayoutContent = binding.appBarMainView.layoutContent;
 
         //set up views
         setupNavigationView();
@@ -430,6 +434,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void requestFailed(String message) {
         DialogFactory.createGenericErrorDialog(mContext, message).show();
+    }
+
+    @Override
+    public void onEmptyResponse() {
+        View emptyView = getLayoutInflater().inflate(R.layout.view_empty_product, null);
+
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mLayoutContent.addView(emptyView, layoutParams);
     }
 
 

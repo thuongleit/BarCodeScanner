@@ -14,6 +14,8 @@ public interface MainContract {
         void onRemoveProductsSuccess();
 
         void requestFailed(String message);
+
+        void onEmptyResponse();
     }
 
     interface Presenter extends BasePresenter {

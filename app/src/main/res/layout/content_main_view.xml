@@ -46,33 +46,20 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-
-                />
+                android:visibility="@{viewmodel.empty ? View.GONE : View.VISIBLE, default=gone}"
+                app:itemViewBinder="@{viewmodel.itemViewBinder}"
+                app:items="@{viewmodel.data}" />
 
             <com.pnikosis.materialishprogress.ProgressWheel
                 android:id="@+id/progress_wheel"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_gravity="center_horizontal|center_vertical"
-                android:visibility="@{viewmodel.loading ? View.VISIBLE : View.GONE}"
-                app:matProg_barColor="@color/colorPrimary"
+                android:visibility="@{viewmodel.loading ? View.VISIBLE : View.GONE, default=visible}"
+                app:matProg_barColor="@color/colorAccent"
                 app:matProg_progressIndeterminate="true" />
 
         </FrameLayout>
-
-        <include
-            android:id="@+id/layout_empty"
-            layout="@layout/view_empty_product"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="@{viewmodel.empty ? View.VISIBLE : View.GONE}" />
-
-        <include
-            android:id="@+id/layout_error"
-            layout="@layout/view_network_error"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="@{viewmodel.networkError ? View.VISIBLE : View.GONE}" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_scan"

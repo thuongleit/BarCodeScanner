@@ -4,6 +4,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="item"
             type="com.whooo.babr.vo.Product" />
@@ -40,9 +42,9 @@
                 android:ellipsize="end"
                 android:gravity="top|start"
                 android:lineSpacingExtra="2dp"
-                android:text="@{item.name}"
                 android:maxLines="2"
                 android:paddingBottom="6dp"
+                android:text="@{item.name}"
                 android:textColor="@color/item_title_tv"
                 android:textSize="@dimen/item_title_tv" />
 
@@ -76,7 +78,8 @@
                     android:gravity="center"
                     android:text="@{item.manufacture}"
                     android:textColor="@color/item_tag_tv"
-                    android:textSize="@dimen/item_tag_tv" />
+                    android:textSize="@dimen/item_tag_tv"
+                    android:visibility="@{(item.manufacture != null &amp;&amp; item.manufacture.length > 0) ? View.VISIBLE : View.GONE}" />
 
                 <TextView
                     android:id="@+id/text_barcode_country"
@@ -88,7 +91,8 @@
                     android:gravity="center"
                     android:text="@{item.country}"
                     android:textColor="@color/item_tag_tv"
-                    android:textSize="@dimen/item_tag_tv" />
+                    android:textSize="@dimen/item_tag_tv"
+                    android:visibility="@{(item.country != null &amp;&amp; item.country.length > 0) ? View.VISIBLE : View.GONE}" />
 
                 <TextView
                     android:id="@+id/text_source"
@@ -100,7 +104,8 @@
                     android:gravity="center"
                     android:text="@{item.source}"
                     android:textColor="@color/item_tag_tv"
-                    android:textSize="@dimen/item_tag_tv" />
+                    android:textSize="@dimen/item_tag_tv"
+                    android:visibility="@{(item.source != null &amp;&amp; item.source.length > 0) ? View.VISIBLE : View.GONE}" />
             </LinearLayout>
         </RelativeLayout>
     </FrameLayout>

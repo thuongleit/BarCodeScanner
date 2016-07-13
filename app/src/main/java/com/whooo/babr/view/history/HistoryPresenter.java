@@ -2,7 +2,6 @@ package com.whooo.babr.view.history;
 
 import android.support.annotation.NonNull;
 
-import com.google.repacked.antlr.v4.runtime.misc.Nullable;
 import com.whooo.babr.data.product.ProductRepository;
 
 /**
@@ -16,7 +15,7 @@ public class HistoryPresenter implements HistoryContract.Presenter {
     private final ProductRepository mProductRepository;
     private Object products;
 
-    public HistoryPresenter(@Nullable HistoryContract.View view, @NonNull ProductRepository productRepository) {
+    public HistoryPresenter( HistoryContract.View view, @NonNull ProductRepository productRepository) {
         mView = view;
         mProductRepository = productRepository;
     }
