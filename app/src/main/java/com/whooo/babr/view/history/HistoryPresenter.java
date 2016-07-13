@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.google.repacked.antlr.v4.runtime.misc.Nullable;
 import com.whooo.babr.data.product.ProductRepository;
-import com.whooo.babr.view.main.MainContract;
 
 /**
  * Created by ThongLe on 7/12/2016.

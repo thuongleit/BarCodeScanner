@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.whooo.babr.vo.Product" />
+    </data>
 
     <FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -9,17 +17,16 @@
             android:id="@+id/item_recycler_container"
             android:layout_width="match_parent"
             android:layout_height="140dp"
-            android:padding="@dimen/item_content_padding"
-            android:background="@color/white">
+            android:background="@color/white"
+            android:padding="@dimen/item_content_padding">
             <!--android:background="@drawable/selector_item_clickable"-->
-
 
             <ImageView
                 android:id="@+id/image_bar_view"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/img_default_gray" />
+                app:url="@{item.imageUrl}" />
 
             <TextView
                 android:id="@+id/text_barcode_title"
@@ -33,6 +40,7 @@
                 android:ellipsize="end"
                 android:gravity="top|start"
                 android:lineSpacingExtra="2dp"
+                android:text="@{item.name}"
                 android:maxLines="2"
                 android:paddingBottom="6dp"
                 android:textColor="@color/item_title_tv"
@@ -66,7 +74,7 @@
                     android:layout_marginRight="5dp"
                     android:background="@drawable/bg_android_tag"
                     android:gravity="center"
-                    android:text="manufacture"
+                    android:text="@{item.manufacture}"
                     android:textColor="@color/item_tag_tv"
                     android:textSize="@dimen/item_tag_tv" />
 
@@ -78,7 +86,7 @@
                     android:layout_marginRight="5dp"
                     android:background="@drawable/bg_ios_tag"
                     android:gravity="center"
-                    android:text="country"
+                    android:text="@{item.country}"
                     android:textColor="@color/item_tag_tv"
                     android:textSize="@dimen/item_tag_tv" />
 
@@ -90,12 +98,10 @@
                     android:layout_marginRight="5dp"
                     android:background="@drawable/bg_js_tag"
                     android:gravity="center"
-                    android:text="source"
+                    android:text="@{item.source}"
                     android:textColor="@color/item_tag_tv"
                     android:textSize="@dimen/item_tag_tv" />
-
             </LinearLayout>
-
         </RelativeLayout>
-
     </FrameLayout>
+</layout>

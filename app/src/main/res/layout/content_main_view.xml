@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
+        <import type="android.view.View" />
 
         <variable
             name="presenter"
             type="com.whooo.babr.view.main.MainContract.Presenter" />
 
         <variable
-            name="viewhandler"
-            type="com.whooo.babr.databinding.MainViewHandlerWrapper" />
-
-        <import
-            alias="v"
-            type="android.view.View" />
-
-
+            name="viewmodel"
+            type="com.whooo.babr.view.main.MainViewModel" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:showIn="@layout/activity_main">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar_layout"
@@ -38,50 +36,43 @@
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
         </android.support.design.widget.AppBarLayout>
 
-
         <FrameLayout
+            android:id="@+id/layout_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="@{viewhandler.typeId>0?v.VISIBLE:v.GONE}">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@{viewhandler.textViewHandler}"
-                    android:gravity="center"
-                    />
-            </LinearLayout>
-
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="@{viewhandler.typeId==0?v.VISIBLE:v.GONE}"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+
+                />
 
             <com.pnikosis.materialishprogress.ProgressWheel
                 android:id="@+id/progress_wheel"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_gravity="center_horizontal|center_vertical"
-                android:visibility="gone"
+                android:visibility="@{viewmodel.loading ? View.VISIBLE : View.GONE}"
                 app:matProg_barColor="@color/colorPrimary"
                 app:matProg_progressIndeterminate="true" />
 
         </FrameLayout>
 
+        <include
+            android:id="@+id/layout_empty"
+            layout="@layout/view_empty_product"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{viewmodel.empty ? View.VISIBLE : View.GONE}" />
+
+        <include
+            android:id="@+id/layout_error"
+            layout="@layout/view_network_error"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{viewmodel.networkError ? View.VISIBLE : View.GONE}" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_scan"

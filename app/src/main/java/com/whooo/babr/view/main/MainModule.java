@@ -7,17 +7,23 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class MainModule {
+class MainModule {
 
     private final MainContract.View mView;
 
-    public MainModule(MainContract.View view) {
+    MainModule(MainContract.View view) {
         mView = view;
     }
 
     @Provides
     @PerActivity
-    public MainContract.Presenter providePresenter(ProductRepository productRespository) {
-        return new MainPresenter(mView, productRespository);
+    MainViewModel provideViewHandler() {
+        return new MainViewModel();
+    }
+
+    @Provides
+    @PerActivity
+    public MainContract.Presenter providePresenter(ProductRepository productRespository, MainViewModel handler) {
+        return new MainPresenter(mView, handler, productRespository);
     }
 }

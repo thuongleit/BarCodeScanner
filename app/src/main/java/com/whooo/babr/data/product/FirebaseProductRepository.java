@@ -2,12 +2,7 @@ package com.whooo.babr.data.product;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,13 +13,12 @@ import com.whooo.babr.vo.CheckoutHistory;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.subscriptions.Subscriptions;
 
 public class FirebaseProductRepository implements ProductRepository {
 
@@ -58,28 +52,33 @@ public class FirebaseProductRepository implements ProductRepository {
 
     @Override
     public Observable<List<Product>> getProducts() {
-        return Observable.create(subscriber -> {
-            DatabaseReference productRef = FirebaseUtils.getProductsRef();
-            final List<Product> products = new ArrayList<>();
+        return Observable
+                .create(subscriber -> {
+                    DatabaseReference productRef = FirebaseUtils.getProductsRef();
+                    final List<Product> products = new ArrayList<>();
 
-            ValueEventListener productsEvent = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+                    ValueEventListener eventListener = productRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Product product = snapshot.getValue(Product.class);
-                        products.add(product);
-                    }
-                    subscriber.onNext(products);
-                    subscriber.onCompleted();
-                }
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                Product product = snapshot.getValue(Product.class);
+                                products.add(product);
+                            }
+                            subscriber.onNext(products);
+                            subscriber.onCompleted();
+                        }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            };
-            productRef.addValueEventListener(productsEvent);
-        });
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            FirebaseUtils.attachErrorHandler(subscriber, databaseError);
+                        }
+                    });
+
+                    //when the subscription is cancelled, remove the listener
+                    subscriber.add(Subscriptions.create(() -> productRef.removeEventListener(eventListener)));
+                });
+
     }
 
     @Override
@@ -87,9 +86,9 @@ public class FirebaseProductRepository implements ProductRepository {
         return Observable.create(subscriber -> {
             DatabaseReference userRef = FirebaseUtils.getUserProductsRef();
             DatabaseReference productRef = FirebaseUtils.getProductsRef();
-
+            // FIXME: 7/13/16 Need to investigate more in saving products
             for (Product p : products) {
-                Product product = new Product(p.name, p.country, p.manufacture, p.source, p.upcA, p.ean, p.imageUrl, p.model, p.quantity,p.objectId, FirebaseUtils.getCurrentUserId());
+                Product product = new Product(p.name, p.country, p.manufacture, p.source, p.upcA, p.ean, p.imageUrl, p.model, p.quantity, p.objectId, FirebaseUtils.getCurrentUserId());
                 userRef.child(p.objectId).setValue(true, (databaseError, databaseReference) -> {
                     productRef.child(p.objectId).setValue(product, (databaseError1, databaseReference1) -> {
 
@@ -99,7 +98,6 @@ public class FirebaseProductRepository implements ProductRepository {
             }
             subscriber.onNext(true);
             subscriber.onCompleted();
-
         });
     }
 
@@ -136,7 +134,7 @@ public class FirebaseProductRepository implements ProductRepository {
             String newKey = hisRef.push().getKey();
             hisRef.child(newKey).setValue(history, (databaseError, databaseReference) -> {
                 for (Product p : products) {
-                    Product product = new Product(p.name, p.country, p.manufacture, p.source, p.upcA, p.ean, p.imageUrl, p.model, p.quantity,p.objectId, FirebaseUtils.getCurrentUserId());
+                    Product product = new Product(p.name, p.country, p.manufacture, p.source, p.upcA, p.ean, p.imageUrl, p.model, p.quantity, p.objectId, FirebaseUtils.getCurrentUserId());
                     hisRef.child(newKey).child("products").child(p.objectId).setValue(product, (databaseError1, databaseReference1) -> {
                         productsRef.child(p.objectId).removeValue();
                     });

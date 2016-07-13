@@ -7,6 +7,10 @@ import dagger.Component;
 
 @PerActivity
 @Component(modules = MainModule.class, dependencies = ApplicationComponent.class)
-public interface MainComponent {
+interface MainComponent {
     void inject(MainActivity activity);
+
+    MainContract.Presenter presenter();
+
+    MainViewModel handler();
 }

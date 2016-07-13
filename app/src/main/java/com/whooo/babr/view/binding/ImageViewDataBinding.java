@@ -1,4 +1,4 @@
-package com.whooo.babr.view.widget;
+package com.whooo.babr.view.binding;
 
 
 import android.databinding.BindingAdapter;
@@ -9,10 +9,10 @@ import com.squareup.picasso.Picasso;
 
 public class ImageViewDataBinding {
 
-    @BindingAdapter("android:src")
-    public static void setImageResource(ApplicationComponent component, ImageView view, int drawable) {
+    @BindingAdapter("url")
+    public static void setImageResource(ApplicationComponent component, ImageView view, String imageUrl) {
         component.picasso()
-                .load(drawable)
+                .load(imageUrl)
                 .priority(Picasso.Priority.LOW)
                 .into(view);
     }

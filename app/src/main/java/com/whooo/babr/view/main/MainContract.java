@@ -9,15 +9,22 @@ import java.util.List;
 
 public interface MainContract {
     interface View extends BaseView {
-        void onLoadProductsSuccess(List<Product> products);
         void onSaveProductsSuccess();
+
         void onRemoveProductsSuccess();
+
+        void requestFailed(String message);
     }
 
     interface Presenter extends BasePresenter {
         void getProducts();
+
         void saveProducts(List<Product> products);
-        void saveProductsHistory(CheckoutHistory history,List<Product> products);
+
+        void saveProductsHistory(CheckoutHistory history, List<Product> products);
+
         void removeProducts(Product product);
+
+        MainViewModel getViewModel();
     }
 }

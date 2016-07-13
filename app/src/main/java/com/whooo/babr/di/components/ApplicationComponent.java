@@ -18,7 +18,6 @@ import com.whooo.babr.data.remote.upcitemdb.UpcItemDbParseService;
 import com.whooo.babr.data.remote.walmartlabs.WalmartlabsParseService;
 import com.whooo.babr.di.ApplicationScope;
 import com.whooo.babr.di.modules.ApplicationModule;
-import com.whooo.babr.util.FirebaseUtils;
 
 import javax.inject.Singleton;
 
@@ -26,7 +25,7 @@ import dagger.Component;
 
 @Singleton
 @Component(modules = {ApplicationModule.class, ApiModule.class})
-public interface ApplicationComponent {
+public interface ApplicationComponent extends android.databinding.DataBindingComponent{
 
     Application application();
 

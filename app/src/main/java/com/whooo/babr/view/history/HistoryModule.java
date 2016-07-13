@@ -2,8 +2,6 @@ package com.whooo.babr.view.history;
 
 import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.di.PerActivity;
-import com.whooo.babr.view.main.MainContract;
-import com.whooo.babr.view.main.MainPresenter;
 
 import dagger.Module;
 import dagger.Provides;

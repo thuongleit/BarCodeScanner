@@ -1,18 +1,14 @@
 package com.whooo.babr.view.main;
 
 import android.Manifest;
-import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,37 +18,28 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.firebase.crash.FirebaseCrash;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
-import com.pnikosis.materialishprogress.ProgressWheel;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.whooo.babr.R;
-import com.whooo.babr.config.Constant;
-import com.whooo.babr.data.remote.ParseServiceOK;
 import com.whooo.babr.databinding.ActivityMainBinding;
-import com.whooo.babr.databinding.MainViewHandlerWrapper;
 import com.whooo.babr.util.AppUtils;
 import com.whooo.babr.util.FirebaseUtils;
+import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.util.dialog.DialogQrcodeHistory;
+import com.whooo.babr.util.swipe.ItemTouchHelperAdapter;
 import com.whooo.babr.util.swipe.ItemTouchHelperCallback;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.history.HistoryActivity;
 import com.whooo.babr.view.product.ProductRecyclerAdapter;
-import com.whooo.babr.view.qrgenerate.GenerateQR;
 import com.whooo.babr.view.scan.CameraActivity;
 import com.whooo.babr.view.session.signin.SignInActivity;
 import com.whooo.babr.view.widget.DividerItemDecoration;
@@ -60,19 +47,10 @@ import com.whooo.babr.vo.CheckoutHistory;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.zip.DeflaterOutputStream;
 
 import javax.inject.Inject;
-
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, MainContract.View,
         ActionMode.Callback, ProductRecyclerAdapter.SwipeProductListener {
@@ -83,27 +61,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private RecyclerView mRecyclerView;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
-    private ProgressWheel mProgressWheel;
     private SearchBox searchBox;
     private FloatingActionButton mFabScan;
     private Toolbar mToolbar;
 
     @Inject
     MainContract.Presenter mPresenter;
+
     private Context mContext;
 
     private boolean mDoubleBackToExitPressedOnce = false;
     private List<Product> mProducts = new ArrayList<>();
-    private ProgressDialog progressDialog;
     private String mGenerateListId;
-    private ParseServiceOK parseServiceOK;
-    private Subscription subscription;
-    private Integer userId;
-    private DeflaterOutputStream actionMode;
     private ItemTouchHelper mItemTouchHelper;
-    private ProductRecyclerAdapter mAdapter;
-    private static ActivityMainBinding mBinding;
-    private static MainViewHandlerWrapper mViewHandler = new MainViewHandlerWrapper();
 
     @Override
     protected BasePresenter getPresenter() {
@@ -113,19 +83,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mContext = this;
-
         initializeInjector();
-        injectViews(mBinding);
 
-        setupNavigationView();
-        setupReCyclerView();
+        DataBindingUtil.setDefaultComponent(getApp().getAppComponent());
+        binding.setPresenter(mPresenter);
+        binding.setViewmodel(mPresenter.getViewModel());
 
-        registerCheckNetwork();
+        injectViews(binding);
+    }
 
-        //mPresenter.getProducts();
-
+    private void setupFab() {
         mFabScan.setOnClickListener(v -> {
             // Must be done during an initialization phase like onCreate
             RxPermissions.getInstance(this)
@@ -146,40 +115,24 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mPresenter.getProducts();
-}
-
-    private void registerCheckNetwork() {
-        if (!AppUtils.isInternetOn(this)) {
-            observableViewHandler(3, "Network error");
-        }
-    }
-
     private void showToast(String message) {
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
     }
 
     private void injectViews(ActivityMainBinding binding) {
         mToolbar = binding.appBarMainView.toolbar;
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         mNavigationView = binding.navView;
         mDrawerLayout = binding.drawerLayout;
         mRecyclerView = binding.appBarMainView.recyclerView;
-        mProgressWheel = binding.appBarMainView.progressWheel;
         mFabScan = binding.appBarMainView.fabScan;
 
-        binding.setPresenter(mPresenter);
-        observableViewHandler(0, "Empty Product");
-        binding.setViewhandler(mViewHandler);
-
-
-    }
-
-    private static void observableViewHandler(int type, String message) {
-        mViewHandler.setTypeId(type);
-        mViewHandler.setTextViewHandler(message);
+        //set up views
+        setupNavigationView();
+        setupRecyclerView();
+        setupFab();
     }
 
     private void initializeInjector() {
@@ -209,8 +162,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
 
         if (id == R.id.action_camera) {
-
-
             if (mProducts.size() >= 1) {
 
                 new AlertDialog.Builder(this, R.style.MyAlertDialogAppCompatStyle)
@@ -246,9 +197,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         checkoutHistory.name = AppUtils.gerenateDateFormat();
         checkoutHistory.size = mProducts.size();
 
-        mPresenter.saveProductsHistory(checkoutHistory,mProducts);
+        mPresenter.saveProductsHistory(checkoutHistory, mProducts);
         mProducts.clear();
-       showToast("Generator qr-code has saved to server!");
+        showToast("Generator qr-code has saved to server!");
 
         DialogQrcodeHistory qrcodeHistory = new DialogQrcodeHistory(mContext, mGenerateListId);
         qrcodeHistory.show();
@@ -261,14 +212,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mToolbar.setTitle("");
         mToolbar.setVisibility(View.GONE);
         searchBox.revealFromMenuItem(R.id.action_search, this);
-        searchBox.setMenuListener(new SearchBox.MenuListener() {
-
-            @Override
-            public void onMenuClick() {
-
-            }
+        searchBox.setMenuListener(() -> {
 
         });
+
         searchBox.setSearchListener(new SearchBox.SearchListener() {
 
             @Override
@@ -284,15 +231,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onSearchTermChanged(String term) {
 
-                subscription = Observable.just(term)
-                        .debounce(400, TimeUnit.SECONDS)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe(s -> {
-                            if (mRecyclerView.getAdapter() != null) {
-                                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).filter(s);
-                            }
-                        });
+//                subscription = Observable.just(term)
+//                        .debounce(400, TimeUnit.SECONDS)
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribeOn(Schedulers.io())
+//                        .subscribe(s -> {
+//                            if (mRecyclerView.getAdapter() != null) {
+//                                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).filter(s);
+//                            }
+//                        });
 
             }
 
@@ -334,7 +281,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     String newProductKey = productRef.push().getKey();
                     p.objectId = newProductKey;
                 }
-                mAdapter.addItems(products);
                 mPresenter.saveProducts(products);
                 setupWithItemTouch();
             }
@@ -342,7 +288,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void setupWithItemTouch() {
-        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(mAdapter, this);
+        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback((ItemTouchHelperAdapter) mRecyclerView.getAdapter(), this);
         mItemTouchHelper = new ItemTouchHelper(callback);
         mItemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
@@ -407,28 +353,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return true;
     }
 
-
-    public void showProgress(boolean show) {
-        if (show) {
-            mProgressWheel.setVisibility(View.VISIBLE);
-            mRecyclerView.setVisibility(View.GONE);
-        } else {
-            mRecyclerView.setVisibility(View.VISIBLE);
-            mProgressWheel.setVisibility(View.GONE);
-        }
-    }
-
-    public void showProducts(List<Product> products) {
-        mProducts.addAll(products);
-        mAdapter.addItems(products);
-    }
-
-    private void setupReCyclerView() {
+    private void setupRecyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST));
         mRecyclerView.setHasFixedSize(true);
-        mAdapter = new ProductRecyclerAdapter(this, mProducts, this);
-        mRecyclerView.setAdapter(mAdapter);
         setupWithItemTouch();
     }
 
@@ -473,7 +401,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             int currPos;
             for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
                 currPos = selectedItemPositions.get(i);
-                parseServiceOK.deleteProduct(mProducts.get(currPos).objectId);
                 mProducts.remove(currPos);
                 ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteItem(currPos);
             }
@@ -487,23 +414,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void onDestroyActionMode(ActionMode mode) {
-        actionMode = null;
         ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).clearSelections();
-    }
-
-    @Override
-    public void showNetworkError() {
-        observableViewHandler(3, "Network error");
-    }
-
-    @Override
-    public void showInAppError() {
-        observableViewHandler(3, "General Error");
-    }
-
-    @Override
-    public void onLoadProductsSuccess(List<Product> products) {
-      mAdapter.addItems(products);
     }
 
     @Override
@@ -514,6 +425,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void onRemoveProductsSuccess() {
         showToast("onRemoveProductsSuccess");
+    }
+
+    @Override
+    public void requestFailed(String message) {
+        DialogFactory.createGenericErrorDialog(mContext, message).show();
     }
 
 
@@ -538,5 +454,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 //
 //            }
 //        });
+    }
+
+    @Override
+    public void showNetworkError() {
+        // TODO: 7/13/16 remove this method at the end. it is already handle in presenter
+    }
+
+    @Override
+    public void showInAppError() {
+        // TODO: 7/13/16 remove this method at the end. it is already handle in presenter
     }
 }

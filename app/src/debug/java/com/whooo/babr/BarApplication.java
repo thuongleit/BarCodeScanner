@@ -23,6 +23,10 @@ public class BarApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
+        //enable to save local db
+        // TODO: 7/13/16 support cache db in local
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
