@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
-public class Product implements Parcelable, Comparable {
+public class Product implements Parcelable, Comparable, Cloneable {
     public String id;
     public String name;
     public String country;
@@ -36,15 +36,6 @@ public class Product implements Parcelable, Comparable {
         this.quantity = quantity;
         this.userId = userId;
         this.id = id;
-    }
-
-    @Override
-    public int compareTo(Object another) {
-        if (another instanceof Product) {
-            Product that = (Product) another;
-            return this.name.compareTo(that.name);
-        }
-        return 0;
     }
 
     @Override
@@ -96,4 +87,18 @@ public class Product implements Parcelable, Comparable {
             return new Product[size];
         }
     };
+
+    @Override
+    public int compareTo(Object another) {
+        if (another instanceof Product) {
+            Product that = (Product) another;
+            return this.name.compareTo(that.name);
+        }
+        return 0;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

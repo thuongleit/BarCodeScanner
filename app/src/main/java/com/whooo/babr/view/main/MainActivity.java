@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -51,7 +53,7 @@ import java.util.Random;
 import javax.inject.Inject;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, MainContract.View,
-        ActionMode.Callback, ProductRecyclerAdapter.SwipeProductListener {
+        ActionMode.Callback {
 
     private static final int REQUEST_CAMERA = 1;
     public static final String USER_ID_EXTRA = "user_id_extra";
@@ -277,16 +279,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             if (products != null && !products.isEmpty()) {
 
                 mPresenter.saveProducts(products);
-                setupWithItemTouch();
             }
         }
     }
 
-    private void setupWithItemTouch() {
-//        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback((ItemTouchHelperAdapter) mRecyclerView.getAdapter(), this);
-//        mItemTouchHelper = new ItemTouchHelper(callback);
-//        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
-    }
 
     @Override
     public void onBackPressed() {
@@ -352,7 +348,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST));
         mRecyclerView.setHasFixedSize(true);
-        setupWithItemTouch();
     }
 
 
@@ -444,29 +439,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-
     @Override
-    public void onSwipeProduct(int position, Product product) {
-        mPresenter.removeProducts(product);
+    public void addPendingRemove(int position, Product product) {
+        final Snackbar snackbar = Snackbar.make(mLayoutContent, "Item deleted", Snackbar.LENGTH_LONG)
+                .setActionTextColor(ContextCompat.getColor(mContext, R.color.white))
+                .setAction("Undo", view -> {
+                    mPresenter.undoRemovedProduct(position, product);
+                });
+        snackbar.show();
 
-//        DatabaseReference userRef = FirebaseUtils.getUserProductsRef();
-//        DatabaseReference productRef = FirebaseUtils.getProductsRef();
-//        userRef.child(product.id).addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                if (dataSnapshot.exists()) {
-//                    userRef.child(product.id).removeValue();
-//                    productRef.child(product.id).removeValue();
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            snackbar.dismiss();
+            mPresenter.removeProducts(product);
+        }, 2000);
     }
+
 
     @Override
     public void showNetworkError() {

@@ -39,5 +39,20 @@ public class MainViewModel {
             data.addAll(products);
         }
     }
+
+    public void removeItem(Product product) {
+        data.remove(product);
+
+        if (data.isEmpty()) {
+            empty.set(true);
+        }
+    }
+
+    public void addItem(int position, Product product) {
+        if (product != null) {
+            empty.set(false);
+        }
+        data.add(position, product);
+    }
 }
 

@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.google.firebase.FirebaseNetworkException;
 import com.whooo.babr.data.product.ProductRepository;
+import com.whooo.babr.view.binding.ItemTouchHandler;
 import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
@@ -131,5 +132,33 @@ class MainPresenter implements MainContract.Presenter {
     @Override
     public MainViewModel getViewModel() {
         return mViewModel;
+    }
+
+    @Override
+    public ItemTouchHandler<Product> itemTouchHandler() {
+        return new ItemTouchHandler<Product>() {
+            @Override
+            public void onItemMove(int position, Product product) {
+
+            }
+
+            @Override
+            public void onItemDismiss(int position, Product product) {
+                try {
+                    final Product clone = (Product) product.clone();
+
+                    mView.addPendingRemove(position, clone);
+                } catch (CloneNotSupportedException e) {
+                    // TODO: 7/14/16 handle unexpected exception
+                    return;
+                }
+                mViewModel.removeItem(product);
+            }
+        };
+    }
+
+    @Override
+    public void undoRemovedProduct(int position, Product product) {
+        mViewModel.addItem(position, product);
     }
 }

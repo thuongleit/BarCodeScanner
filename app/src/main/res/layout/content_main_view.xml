@@ -7,6 +7,8 @@
 
         <import type="android.view.View" />
 
+        <import type="java.lang.Boolean" />
+
         <variable
             name="presenter"
             type="com.whooo.babr.view.main.MainContract.Presenter" />
@@ -47,8 +49,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="@{viewmodel.empty ? View.GONE : View.VISIBLE, default=gone}"
+                app:enableSwipe="@{Boolean.TRUE}"
                 app:itemViewBinder="@{viewmodel.itemViewBinder}"
-                app:items="@{viewmodel.data}" />
+                app:items="@{viewmodel.data}"
+                app:touchHandler="@{presenter.itemTouchHandler}" />
 
             <com.pnikosis.materialishprogress.ProgressWheel
                 android:id="@+id/progress_wheel"

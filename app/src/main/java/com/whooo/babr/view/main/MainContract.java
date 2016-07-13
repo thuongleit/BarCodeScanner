@@ -2,6 +2,7 @@ package com.whooo.babr.view.main;
 
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.base.BaseView;
+import com.whooo.babr.view.binding.ItemTouchHandler;
 import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
@@ -18,6 +19,8 @@ public interface MainContract {
         void onEmptyResponse();
 
         void removeEmptyViewIfNeeded();
+
+        void addPendingRemove(int position, Product clone);
     }
 
     interface Presenter extends BasePresenter {
@@ -30,5 +33,9 @@ public interface MainContract {
         void removeProducts(Product product);
 
         MainViewModel getViewModel();
+
+        ItemTouchHandler<Product> itemTouchHandler();
+
+        void undoRemovedProduct(int position, Product product);
     }
 }

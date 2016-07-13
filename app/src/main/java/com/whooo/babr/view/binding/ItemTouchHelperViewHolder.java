@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-package com.whooo.babr.util.swipe;
-
-import android.content.Context;
-
-/**
- * Created by ThongLe on 7/10/2016.
- */
+package com.whooo.babr.view.binding;
 
 public interface ItemTouchHelperViewHolder {
 
-    void onItemSelected(Context context);
-    void onItemClear(Context context);
+    void onItemSelected();
+
+    void onItemClear();
 }

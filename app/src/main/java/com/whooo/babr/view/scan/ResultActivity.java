@@ -13,16 +13,17 @@ import android.view.MenuItem;
 
 import com.whooo.babr.R;
 import com.whooo.babr.databinding.ActivitySearchResultBinding;
-import com.whooo.babr.util.swipe.ItemTouchHelperCallback;
+import com.whooo.babr.view.binding.ItemTouchHelperCallback;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
+import com.whooo.babr.view.binding.OnItemTouchListener;
 import com.whooo.babr.view.product.ProductRecyclerAdapter;
 import com.whooo.babr.view.widget.DividerItemDecoration;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
 
-public class ResultActivity extends BaseActivity implements ProductRecyclerAdapter.SwipeProductListener {
+public class ResultActivity extends BaseActivity {
     public static final String EXTRA_DATA = "EXTRA_DATA";
 
     private RecyclerView mRecyclerView;
@@ -44,14 +45,17 @@ public class ResultActivity extends BaseActivity implements ProductRecyclerAdapt
         ActivitySearchResultBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_search_result);
 
         injectViews(binding);
+        setUpRecyclerView();
+
         mProducts = getIntent().getParcelableArrayListExtra(EXTRA_DATA);
+        binding.setViewmodel(new ResultViewModel(mProducts));
+
 
         if (mProducts == null) {
             // TODO: 7/9/16 handle empty state
             // FIXME: 7/9/16 no empty list?
         }
 
-        setUpRecyclerView();
     }
 
     @Override
@@ -84,10 +88,8 @@ public class ResultActivity extends BaseActivity implements ProductRecyclerAdapt
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
-        mAdapter=new ProductRecyclerAdapter(this, mProducts,this);
-        mRecyclerView.setAdapter(mAdapter);
 
-        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(mAdapter,this);
+        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback((OnItemTouchListener) mAdapter, this);
         mItemTouchHelper = new ItemTouchHelper(callback);
         mItemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
@@ -97,10 +99,5 @@ public class ResultActivity extends BaseActivity implements ProductRecyclerAdapt
         intent.putParcelableArrayListExtra(EXTRA_DATA, mProducts);
         setResult(Activity.RESULT_OK, intent);
         finish();
-    }
-
-    @Override
-    public void onSwipeProduct(int position, Product product) {
-
     }
 }

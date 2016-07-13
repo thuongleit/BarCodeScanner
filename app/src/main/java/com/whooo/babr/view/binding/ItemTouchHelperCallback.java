@@ -1,5 +1,5 @@
 
-package com.whooo.babr.util.swipe;
+package com.whooo.babr.view.binding;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -17,12 +17,12 @@ import com.whooo.babr.util.DisplayUtils;
 
 public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
-    private final ItemTouchHelperAdapter mAdapter;
+    private final OnItemTouchListener mTouchListener;
     private Context context;
     Paint p = new Paint();
 
-    public ItemTouchHelperCallback(ItemTouchHelperAdapter adapter, Context context) {
-        mAdapter = adapter;
+    public ItemTouchHelperCallback(OnItemTouchListener touchListener, Context context) {
+        this.mTouchListener = touchListener;
         this.context=context;
     }
 
@@ -59,7 +59,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
         }
 
         // Notify the adapter of the move
-        mAdapter.onItemMove(source.getAdapterPosition(), target.getAdapterPosition());
+        mTouchListener.onItemMove(source.itemView, source.getAdapterPosition(), target.getAdapterPosition());
         return true;
     }
 
@@ -71,7 +71,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
     @Override
     public void onSwiped(final RecyclerView.ViewHolder viewHolder, int i) {
         // Notify the adapter of the dismissal
-          mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
+          mTouchListener.onItemDismiss(viewHolder.itemView, viewHolder.getAdapterPosition());
     }
 
 
@@ -115,7 +115,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
             // Let the view holder know that this item is being moved or dragged
             ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
-            itemViewHolder.onItemSelected(context);
+            itemViewHolder.onItemSelected();
         }
 
         super.onSelectedChanged(viewHolder, actionState);
@@ -130,7 +130,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
              // Tell the view holder it's time to restore the idle state
         ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
-        itemViewHolder.onItemClear(context);
+        itemViewHolder.onItemClear();
 
     }
 

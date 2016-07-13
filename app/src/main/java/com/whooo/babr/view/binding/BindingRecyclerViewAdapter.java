@@ -5,15 +5,18 @@ import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.whooo.babr.R;
+
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 
-public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingRecyclerViewAdapter.ViewHolder> implements View.OnClickListener, View.OnLongClickListener {
+public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingRecyclerViewAdapter.ViewHolder> implements View.OnClickListener, View.OnLongClickListener, OnItemTouchListener {
     private static final int ITEM_MODEL = -124;
     private final WeakReferenceOnListChangedCallback onListChangedCallback;
     private final ItemBinder<T> itemBinder;
@@ -21,6 +24,7 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingR
     private LayoutInflater inflater;
     private ClickHandler<T> clickHandler;
     private LongClickHandler<T> longClickHandler;
+    private ItemTouchHandler<T> touchHandler;
 
     public BindingRecyclerViewAdapter(ItemBinder<T> itemBinder, @Nullable Collection<T> items) {
         this.itemBinder = itemBinder;
@@ -110,12 +114,43 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingR
         return false;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public boolean onItemMove(View v, int fromPosition, int toPosition) {
+        if (touchHandler != null) {
+            T item = (T) v.getTag(ITEM_MODEL);
+            touchHandler.onItemMove(toPosition, item);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean onItemDismiss(View v, int position) {
+        if (touchHandler != null) {
+            T item = (T) v.getTag(ITEM_MODEL);
+            touchHandler.onItemDismiss(position, item);
+            return true;
+        }
+        return false;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder{
         final ViewDataBinding binding;
 
         ViewHolder(ViewDataBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+        }
+
+        @Override
+        public void onItemSelected() {
+            binding.getRoot().setBackgroundColor(ContextCompat.getColor(binding.getRoot().getContext(), R.color.hightlight_item_select));
+        }
+
+        @Override
+        public void onItemClear() {
+            binding.getRoot().setBackgroundColor(ContextCompat.getColor(binding.getRoot().getContext(), R.color.white));
         }
     }
 
@@ -174,5 +209,9 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingR
 
     public void setLongClickHandler(LongClickHandler<T> clickHandler) {
         this.longClickHandler = clickHandler;
+    }
+
+    public void setTouchHandler(ItemTouchHandler<T> touchHandler) {
+        this.touchHandler = touchHandler;
     }
 }

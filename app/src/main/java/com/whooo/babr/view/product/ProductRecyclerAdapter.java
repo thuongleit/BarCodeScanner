@@ -1,10 +1,6 @@
 package com.whooo.babr.view.product;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.os.Handler;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
@@ -18,9 +14,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.whooo.babr.R;
 import com.whooo.babr.util.RoundedTransformation;
-import com.whooo.babr.util.TypefacesUtils;
-import com.whooo.babr.util.swipe.ItemTouchHelperAdapter;
-import com.whooo.babr.util.swipe.ItemTouchHelperViewHolder;
+import com.whooo.babr.view.binding.ItemTouchHelperViewHolder;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
@@ -30,7 +24,7 @@ import java.util.Locale;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecyclerAdapter.ViewHolder> implements ItemTouchHelperAdapter {
+public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecyclerAdapter.ViewHolder> {
 
     private final Context context;
     private final List<Product> mProducts;
@@ -106,45 +100,6 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         notifyDataSetChanged();
     }
 
-    @Override
-    public void onItemMove(int fromPosition, int toPosition) {
-
-    }
-
-    @Override
-    public void onItemDismiss(final int position) {
-        final Product product = new Product();
-        product.name = mProducts.get(position).name;
-        product.manufacture = mProducts.get(position).manufacture;
-        product.country = mProducts.get(position).country;
-        product.source = mProducts.get(position).source;
-        product.imageUrl = mProducts.get(position).imageUrl;
-        product.id = mProducts.get(position).id;
-
-        deleteItem(position);
-
-        final Snackbar snackbar = Snackbar.make(mRootView, "Item deteted", Snackbar.LENGTH_LONG)
-                .setActionTextColor(ContextCompat.getColor(context, R.color.white))
-                .setAction("Undo", view -> {
-                    mProducts.add(position, product);
-                    notifyItemInserted(position);
-                });
-
-        View snackbarView = snackbar.getView();
-        snackbarView.setBackgroundColor(ContextCompat.getColor(context, R.color.snackbar_undo));
-        TextView tvSnack = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-        TextView tvSnackAction = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_action);
-        tvSnack.setTextColor(Color.WHITE);
-        tvSnack.setTypeface(TypefacesUtils.getRobotoMedium(context));
-        tvSnackAction.setTypeface(TypefacesUtils.getRobotoMedium(context));
-        snackbar.show();
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            snackbar.dismiss();
-            mSwipeProductListener.onSwipeProduct(position, product);
-        }, 2500);
-    }
-
     public class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
 
         @Bind(R.id.image_bar_view)
@@ -192,13 +147,13 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
 
 
         @Override
-        public void onItemSelected(Context context) {
-            container.setBackgroundColor(ContextCompat.getColor(context, R.color.hightlight_item_select));
+        public void onItemSelected() {
+
         }
 
         @Override
-        public void onItemClear(Context context) {
-            container.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
+        public void onItemClear() {
+
         }
     }
 
