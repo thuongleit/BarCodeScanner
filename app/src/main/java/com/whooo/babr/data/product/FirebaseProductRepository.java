@@ -9,7 +9,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.whooo.babr.di.ApplicationScope;
 import com.whooo.babr.util.FirebaseUtils;
-import com.whooo.babr.vo.CheckoutHistory;
+import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
@@ -52,9 +52,10 @@ public class FirebaseProductRepository implements ProductRepository {
 
     @Override
     public Observable<List<Product>> getProducts() {
+        // TODO: 7/14/16 need to load products per pages (10-20 items per page)
         return Observable
                 .create(subscriber -> {
-                    DatabaseReference productRef = FirebaseUtils.getProductsRef();
+                    DatabaseReference productRef = FirebaseUtils.getProductsRef().child(FirebaseUtils.getCurrentUserId());
                     final List<Product> products = new ArrayList<>();
 
                     ValueEventListener eventListener = productRef.addValueEventListener(new ValueEventListener() {
@@ -84,16 +85,18 @@ public class FirebaseProductRepository implements ProductRepository {
     @Override
     public Observable<Boolean> saveProducts(List<Product> products) {
         return Observable.create(subscriber -> {
-            DatabaseReference userRef = FirebaseUtils.getUserProductsRef();
             DatabaseReference productRef = FirebaseUtils.getProductsRef();
             // FIXME: 7/13/16 Need to investigate more in saving products
             for (Product p : products) {
-                Product product = new Product(p.name, p.country, p.manufacture, p.source, p.upcA, p.ean, p.imageUrl, p.model, p.quantity, p.objectId, FirebaseUtils.getCurrentUserId());
-                userRef.child(p.objectId).setValue(true, (databaseError, databaseReference) -> {
-                    productRef.child(p.objectId).setValue(product, (databaseError1, databaseReference1) -> {
-
-                    });
-
+                String productKey = productRef.push().getKey();
+                Product product = new Product(p.name, p.country, p.manufacture, p.source, p.upc, p.ean, p.imageUrl, p.model, p.quantity, p.id, FirebaseUtils.getCurrentUserId());
+                p.id = productKey;
+                productRef
+                        .child(FirebaseUtils.getCurrentUserId())
+                        .child(p.id).setValue(product, (databaseError, databaseReference) -> {
+                    if (databaseError != null) {
+                        FirebaseUtils.attachErrorHandler(subscriber, databaseError);
+                    }
                 });
             }
             subscriber.onNext(true);
@@ -104,14 +107,14 @@ public class FirebaseProductRepository implements ProductRepository {
     @Override
     public Observable<Boolean> removeProduct(Product product) {
         return Observable.create(subscriber -> {
-            DatabaseReference userRef = FirebaseUtils.getUserProductsRef();
+            DatabaseReference userRef = null;
             DatabaseReference productRef = FirebaseUtils.getProductsRef();
-            userRef.child(product.objectId).addListenerForSingleValueEvent(new ValueEventListener() {
+            userRef.child(product.id).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        userRef.child(product.objectId).removeValue();
-                        productRef.child(product.objectId).removeValue();
+                        userRef.child(product.id).removeValue();
+                        productRef.child(product.id).removeValue();
                     }
                     subscriber.onNext(true);
                     subscriber.onCompleted();
@@ -127,16 +130,16 @@ public class FirebaseProductRepository implements ProductRepository {
     }
 
     @Override
-    public Observable<Boolean> saveProductsHistory(CheckoutHistory history, List<Product> products) {
+    public Observable<Boolean> saveProductsHistory(Cart history, List<Product> products) {
         return Observable.create(subscriber -> {
             DatabaseReference productsRef = FirebaseUtils.getProductsRef();
-            DatabaseReference hisRef = FirebaseUtils.getHistoryRef();
+            DatabaseReference hisRef = FirebaseUtils.getCartRef();
             String newKey = hisRef.push().getKey();
             hisRef.child(newKey).setValue(history, (databaseError, databaseReference) -> {
                 for (Product p : products) {
-                    Product product = new Product(p.name, p.country, p.manufacture, p.source, p.upcA, p.ean, p.imageUrl, p.model, p.quantity, p.objectId, FirebaseUtils.getCurrentUserId());
-                    hisRef.child(newKey).child("products").child(p.objectId).setValue(product, (databaseError1, databaseReference1) -> {
-                        productsRef.child(p.objectId).removeValue();
+                    Product product = new Product(p.name, p.country, p.manufacture, p.source, p.upc, p.ean, p.imageUrl, p.model, p.quantity, p.id, FirebaseUtils.getCurrentUserId());
+                    hisRef.child(newKey).child("products").child(p.id).setValue(product, (databaseError1, databaseReference1) -> {
+                        productsRef.child(p.id).removeValue();
                     });
                 }
             });

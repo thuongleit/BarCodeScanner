@@ -17,17 +17,14 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.whooo.babr.R;
-import com.whooo.babr.config.Constant;
 import com.whooo.babr.databinding.ActivityCameraBinding;
 import com.whooo.babr.util.AppUtils;
-import com.whooo.babr.util.RevealBackgroundView;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
@@ -46,7 +43,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
 import timber.log.Timber;
 
 public class CameraActivity extends BaseActivity implements CameraContract.View, Camera.PreviewCallback{
@@ -297,8 +293,8 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
 
             Image barcode = new Image(size.width, size.height, "Y800");
             barcode.setData(data);
-
             int result = mScanner.scanImage(barcode);
+
 
             if (result != 0) {
                 stopCamera();

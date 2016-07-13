@@ -17,7 +17,6 @@ import com.whooo.babr.util.DisplayUtils;
 
 public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
-
     private final ItemTouchHelperAdapter mAdapter;
     private Context context;
     Paint p = new Paint();

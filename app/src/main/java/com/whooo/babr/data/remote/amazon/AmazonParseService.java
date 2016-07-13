@@ -46,7 +46,7 @@ public class AmazonParseService implements ParseService {
                         Product product = new Product();
 
                         product.name = amazonProduct.attributes.title;
-                        product.upcA = amazonProduct.attributes.upc;
+                        product.upc = amazonProduct.attributes.upc;
                         product.imageUrl = amazonProduct.image.url;
                         product.manufacture = amazonProduct.attributes.manufacturer;
 
@@ -86,7 +86,7 @@ public class AmazonParseService implements ParseService {
 //                    String productTitle = element.text();
 //                    product.name = productTitle;
 //                    product.source = "amazon.com";
-//                    product.listId = "a";
+//                    product.cartId = "a";
 //                }
 //            }
 //

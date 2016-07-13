@@ -25,6 +25,7 @@ public class MainViewModel {
     };
 
     public void setLoading() {
+        data.clear();
         loading.set(true);
         empty.set(false);
     }

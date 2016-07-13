@@ -1,5 +1,8 @@
 package com.whooo.babr.util;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -12,10 +15,18 @@ import rx.Subscriber;
 
 public class FirebaseUtils {
 
-    public static DatabaseReference getBaseDatabaseRef() {
-        return FirebaseDatabase.getInstance().getReference();
+    public static final String PATH = "/";
+
+    @NonNull
+    public static DatabaseReference getBaseDatabaseRef(DbInstance instance) {
+        if (instance == DbInstance.KEY_ALL) {
+            return FirebaseDatabase.getInstance().getReference();
+        } else {
+            return FirebaseDatabase.getInstance().getReference(instance.getKey());
+        }
     }
 
+    @Nullable
     public static String getCurrentUserId() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -24,50 +35,52 @@ public class FirebaseUtils {
         return null;
     }
 
+    @Nullable
     public static User getUser() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) return null;
+        if (user == null) {
+            return null;
+        }
         return new User(user.getDisplayName(), getCurrentUserId());
     }
 
+    @Nullable
     public static DatabaseReference getCurrentUserRef() {
         String uid = getCurrentUserId();
         if (uid != null) {
-            return getBaseDatabaseRef().child("user").child(getCurrentUserId());
+            return getBaseDatabaseRef(DbInstance.KEY_USERS).child(getCurrentUserId());
         }
         return null;
     }
 
+    @NonNull
     public static DatabaseReference getProductsRef() {
-        return getBaseDatabaseRef().child("products").child(getCurrentUserId());
+        return getBaseDatabaseRef(DbInstance.KEY_PRODUCTS);
     }
 
+    @NonNull
     public static String getProductsPath() {
-        return "products/";
+        return DbInstance.KEY_PRODUCTS.getKey() + PATH;
     }
 
-    public static DatabaseReference getUserProductsRef() {
-        return getBaseDatabaseRef().child("users").child(getCurrentUserId()).child("products");
-    }
-
+    @NonNull
     public static DatabaseReference getUsersRef() {
-        return getBaseDatabaseRef().child("users");
+        return getBaseDatabaseRef(DbInstance.KEY_USERS);
     }
 
+    @NonNull
     public static String getUsersPath() {
-        return "users/";
+        return DbInstance.KEY_USERS.getKey() + PATH;
     }
 
-    public static DatabaseReference getHistoryRef() {
-        return getBaseDatabaseRef().child("history").child(getCurrentUserId());
+    @NonNull
+    public static DatabaseReference getCartRef() {
+        return getBaseDatabaseRef(DbInstance.KEY_CARTS);
     }
 
-//    public static DatabaseReference getHistoryProductsRef() {
-//        return getBaseDatabaseRef().child("history").child(getCurrentUserId()).;
-//    }
-
-    public static String getHistoryPath() {
-        return "history/";
+    @NonNull
+    public static String getCartsPath() {
+        return DbInstance.KEY_CARTS + PATH;
     }
 
     /**
@@ -86,6 +99,23 @@ public class FirebaseUtils {
                 break;
             default:
                 subscriber.onError(dbError.toException());
+        }
+    }
+
+    public enum DbInstance {
+        KEY_USERS("users"),
+        KEY_PRODUCTS("products"),
+        KEY_CARTS("carts"),
+        KEY_ALL("all");
+
+        private String key;
+
+        DbInstance(String key) {
+            this.key = key;
+        }
+
+        public String getKey() {
+            return key;
         }
     }
 }

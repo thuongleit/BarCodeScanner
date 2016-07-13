@@ -26,18 +26,14 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.google.firebase.database.DatabaseReference;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.whooo.babr.R;
 import com.whooo.babr.databinding.ActivityMainBinding;
 import com.whooo.babr.util.AppUtils;
-import com.whooo.babr.util.FirebaseUtils;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.util.dialog.DialogQrcodeHistory;
-import com.whooo.babr.util.swipe.ItemTouchHelperAdapter;
-import com.whooo.babr.util.swipe.ItemTouchHelperCallback;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.history.HistoryActivity;
@@ -45,7 +41,7 @@ import com.whooo.babr.view.product.ProductRecyclerAdapter;
 import com.whooo.babr.view.scan.CameraActivity;
 import com.whooo.babr.view.session.signin.SignInActivity;
 import com.whooo.babr.view.widget.DividerItemDecoration;
-import com.whooo.babr.vo.CheckoutHistory;
+import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
@@ -77,6 +73,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private String mGenerateListId;
     private ItemTouchHelper mItemTouchHelper;
     private FrameLayout mLayoutContent;
+    private View mEmptyView;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -196,12 +193,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 //            mProducts.clear();
 //            showToast("Generator qr-code has saved to server!");
 //        });
-        CheckoutHistory checkoutHistory = new CheckoutHistory();
-        checkoutHistory.listId = mGenerateListId;
-        checkoutHistory.name = AppUtils.gerenateDateFormat();
-        checkoutHistory.size = mProducts.size();
+        Cart cart = new Cart();
+//        cart.listId = mGenerateListId;
+        cart.name = AppUtils.gerenateDateFormat();
 
-        mPresenter.saveProductsHistory(checkoutHistory, mProducts);
+        mPresenter.saveProductsHistory(cart, mProducts);
         mProducts.clear();
         showToast("Generator qr-code has saved to server!");
 
@@ -280,11 +276,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             ArrayList<Product> products = data.getParcelableArrayListExtra(CameraActivity.EXTRA_DATA);
             if (products != null && !products.isEmpty()) {
 
-                DatabaseReference productRef = FirebaseUtils.getProductsRef();
-                for (Product p : products) {
-                    String newProductKey = productRef.push().getKey();
-                    p.objectId = newProductKey;
-                }
                 mPresenter.saveProducts(products);
                 setupWithItemTouch();
             }
@@ -292,9 +283,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void setupWithItemTouch() {
-        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback((ItemTouchHelperAdapter) mRecyclerView.getAdapter(), this);
-        mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
+//        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback((ItemTouchHelperAdapter) mRecyclerView.getAdapter(), this);
+//        mItemTouchHelper = new ItemTouchHelper(callback);
+//        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     @Override
@@ -438,10 +429,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void onEmptyResponse() {
-        View emptyView = getLayoutInflater().inflate(R.layout.view_empty_product, null);
+        if (mEmptyView == null) {
+            mEmptyView = getLayoutInflater().inflate(R.layout.view_empty_product, null);
+        }
 
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        mLayoutContent.addView(emptyView, layoutParams);
+        mLayoutContent.addView(mEmptyView, layoutParams);
+    }
+
+    @Override
+    public void removeEmptyViewIfNeeded() {
+        if (mEmptyView != null && !mPresenter.getViewModel().empty.get()) {
+            mLayoutContent.removeView(mEmptyView);
+        }
     }
 
 
@@ -451,12 +451,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 //        DatabaseReference userRef = FirebaseUtils.getUserProductsRef();
 //        DatabaseReference productRef = FirebaseUtils.getProductsRef();
-//        userRef.child(product.objectId).addListenerForSingleValueEvent(new ValueEventListener() {
+//        userRef.child(product.id).addListenerForSingleValueEvent(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(DataSnapshot dataSnapshot) {
 //                if (dataSnapshot.exists()) {
-//                    userRef.child(product.objectId).removeValue();
-//                    productRef.child(product.objectId).removeValue();
+//                    userRef.child(product.id).removeValue();
+//                    productRef.child(product.id).removeValue();
 //                }
 //
 //            }

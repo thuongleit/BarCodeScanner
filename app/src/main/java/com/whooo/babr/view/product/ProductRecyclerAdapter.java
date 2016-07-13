@@ -15,13 +15,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.whooo.babr.R;
 import com.whooo.babr.util.RoundedTransformation;
 import com.whooo.babr.util.TypefacesUtils;
 import com.whooo.babr.util.swipe.ItemTouchHelperAdapter;
 import com.whooo.babr.util.swipe.ItemTouchHelperViewHolder;
 import com.whooo.babr.vo.Product;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,7 +119,7 @@ public class ProductRecyclerAdapter extends RecyclerView.Adapter<ProductRecycler
         product.country = mProducts.get(position).country;
         product.source = mProducts.get(position).source;
         product.imageUrl = mProducts.get(position).imageUrl;
-        product.objectId=mProducts.get(position).objectId;
+        product.id = mProducts.get(position).id;
 
         deleteItem(position);
 

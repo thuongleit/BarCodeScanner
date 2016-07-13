@@ -2,7 +2,7 @@ package com.whooo.babr.view.main;
 
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.base.BaseView;
-import com.whooo.babr.vo.CheckoutHistory;
+import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.List;
@@ -16,6 +16,8 @@ public interface MainContract {
         void requestFailed(String message);
 
         void onEmptyResponse();
+
+        void removeEmptyViewIfNeeded();
     }
 
     interface Presenter extends BasePresenter {
@@ -23,7 +25,7 @@ public interface MainContract {
 
         void saveProducts(List<Product> products);
 
-        void saveProductsHistory(CheckoutHistory history, List<Product> products);
+        void saveProductsHistory(Cart history, List<Product> products);
 
         void removeProducts(Product product);
 

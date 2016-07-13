@@ -39,7 +39,7 @@ public class WalmartlabsParseService implements ParseService {
                     product.source = ProductSource.WALMART.getDisplay();
                     product.name = childNode.name;
                     product.imageUrl = childNode.largeImage;
-                    product.upcA = childNode.upc;
+                    product.upc = childNode.upc;
                     product.model = childNode.brandName;
 
                     return Observable.just(product);

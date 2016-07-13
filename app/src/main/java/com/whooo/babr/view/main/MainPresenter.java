@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.google.firebase.FirebaseNetworkException;
 import com.whooo.babr.data.product.ProductRepository;
-import com.whooo.babr.vo.CheckoutHistory;
+import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
@@ -52,6 +52,7 @@ class MainPresenter implements MainContract.Presenter {
     public void getProducts() {
         unsubscribe();
         mViewModel.setLoading();
+        mView.removeEmptyViewIfNeeded();
         mSubscriptions.add(
                 mProductRepository
                         .getProducts()
@@ -83,18 +84,21 @@ class MainPresenter implements MainContract.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .unsubscribeOn(Schedulers.io())
-                        .subscribe(isSuccess -> {
-                                    if (isSuccess) {
-                                        mView.onSaveProductsSuccess();
-                                    }
-                                }, Throwable::printStackTrace
-                                , () -> {
-
-                                }));
+                        .subscribe(success -> {
+                            if (success) {
+                                mView.onSaveProductsSuccess();
+                            }
+                        }, e -> {
+                            if (e instanceof FirebaseNetworkException) {
+                                mView.showNetworkError();
+                            } else {
+                                mView.requestFailed(e.getMessage());
+                            }
+                        }));
     }
 
     @Override
-    public void saveProductsHistory(CheckoutHistory history, List<Product> products) {
+    public void saveProductsHistory(Cart history, List<Product> products) {
         mProductRepository.saveProductsHistory(history, products).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(Schedulers.io())

@@ -13,7 +13,7 @@ import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.widget.DividerItemDecoration;
-import com.whooo.babr.vo.CheckoutHistory;
+import com.whooo.babr.vo.Cart;
 
 import java.util.ArrayList;
 
@@ -34,7 +34,7 @@ public class HistoryActivity extends BaseActivity {
     Config mConfig;
 //    DataManager mDataManager;
 
-    private ArrayList<CheckoutHistory> productHistories = new ArrayList<>();
+    private ArrayList<Cart> productHistories = new ArrayList<>();
     private AdapterHistory adapterHistory;
     private ProgressDialog progressDialog;
 
