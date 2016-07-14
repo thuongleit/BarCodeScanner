@@ -4,6 +4,10 @@ apply plugin: 'me.tatarka.retrolambda'
 apply from: '../config/quality.gradle'
 
 android {
+    def keystorePropertiesFile = rootProject.file("keystore.properties");
+    def keystoreProperties = new Properties()
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileOptions.encoding = 'UTF-8' // write your encoding here
@@ -25,12 +29,30 @@ android {
         multiDexEnabled true
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
+
+    signingConfigs {
+        debug {
+            storeFile rootProject.file('config/debug.keystore')
+            storePassword 'android'
+            keyAlias 'android'
+            keyPassword 'android'
+        }
+
+        release {
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+            signingConfig signingConfigs.release
         }
         debug {
             minifyEnabled false
@@ -38,7 +60,7 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
-//            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.debug
         }
     }
 
@@ -49,15 +71,6 @@ android {
         debug {
             java.srcDirs = ['src/debug/java'];
         }
-    }
-
-    signingConfigs {
-//        debug {
-//            storeFile rootProject.file('config/debug.keystore')
-//            storePassword 'android'
-//            keyAlias 'android'
-//            keyPassword 'android'
-//        }
     }
 
     dexOptions {

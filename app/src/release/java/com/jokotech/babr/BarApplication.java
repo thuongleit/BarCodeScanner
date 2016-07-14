@@ -6,9 +6,9 @@ import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.database.FirebaseDatabase;
-import com.whooo.babr.di.components.ApplicationComponent;
-import com.whooo.babr.di.components.DaggerApplicationComponent;
-import com.whooo.babr.di.modules.ApplicationModule;
+import com.whooo.babr.di.ApplicationComponent;
+import com.whooo.babr.di.ApplicationModule;
+import com.whooo.babr.di.DaggerApplicationComponent;
 
 import timber.log.Timber;
 
@@ -25,7 +25,7 @@ public class BarApplication extends MultiDexApplication {
         super.onCreate();
 
         //enable to save local db
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
