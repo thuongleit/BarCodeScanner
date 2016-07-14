@@ -1,4 +1,4 @@
-package com.whooo.babr.view.scan;
+package com.whooo.babr.view.scan.camera;
 
 import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.di.PerActivity;

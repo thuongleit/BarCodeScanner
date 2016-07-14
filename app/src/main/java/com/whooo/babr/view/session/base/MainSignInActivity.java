@@ -22,14 +22,9 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.whooo.babr.R;
-import com.whooo.babr.util.FirebaseUtils;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
@@ -65,9 +60,6 @@ public class MainSignInActivity extends BaseActivity implements GoogleApiClient.
 
     @Inject
     FirebaseAuth mFirebaseAuth;
-
-    @Inject
-    DatabaseReference mDataRef;
 
     private ProgressDialog mProgressDialog;
 
@@ -111,21 +103,9 @@ public class MainSignInActivity extends BaseActivity implements GoogleApiClient.
     }
 
     private void onAuthSuccess(FirebaseUser user) {
-        String username = "thongle";
-//        if (user.getDisplayName() != null) {
-//            username = user.getDisplayName();
-//        } else {
-//            username = usernameFromEmail(user.getEmail());
-//        }
-        writeNewUser(user.getUid(), username);
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
-    }
-
-    private void writeNewUser(String userId, String name) {
-        User user = new User(name,userId);
-        mDataRef.child("users").child(userId).setValue(user);
     }
 
     @Override

@@ -1,7 +1,7 @@
-package com.whooo.babr.view.scan;
+package com.whooo.babr.view.scan.camera;
 
 import com.whooo.babr.di.PerActivity;
-import com.whooo.babr.di.components.ApplicationComponent;
+import com.whooo.babr.di.ApplicationComponent;
 
 import dagger.Component;
 

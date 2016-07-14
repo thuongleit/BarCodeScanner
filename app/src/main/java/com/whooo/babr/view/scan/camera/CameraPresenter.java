@@ -1,4 +1,4 @@
-package com.whooo.babr.view.scan;
+package com.whooo.babr.view.scan.camera;
 
 import android.support.annotation.Nullable;
 

@@ -81,7 +81,7 @@ public class AmazonParseService implements ParseService {
 //            //check if item is valid or not
 //            Elements spanElements = document.select("span");
 //            for (Element element : spanElements) {
-//                String idElement = element.attr("id");
+//                String idElement = element.attr("objectId");
 //                if ("productTitle".equals(idElement)) {
 //                    String productTitle = element.text();
 //                    product.name = productTitle;
@@ -93,8 +93,8 @@ public class AmazonParseService implements ParseService {
 //            //parsing product image
 //            Elements divElements = document.select("div");
 //            for (Element element : divElements) {
-//                String id = element.attr("id");
-//                if ("leftCol".equals(id)) {
+//                String objectId = element.attr("objectId");
+//                if ("leftCol".equals(objectId)) {
 //                    element.getAllElements();
 //                    Elements imgElements = element.getElementsByTag("img");
 //                    if (imgElements != null && !imgElements.isEmpty()) {

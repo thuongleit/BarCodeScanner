@@ -1,4 +1,4 @@
-package com.whooo.babr.view.scan;
+package com.whooo.babr.view.scan.camera;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -28,6 +28,7 @@ import com.whooo.babr.util.AppUtils;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
+import com.whooo.babr.view.scan.result.ResultActivity;
 import com.whooo.babr.view.widget.CameraPreview;
 import com.whooo.babr.view.widget.ViewFinderView;
 import com.whooo.babr.vo.Product;

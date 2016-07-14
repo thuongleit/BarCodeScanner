@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
-import com.whooo.babr.di.components.ApplicationComponent;
+import com.whooo.babr.di.ApplicationComponent;
 import com.squareup.picasso.Picasso;
 
 public class ImageViewDataBinding {

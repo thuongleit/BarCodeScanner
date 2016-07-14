@@ -10,7 +10,6 @@ import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -78,39 +77,21 @@ class MainPresenter implements MainContract.Presenter {
 
 
     @Override
-    public void saveProducts(List<Product> products) {
+    public void checkout(Cart cart) {
+        mView.showStandaloneProgress(true);
         mSubscriptions.add(
-                mProductRepository
-                        .saveProducts(products)
+                mProductRepository.checkout(cart, mViewModel.data)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .unsubscribeOn(Schedulers.io())
-                        .subscribe(success -> {
-                            if (success) {
-                                mView.onSaveProductsSuccess();
-                            }
-                        }, e -> {
-                            if (e instanceof FirebaseNetworkException) {
-                                mView.showNetworkError();
-                            } else {
-                                mView.requestFailed(e.getMessage());
-                            }
-                        }));
-    }
-
-    @Override
-    public void saveProductsHistory(Cart history, List<Product> products) {
-        mProductRepository.saveProductsHistory(history, products).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .unsubscribeOn(Schedulers.io())
-                .subscribe(isSuccess -> {
-                            if (isSuccess) {
-                                mView.onSaveProductsSuccess();
-                            }
-                        }, Throwable::printStackTrace
-                        , () -> {
-
-                        });
+                        .subscribe(key -> {
+                                    mView.onCheckoutSuccess(key);
+                                    mViewModel.setData(new ArrayList<>());
+                                }
+                                , e -> {
+                                    e.printStackTrace();
+                                    mView.showStandaloneProgress(false);
+                                }, () -> mView.showStandaloneProgress(false)));
     }
 
 

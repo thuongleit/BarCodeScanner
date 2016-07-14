@@ -16,9 +16,9 @@ public interface ProductRepository extends DataSource {
 
     Observable<List<Product>> getProducts();
 
-    Observable<Boolean> saveProducts(List<Product> products);
+    Observable<List<Product>> saveProducts(List<Product> products);
 
     Observable<Boolean> removeProduct(Product product);
 
-    Observable<Boolean> saveProductsHistory(Cart history, List<Product> products);
+    Observable<String> checkout(Cart cart, List<Product> products);
 }

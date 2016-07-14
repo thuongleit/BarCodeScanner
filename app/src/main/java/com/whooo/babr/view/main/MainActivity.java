@@ -1,6 +1,7 @@
 package com.whooo.babr.view.main;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -19,7 +20,6 @@ import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -38,9 +38,9 @@ import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.util.dialog.DialogQrcodeHistory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
-import com.whooo.babr.view.history.HistoryActivity;
+import com.whooo.babr.view.cart.HistoryActivity;
 import com.whooo.babr.view.product.ProductRecyclerAdapter;
-import com.whooo.babr.view.scan.CameraActivity;
+import com.whooo.babr.view.scan.camera.CameraActivity;
 import com.whooo.babr.view.session.signin.SignInActivity;
 import com.whooo.babr.view.widget.DividerItemDecoration;
 import com.whooo.babr.vo.Cart;
@@ -48,7 +48,6 @@ import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -71,11 +70,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private Context mContext;
 
     private boolean mDoubleBackToExitPressedOnce = false;
-    private List<Product> mProducts = new ArrayList<>();
-    private String mGenerateListId;
-    private ItemTouchHelper mItemTouchHelper;
     private FrameLayout mLayoutContent;
     private View mEmptyView;
+    private MainViewModel mViewModel;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -93,7 +91,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         injectViews(binding);
 
         binding.setPresenter(mPresenter);
-        binding.setViewmodel(mPresenter.getViewModel());
+        mViewModel = mPresenter.getViewModel();
+        binding.setViewmodel(mViewModel);
     }
 
     private void setupFab() {
@@ -150,65 +149,41 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
 
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                openSearch();
+                return true;
+            case R.id.action_checkout:
+                if (mViewModel.data.isEmpty()) {
+                    DialogFactory.createGenericErrorDialog(mContext, "You don't have any items!").show();
+                } else {
+                    Cart cart = new Cart();
+                    cart.name = AppUtils.gerenateDateFormat();
+                    cart.timestamp = cart.name;
 
-        if (id == R.id.action_search) {
-            openSearch();
-            return true;
+                    AlertDialog dialogCheckout = new AlertDialog.Builder(this)
+                            .setMessage("Checkout items as name " + cart.name + "?")
+                            .setTitle("Checkout")
+                            .setNegativeButton(R.string.dialog_action_ok, ((dialog, which) -> {
+                                dialog.dismiss();
+                                mPresenter.checkout(cart);
+                            })).setPositiveButton(R.string.dialog_action_cancel, ((dialog1, which1) -> {
+                                dialog1.dismiss();
+                            })).create();
+                    dialogCheckout.show();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        if (id == R.id.action_camera) {
-            if (mProducts.size() >= 1) {
-
-                new AlertDialog.Builder(this, R.style.MyAlertDialogAppCompatStyle)
-                        .setMessage(getResources().getString(R.string.save_to_history))
-                        .setTitle("Option")
-                        .setNegativeButton("OK", ((dialog, which) -> {
-                            saveProductToHistory();
-                        })).setPositiveButton("Cancle", ((dialog1, which1) -> {
-                    dialog1.dismiss();
-                })).show();
-
-
-            } else {
-                showToast("You don't have any item!");
-            }
-
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
-
-    private void saveProductToHistory() {
-        mGenerateListId = AppUtils.generateString(new Random(), "1254789dhfoendlf89ssofnd8965412312sda2wdsds212asdsa21dad", 20);
-
-//        parseServiceOK.saveListProductNoCheckout(mProducts, mGenerateListId).subscribeOn(Schedulers.newThread())
-//                .observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
-//            mProducts.clear();
-//            showToast("Generator qr-code has saved to server!");
-//        });
-        Cart cart = new Cart();
-//        cart.listId = mGenerateListId;
-        cart.name = AppUtils.gerenateDateFormat();
-
-        mPresenter.saveProductsHistory(cart, mProducts);
-        mProducts.clear();
-        showToast("Generator qr-code has saved to server!");
-
-        DialogQrcodeHistory qrcodeHistory = new DialogQrcodeHistory(mContext, mGenerateListId);
-        qrcodeHistory.show();
-
-        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteAll();
-    }
-
 
     public void openSearch() {
         mToolbar.setTitle("");
@@ -277,8 +252,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
             ArrayList<Product> products = data.getParcelableArrayListExtra(CameraActivity.EXTRA_DATA);
             if (products != null && !products.isEmpty()) {
-
-                mPresenter.saveProducts(products);
+                mViewModel.setData(products);
             }
         }
     }
@@ -309,31 +283,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 this.finish();
                 break;
             case R.id.nav_generate:
-
-//                if (userId != null) {
-//
-//                    Intent intentGenerate = new Intent(MainActivity.this, GenerateQR.class);
-//                    intentGenerate.putExtra(USER_ID_EXTRA, userId);
-//                    startActivity(intentGenerate);
-//
-//                } else {
-//                    showToast("You must SignIn!");
-//                }
-                if (mProducts.size() >= 1) {
-
-                    new AlertDialog.Builder(this, R.style.MyAlertDialogAppCompatStyle)
-                            .setMessage(getResources().getString(R.string.save_to_history))
-                            .setTitle("Option")
-                            .setNegativeButton("OK", ((dialog, which) -> {
-                                saveProductToHistory();
-                            })).setPositiveButton("Cancle", ((dialog1, which1) -> {
-                        dialog1.dismiss();
-                    })).show();
-
-
-                } else {
-                    showToast("You don't have any item!");
-                }
 
                 break;
             case R.id.nav_history:
@@ -391,7 +340,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             int currPos;
             for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
                 currPos = selectedItemPositions.get(i);
-                mProducts.remove(currPos);
+//                mProducts.remove(currPos);
                 ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteItem(currPos);
             }
 
@@ -408,8 +357,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    public void onSaveProductsSuccess() {
-        showToast("onSaveProductsSuccess");
+    public void onCheckoutSuccess(String keyOfCart) {
+        showToast("Checkout success!");
+
+        DialogQrcodeHistory qrcodeHistory = new DialogQrcodeHistory(mContext, keyOfCart);
+        qrcodeHistory.show();
     }
 
     @Override
@@ -453,6 +405,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             snackbar.dismiss();
             mPresenter.removeProducts(product);
         }, 2000);
+    }
+
+    @Override
+    public void showStandaloneProgress(boolean show) {
+        if (mProgressDialog == null) {
+            mProgressDialog = DialogFactory.createProgressDialog(mContext, "Please wait...", "Checking out...");
+        }
+        if (show) {
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.dismiss();
+        }
     }
 
 

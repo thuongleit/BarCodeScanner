@@ -1,4 +1,4 @@
-package com.whooo.babr.view.history;
+package com.whooo.babr.view.cart;
 
 import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.di.PerActivity;

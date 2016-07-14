@@ -1,7 +1,7 @@
 package com.whooo.babr.view.session.base;
 
 import com.whooo.babr.di.PerActivity;
-import com.whooo.babr.di.components.ApplicationComponent;
+import com.whooo.babr.di.ApplicationComponent;
 
 import dagger.Component;
 

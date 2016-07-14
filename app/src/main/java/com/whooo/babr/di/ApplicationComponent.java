@@ -1,10 +1,9 @@
-package com.whooo.babr.di.components;
+package com.whooo.babr.di;
 
 import android.app.Application;
 import android.content.Context;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 import com.squareup.picasso.Picasso;
 import com.whooo.babr.config.Config;
 import com.whooo.babr.data.product.ProductRepository;
@@ -16,8 +15,6 @@ import com.whooo.babr.data.remote.searchupc.SearchUpcParseService;
 import com.whooo.babr.data.remote.upcdatabase.UpcDatabaseParseService;
 import com.whooo.babr.data.remote.upcitemdb.UpcItemDbParseService;
 import com.whooo.babr.data.remote.walmartlabs.WalmartlabsParseService;
-import com.whooo.babr.di.ApplicationScope;
-import com.whooo.babr.di.modules.ApplicationModule;
 
 import javax.inject.Singleton;
 
@@ -25,7 +22,7 @@ import dagger.Component;
 
 @Singleton
 @Component(modules = {ApplicationModule.class, ApiModule.class})
-public interface ApplicationComponent extends android.databinding.DataBindingComponent{
+public interface ApplicationComponent extends android.databinding.DataBindingComponent {
 
     Application application();
 
@@ -37,8 +34,6 @@ public interface ApplicationComponent extends android.databinding.DataBindingCom
     Picasso picasso();
 
     FirebaseAuth firebaseAuth();
-
-    DatabaseReference firebaseDbRef();
 
     SearchService searchService();
 

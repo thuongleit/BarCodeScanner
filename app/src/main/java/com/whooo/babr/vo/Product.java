@@ -3,11 +3,15 @@ package com.whooo.babr.vo;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @IgnoreExtraProperties
 public class Product implements Parcelable, Comparable, Cloneable {
-    public String id;
+    public String objectId;
     public String name;
     public String country;
     public String manufacture;
@@ -24,7 +28,7 @@ public class Product implements Parcelable, Comparable, Cloneable {
     public Product() {
     }
 
-    public Product(String name, String country, String manufacture, String source, String upc, String ean, String imageUrl, String model, int quantity, String id, String userId) {
+    public Product(String name, String country, String manufacture, String source, String upc, String ean, String imageUrl, String model, int quantity, String objectId, String userId) {
         this.name = name;
         this.country = country;
         this.manufacture = manufacture;
@@ -35,7 +39,7 @@ public class Product implements Parcelable, Comparable, Cloneable {
         this.model = model;
         this.quantity = quantity;
         this.userId = userId;
-        this.id = id;
+        this.objectId = objectId;
     }
 
     @Override
@@ -45,7 +49,7 @@ public class Product implements Parcelable, Comparable, Cloneable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.id);
+        dest.writeString(this.objectId);
         dest.writeString(this.name);
         dest.writeString(this.country);
         dest.writeString(this.manufacture);
@@ -61,7 +65,7 @@ public class Product implements Parcelable, Comparable, Cloneable {
     }
 
     protected Product(Parcel in) {
-        this.id = in.readString();
+        this.objectId = in.readString();
         this.name = in.readString();
         this.country = in.readString();
         this.manufacture = in.readString();
@@ -100,5 +104,24 @@ public class Product implements Parcelable, Comparable, Cloneable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
+    }
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("objectId", objectId);
+        result.put("name", name);
+        result.put("country", country);
+        result.put("manufacture", manufacture);
+        result.put("upc", upc);
+        result.put("ean", ean);
+        result.put("imageUrl", imageUrl);
+        result.put("originalUrl", originalUrl);
+        result.put("model", model);
+        result.put("quantity", quantity);
+        result.put("cartId", cartId);
+        result.put("userId", userId);
+
+        return result;
     }
 }

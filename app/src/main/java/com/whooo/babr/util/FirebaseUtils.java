@@ -19,7 +19,7 @@ public class FirebaseUtils {
 
     @NonNull
     public static DatabaseReference getBaseDatabaseRef(DbInstance instance) {
-        if (instance == DbInstance.KEY_ALL) {
+        if (instance == DbInstance.KEY_NONE) {
             return FirebaseDatabase.getInstance().getReference();
         } else {
             return FirebaseDatabase.getInstance().getReference(instance.getKey());
@@ -60,7 +60,7 @@ public class FirebaseUtils {
 
     @NonNull
     public static String getProductsPath() {
-        return DbInstance.KEY_PRODUCTS.getKey() + PATH;
+        return PATH + DbInstance.KEY_PRODUCTS.getKey() + PATH;
     }
 
     @NonNull
@@ -70,7 +70,7 @@ public class FirebaseUtils {
 
     @NonNull
     public static String getUsersPath() {
-        return DbInstance.KEY_USERS.getKey() + PATH;
+        return PATH + DbInstance.KEY_USERS.getKey() + PATH;
     }
 
     @NonNull
@@ -80,7 +80,7 @@ public class FirebaseUtils {
 
     @NonNull
     public static String getCartsPath() {
-        return DbInstance.KEY_CARTS + PATH;
+        return PATH + DbInstance.KEY_CARTS + PATH;
     }
 
     /**
@@ -106,7 +106,7 @@ public class FirebaseUtils {
         KEY_USERS("users"),
         KEY_PRODUCTS("products"),
         KEY_CARTS("carts"),
-        KEY_ALL("all");
+        KEY_NONE("all");
 
         private String key;
 

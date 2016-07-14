@@ -1,17 +1,14 @@
-package com.whooo.babr.di.modules;
+package com.whooo.babr.di;
 
 import android.app.Application;
 import android.content.Context;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 import com.whooo.babr.data.product.FirebaseProductRepository;
 import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.data.product.SearchService;
-import com.whooo.babr.di.ApplicationScope;
 
 import javax.inject.Singleton;
 
@@ -57,13 +54,7 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    DatabaseReference provideFirebaseDbRef() {
-        return FirebaseDatabase.getInstance().getReference();
-    }
-
-    @Provides
-    @Singleton
-    ProductRepository provideProductRepository(DatabaseReference dbRef, SearchService searchService) {
-        return new FirebaseProductRepository(dbRef, searchService);
+    ProductRepository provideProductRepository(SearchService searchService) {
+        return new FirebaseProductRepository(searchService);
     }
 }

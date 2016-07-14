@@ -6,11 +6,9 @@ import com.whooo.babr.view.binding.ItemTouchHandler;
 import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
-import java.util.List;
-
 public interface MainContract {
     interface View extends BaseView {
-        void onSaveProductsSuccess();
+        void onCheckoutSuccess(String keyOfCart);
 
         void onRemoveProductsSuccess();
 
@@ -21,14 +19,14 @@ public interface MainContract {
         void removeEmptyViewIfNeeded();
 
         void addPendingRemove(int position, Product clone);
+
+        void showStandaloneProgress(boolean show);
     }
 
     interface Presenter extends BasePresenter {
         void getProducts();
 
-        void saveProducts(List<Product> products);
-
-        void saveProductsHistory(Cart history, List<Product> products);
+        void checkout(Cart cart);
 
         void removeProducts(Product product);
 

@@ -7,9 +7,12 @@ import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
 public class Cart implements Parcelable {
-    public String id;
+    public String objectId;
     public String name;
-    public boolean isCheckout;
+    public String timestamp;
+
+    public Cart() {
+    }
 
     @Override
     public int describeContents() {
@@ -18,18 +21,15 @@ public class Cart implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.id);
+        dest.writeString(this.objectId);
         dest.writeString(this.name);
-        dest.writeByte(this.isCheckout ? (byte) 1 : (byte) 0);
-    }
-
-    public Cart() {
+        dest.writeString(this.timestamp);
     }
 
     protected Cart(Parcel in) {
-        this.id = in.readString();
+        this.objectId = in.readString();
         this.name = in.readString();
-        this.isCheckout = in.readByte() != 0;
+        this.timestamp = in.readString();
     }
 
     public static final Creator<Cart> CREATOR = new Creator<Cart>() {

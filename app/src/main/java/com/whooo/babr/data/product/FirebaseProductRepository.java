@@ -13,7 +13,9 @@ import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -23,17 +25,13 @@ import rx.subscriptions.Subscriptions;
 public class FirebaseProductRepository implements ProductRepository {
 
     @NonNull
-    private final DatabaseReference mDbRef;
-    @NonNull
     private final SearchService mSearchService;
 
     @Inject
     @ApplicationScope
     Context mContext;
 
-    public FirebaseProductRepository(@NonNull DatabaseReference dbRef,
-                                     @NonNull SearchService searchService) {
-        mDbRef = dbRef;
+    public FirebaseProductRepository(@NonNull SearchService searchService) {
         mSearchService = searchService;
     }
 
@@ -83,23 +81,29 @@ public class FirebaseProductRepository implements ProductRepository {
     }
 
     @Override
-    public Observable<Boolean> saveProducts(List<Product> products) {
+    public Observable<List<Product>> saveProducts(List<Product> products) {
         return Observable.create(subscriber -> {
+            List<Product> result = new ArrayList<>();
             DatabaseReference productRef = FirebaseUtils.getProductsRef();
             // FIXME: 7/13/16 Need to investigate more in saving products
-            for (Product p : products) {
+            for (Product product : products) {
                 String productKey = productRef.push().getKey();
-                Product product = new Product(p.name, p.country, p.manufacture, p.source, p.upc, p.ean, p.imageUrl, p.model, p.quantity, p.id, FirebaseUtils.getCurrentUserId());
-                p.id = productKey;
-                productRef
-                        .child(FirebaseUtils.getCurrentUserId())
-                        .child(p.id).setValue(product, (databaseError, databaseReference) -> {
-                    if (databaseError != null) {
-                        FirebaseUtils.attachErrorHandler(subscriber, databaseError);
-                    }
-                });
+                try {
+                    Product newProduct = (Product) product.clone();
+                    newProduct.objectId = productKey;
+                    productRef
+                            .child(FirebaseUtils.getCurrentUserId())
+                            .child(newProduct.objectId).setValue(newProduct, (databaseError, databaseReference) -> {
+                        if (databaseError != null) {
+                            FirebaseUtils.attachErrorHandler(subscriber, databaseError);
+                        }
+                    });
+                    result.add(newProduct);
+                } catch (CloneNotSupportedException e) {
+                    subscriber.onError(e);
+                }
             }
-            subscriber.onNext(true);
+            subscriber.onNext(result);
             subscriber.onCompleted();
         });
     }
@@ -109,12 +113,12 @@ public class FirebaseProductRepository implements ProductRepository {
         return Observable.create(subscriber -> {
             DatabaseReference userRef = null;
             DatabaseReference productRef = FirebaseUtils.getProductsRef();
-            userRef.child(product.id).addListenerForSingleValueEvent(new ValueEventListener() {
+            userRef.child(product.objectId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        userRef.child(product.id).removeValue();
-                        productRef.child(product.id).removeValue();
+                        userRef.child(product.objectId).removeValue();
+                        productRef.child(product.objectId).removeValue();
                     }
                     subscriber.onNext(true);
                     subscriber.onCompleted();
@@ -130,23 +134,31 @@ public class FirebaseProductRepository implements ProductRepository {
     }
 
     @Override
-    public Observable<Boolean> saveProductsHistory(Cart history, List<Product> products) {
+    public Observable<String> checkout(Cart cart, List<Product> products) {
         return Observable.create(subscriber -> {
-            DatabaseReference productsRef = FirebaseUtils.getProductsRef();
-            DatabaseReference hisRef = FirebaseUtils.getCartRef();
-            String newKey = hisRef.push().getKey();
-            hisRef.child(newKey).setValue(history, (databaseError, databaseReference) -> {
-                for (Product p : products) {
-                    Product product = new Product(p.name, p.country, p.manufacture, p.source, p.upc, p.ean, p.imageUrl, p.model, p.quantity, p.id, FirebaseUtils.getCurrentUserId());
-                    hisRef.child(newKey).child("products").child(p.id).setValue(product, (databaseError1, databaseReference1) -> {
-                        productsRef.child(p.id).removeValue();
+            DatabaseReference cartRef = FirebaseUtils.getCartRef();
+            String getKey = cartRef.push().getKey();
+
+            cartRef
+                    .child(getKey)
+                    .setValue(cart, (databaseError, dbRef) -> {
+                        if (databaseError != null) {
+                            FirebaseUtils.attachErrorHandler(subscriber, databaseError);
+                            return;
+                        }
+                        //update child products
+                        for (Product product : products) {
+                            product.cartId = getKey;
+
+                            Map<String, Object> childUpdates = new HashMap<>();
+                            String productPath = FirebaseUtils.getProductsPath() + FirebaseUtils.getCurrentUserId() + FirebaseUtils.PATH + product.objectId + FirebaseUtils.PATH;
+                            childUpdates.put(productPath, product.toMap());
+
+                            FirebaseUtils.getBaseDatabaseRef(FirebaseUtils.DbInstance.KEY_NONE).updateChildren(childUpdates);
+                        }
                     });
-                }
-            });
-            subscriber.onNext(true);
+            subscriber.onNext(getKey);
             subscriber.onCompleted();
-
-
         });
     }
 }

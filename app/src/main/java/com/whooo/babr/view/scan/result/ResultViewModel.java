@@ -1,4 +1,4 @@
-package com.whooo.babr.view.scan;
+package com.whooo.babr.view.scan.result;
 
 import android.databinding.ObservableArrayList;
 
@@ -8,7 +8,6 @@ import com.whooo.babr.view.binding.ConditionalDataBinder;
 import com.whooo.babr.view.binding.ItemBinder;
 import com.whooo.babr.vo.Product;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ResultViewModel {
@@ -21,7 +20,7 @@ public class ResultViewModel {
         }
     };
 
-    public ResultViewModel(ArrayList<Product> products) {
+    public ResultViewModel(List<Product> products) {
         this.data.addAll(products);
     }
 //

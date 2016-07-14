@@ -1,4 +1,4 @@
-package com.whooo.babr.view.history;
+package com.whooo.babr.view.cart;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -9,34 +9,32 @@ import android.view.MenuItem;
 
 import com.whooo.babr.R;
 import com.whooo.babr.config.Config;
+import com.whooo.babr.config.Constant;
+import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.widget.DividerItemDecoration;
-import com.whooo.babr.vo.Cart;
+import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
-
-import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Subscription;
 
-public class HistoryActivity extends BaseActivity {
-
+public class DetailActivity extends BaseActivity {
     @Bind(R.id.recycler_view)
     RecyclerView mRecyclerView;
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Inject
     Config mConfig;
-//    DataManager mDataManager;
+    ProductRepository mDataManager;
 
-    private ArrayList<Cart> productHistories = new ArrayList<>();
-    private AdapterHistory adapterHistory;
+    private ArrayList<Product> productHistories = new ArrayList<>();
     private ProgressDialog progressDialog;
+    private String listId;
 
     private Subscription subscription;
 
@@ -44,7 +42,7 @@ public class HistoryActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_history);
+        setContentView(R.layout.activity_detail);
 
         ButterKnife.bind(this);
 
@@ -52,35 +50,28 @@ public class HistoryActivity extends BaseActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        getSupportActionBar().setTitle("History");
+        getSupportActionBar().setTitle("Detail List");
 
+        listId = getIntent().getStringExtra(Constant.KEY_LIST_ID);
 
         progressDialog = DialogFactory.createProgressDialog(this, "", "Loading...");
         progressDialog.show();
-
-        adapterHistory = new AdapterHistory(this, productHistories);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
 
-        mRecyclerView.setAdapter(adapterHistory);
 
-//        subscription = mDataManager.getProductsHistory()
-//                .subscribeOn(Schedulers.newThread())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(list -> {
-//                    progressDialog.dismiss();
-//                    productHistories.addAll(list);
-//                    adapterHistory.addItems(productHistories);
-//                });
+
 
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         if (item.getItemId() == android.R.id.home) {
             finish();
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -96,5 +87,4 @@ public class HistoryActivity extends BaseActivity {
     protected BasePresenter getPresenter() {
         return null;
     }
-
 }

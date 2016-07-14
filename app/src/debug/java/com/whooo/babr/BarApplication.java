@@ -5,9 +5,9 @@ import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
-import com.whooo.babr.di.components.ApplicationComponent;
-import com.whooo.babr.di.components.DaggerApplicationComponent;
-import com.whooo.babr.di.modules.ApplicationModule;
+import com.whooo.babr.di.ApplicationComponent;
+import com.whooo.babr.di.DaggerApplicationComponent;
+import com.whooo.babr.di.ApplicationModule;
 
 import timber.log.Timber;
 

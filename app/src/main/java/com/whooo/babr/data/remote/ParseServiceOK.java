@@ -90,7 +90,7 @@ public class ParseServiceOK {
     public void deleteProduct(String query) {
         return;
 //        ParseQuery<ParseObject> queryStm = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId())
-//                .whereEqualTo("id", query);
+//                .whereEqualTo("objectId", query);
 //        queryStm.getFirstInBackground(new GetCallback<ParseObject>() {
 //            @Override
 //            public void done(ParseObject object, ParseException e) {
@@ -120,7 +120,7 @@ public class ParseServiceOK {
 //                            String manufacture = object.getString("manufacture");
 //                            String model = object.getString("model");
 //                            String name = object.getString("name");
-//                            String id = object.getObjectId();
+//                            String objectId = object.getObjectId();
 //                            String source = object.getString("source");
 //                            String cartId = object.getString("cartId");
 //                            Number quantity = object.getNumber("quantity");
@@ -132,7 +132,7 @@ public class ParseServiceOK {
 //                            product.setCountry(country);
 //                            product.setManufacture(manufacture);
 //                            product.setName(name);
-//                            product.setObjectId(id);
+//                            product.setObjectId(objectId);
 //                            product.setModel(model);
 //                            product.setSource(source);
 //                            product.setListId(cartId);
@@ -161,7 +161,7 @@ public class ParseServiceOK {
 //                            String manufacture = object.getString("manufacture");
 //                            String model = object.getString("model");
 //                            String name = object.getString("name");
-//                            String id = object.getObjectId();
+//                            String objectId = object.getObjectId();
 //                            String source = object.getString("source");
 //                            String cartId = object.getString("cartId");
 //                            Number quantity = object.getNumber("quantity");
@@ -173,7 +173,7 @@ public class ParseServiceOK {
 //                            product.setCountry(country);
 //                            product.setManufacture(manufacture);
 //                            product.setName(name);
-//                            product.setObjectId(id);
+//                            product.setObjectId(objectId);
 //                            product.setModel(model);
 //                            product.setSource(source);
 //                            product.setListId(cartId);
@@ -204,7 +204,7 @@ public class ParseServiceOK {
 //                            String model = object.getString("model");
 //                            String name = object.getString("name");
 //                            String source = object.getString("source");
-//                            String id = object.getObjectId();
+//                            String objectId = object.getObjectId();
 //                            String cartId = object.getString("cartId");
 //                            Number quantity = object.getNumber("quantity");
 //
@@ -215,7 +215,7 @@ public class ParseServiceOK {
 //                            product.setCountry(country);
 //                            product.setManufacture(manufacture);
 //                            product.setName(name);
-//                            product.setObjectId(id);
+//                            product.setObjectId(objectId);
 //                            product.setModel(model);
 //                            product.setSource(source);
 //                            product.setListId(cartId);
@@ -256,7 +256,7 @@ public class ParseServiceOK {
 
     public Observable<Product> getProductBABR(String id) {
         return Observable.empty();
-//        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", id);
+//        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", objectId);
 //        return Observable.create(new Observable.OnSubscribe<Product>() {
 //            @Override
 //            public void call(Subscriber<? super Product> subscriber) {
@@ -272,7 +272,7 @@ public class ParseServiceOK {
 //                            String name = object.getString("name");
 //                            String source = object.getString("source");
 //                            String cartId = object.getString("cartId");
-//                            String id = object.getObjectId();
+//                            String objectId = object.getObjectId();
 //                            Number quantity = object.getNumber("quantity");
 //
 //                            Product product = new Product();
@@ -282,7 +282,7 @@ public class ParseServiceOK {
 //                            product.setCountry(country);
 //                            product.setManufacture(manufacture);
 //                            product.setName(name);
-//                            product.setObjectId(id);
+//                            product.setObjectId(objectId);
 //                            product.setModel(model);
 //                            product.setSource(source);
 //                            product.setListId(cartId);
