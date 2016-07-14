@@ -4,10 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.whooo.babr.data.product.ProductRepository;
 
-/**
- * Created by ThongLe on 7/12/2016.
- */
-
 public class HistoryPresenter implements HistoryContract.Presenter {
 
     private HistoryContract.View mView;

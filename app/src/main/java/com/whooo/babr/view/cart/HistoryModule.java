@@ -6,11 +6,8 @@ import com.whooo.babr.di.PerActivity;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by ThongLe on 7/12/2016.
- */
 @Module
-public class HistoryModule {
+class HistoryModule {
 
     private final HistoryContract.View mView;
 

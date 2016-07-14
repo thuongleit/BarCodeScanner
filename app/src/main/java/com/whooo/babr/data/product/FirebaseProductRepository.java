@@ -140,6 +140,7 @@ public class FirebaseProductRepository implements ProductRepository {
             String getKey = cartRef.push().getKey();
 
             cartRef
+                    .child(FirebaseUtils.getCurrentUserId())
                     .child(getKey)
                     .setValue(cart, (databaseError, dbRef) -> {
                         if (databaseError != null) {

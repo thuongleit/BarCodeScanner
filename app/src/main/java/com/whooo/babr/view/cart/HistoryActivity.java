@@ -8,7 +8,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.whooo.babr.R;
-import com.whooo.babr.config.Config;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
@@ -17,11 +16,8 @@ import com.whooo.babr.vo.Cart;
 
 import java.util.ArrayList;
 
-import javax.inject.Inject;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import rx.Subscription;
 
 public class HistoryActivity extends BaseActivity {
 
@@ -30,16 +26,9 @@ public class HistoryActivity extends BaseActivity {
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Inject
-    Config mConfig;
-//    DataManager mDataManager;
-
     private ArrayList<Cart> productHistories = new ArrayList<>();
     private AdapterHistory adapterHistory;
     private ProgressDialog progressDialog;
-
-    private Subscription subscription;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,8 +77,6 @@ public class HistoryActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (!subscription.isUnsubscribed())
-            subscription.unsubscribe();
     }
 
     @Override
