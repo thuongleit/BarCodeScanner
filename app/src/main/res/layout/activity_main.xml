@@ -10,9 +10,8 @@
             type="com.whooo.babr.view.main.MainContract.Presenter" />
 
         <variable
-            name="viewhandler"
-            type="com.whooo.babr.databinding.MainViewHandlerWrapper" />
-
+            name="viewmodel"
+            type="com.whooo.babr.view.main.MainViewModel" />
 
     </data>
 
@@ -20,23 +19,26 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        tools:context=".view.main.MainActivity"
         tools:openDrawer="start">
 
         <include
             android:id="@+id/app_bar_main_view"
-            layout="@layout/app_bar_main_view"
+            layout="@layout/content_main_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:presenter="@{presenter}"
-            app:viewhandler="@{viewhandler}"/>
+            app:viewmodel="@{viewmodel}" />
 
         <android.support.design.widget.NavigationView
             android:id="@+id/nav_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="start"
+            android:fitsSystemWindows="true"
             app:headerLayout="@layout/view_nav_header_main"
-            app:menu="@menu/activity_main_drawer" />
+            app:menu="@menu/main_nav_drawer" />
 
     </android.support.v4.widget.DrawerLayout>
 </layout>

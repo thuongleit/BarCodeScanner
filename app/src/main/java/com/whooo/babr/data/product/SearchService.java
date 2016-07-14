@@ -6,7 +6,7 @@ import com.whooo.babr.data.remote.searchupc.SearchUpcParseService;
 import com.whooo.babr.data.remote.upcdatabase.UpcDatabaseParseService;
 import com.whooo.babr.data.remote.upcitemdb.UpcItemDbParseService;
 import com.whooo.babr.data.remote.walmartlabs.WalmartlabsParseService;
-import com.whooo.babr.vo.CheckoutHistory;
+import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
@@ -94,9 +94,9 @@ public class SearchService {
         });
     }
 
-    public Observable<List<CheckoutHistory>> getProductsHistory() {
+    public Observable<List<Cart>> getProductsHistory() {
         return Observable.create(subscriber -> {
-            List<CheckoutHistory> products = new ArrayList<>();
+            List<Cart> products = new ArrayList<>();
             mAppService.getProductsHistory().doOnNext(product -> {
                 products.add(product);
 
