@@ -38,8 +38,8 @@
         <activity android:name="com.whooo.babr.view.AppIntroActivity" />
         <activity android:name="com.whooo.babr.view.qrgenerate.GenerateQR" />
 
-        <activity android:name="com.whooo.babr.view.history.HistoryActivity" />
-        <activity android:name="com.whooo.babr.view.history.DetailActivity" />
+        <activity android:name="com.whooo.babr.view.cart.HistoryActivity" />
+        <activity android:name="com.whooo.babr.view.cart.DetailActivity" />
 
         <activity
             android:name="com.facebook.FacebookActivity"
@@ -70,7 +70,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name="com.whooo.babr.view.scan.CameraActivity"
+            android:name=".view.scan.camera.CameraActivity"
             android:label="Scan barcode"
             android:parentActivityName="com.whooo.babr.view.main.MainActivity">
             <meta-data
@@ -79,12 +79,12 @@
         </activity>
 
         <activity
-            android:name="com.whooo.babr.view.scan.ResultActivity"
-            android:label="Searching Result"
-            android:parentActivityName="com.whooo.babr.view.scan.CameraActivity">
+            android:name=".view.scan.result.ResultActivity"
+            android:label="Result"
+            android:parentActivityName=".view.scan.camera.CameraActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.whooo.babr.view.scan.CameraActivity" />
+                android:value=".view.scan.camera.CameraActivity" />
         </activity>
 
         <activity

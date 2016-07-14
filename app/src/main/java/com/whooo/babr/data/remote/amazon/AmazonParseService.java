@@ -46,7 +46,7 @@ public class AmazonParseService implements ParseService {
                         Product product = new Product();
 
                         product.name = amazonProduct.attributes.title;
-                        product.upcA = amazonProduct.attributes.upc;
+                        product.upc = amazonProduct.attributes.upc;
                         product.imageUrl = amazonProduct.image.url;
                         product.manufacture = amazonProduct.attributes.manufacturer;
 
@@ -81,20 +81,20 @@ public class AmazonParseService implements ParseService {
 //            //check if item is valid or not
 //            Elements spanElements = document.select("span");
 //            for (Element element : spanElements) {
-//                String idElement = element.attr("id");
+//                String idElement = element.attr("objectId");
 //                if ("productTitle".equals(idElement)) {
 //                    String productTitle = element.text();
 //                    product.name = productTitle;
 //                    product.source = "amazon.com";
-//                    product.listId = "a";
+//                    product.cartId = "a";
 //                }
 //            }
 //
 //            //parsing product image
 //            Elements divElements = document.select("div");
 //            for (Element element : divElements) {
-//                String id = element.attr("id");
-//                if ("leftCol".equals(id)) {
+//                String objectId = element.attr("objectId");
+//                if ("leftCol".equals(objectId)) {
 //                    element.getAllElements();
 //                    Elements imgElements = element.getElementsByTag("img");
 //                    if (imgElements != null && !imgElements.isEmpty()) {

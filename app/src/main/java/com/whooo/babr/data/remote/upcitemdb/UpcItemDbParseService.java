@@ -35,10 +35,10 @@ public class UpcItemDbParseService implements ParseService {
                     Product product = new Product();
 
                     product.source = ProductSource.UPC_ITEM_DB.getDisplay();
-                    product.listId = "a";
+                    product.cartId = "a";
                     product.name = childNode.title;
                     product.ean = childNode.ean;
-                    product.upcA = childNode.upc;
+                    product.upc = childNode.upc;
                     if (!childNode.images.isEmpty()) {
                         product.imageUrl = childNode.images.get(0);
                     }

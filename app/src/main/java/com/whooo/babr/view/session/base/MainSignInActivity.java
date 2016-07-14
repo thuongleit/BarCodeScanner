@@ -22,6 +22,8 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.whooo.babr.R;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
@@ -56,6 +58,9 @@ public class MainSignInActivity extends BaseActivity implements GoogleApiClient.
     @Inject
     SignInBaseContract.Presenter mPresenter;
 
+    @Inject
+    FirebaseAuth mFirebaseAuth;
+
     private ProgressDialog mProgressDialog;
 
     @Override
@@ -82,6 +87,25 @@ public class MainSignInActivity extends BaseActivity implements GoogleApiClient.
                 .inject(this);
 
         initializeFacebookAuth();
+
+//        mFirebaseAuth.createUserWithEmailAndPassword("thongle123@gmail.com", "123123")
+//                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<AuthResult> task) {
+//                        if (!task.isSuccessful()) {
+//                            Toast.makeText(MainSignInActivity.this, "Authentication failed.",
+//                                    Toast.LENGTH_SHORT).show();
+//                        } else {
+//                            onAuthSuccess(mFirebaseAuth.getCurrentUser());
+//                        }
+//                    }
+//                });
+    }
+
+    private void onAuthSuccess(FirebaseUser user) {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override

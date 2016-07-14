@@ -22,4 +22,7 @@ public interface Constant {
 
     String ARG_REVEAL_START_LOCATION = "reveal_start_location";
 
+    String ACTION_CHECK_NETWORK="action_check_network";
+    String ACTION_NETWORK="action_network";
+
 }

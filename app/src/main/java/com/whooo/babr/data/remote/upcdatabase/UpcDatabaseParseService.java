@@ -36,7 +36,7 @@ public class UpcDatabaseParseService implements ParseService {
 
                     product.source = ProductSource.UPC_DATABASE.getDisplay();
                     product.name = item.name;
-                    product.upcA = item.upc;
+                    product.upc = item.upc;
 
                     return Observable.just(product);
                 })

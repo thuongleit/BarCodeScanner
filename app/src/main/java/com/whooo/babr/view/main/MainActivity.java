@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,46 +20,36 @@ import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.pnikosis.materialishprogress.ProgressWheel;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.whooo.babr.R;
-import com.whooo.babr.data.remote.ParseServiceOK;
 import com.whooo.babr.databinding.ActivityMainBinding;
 import com.whooo.babr.util.AppUtils;
+import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.util.dialog.DialogQrcodeHistory;
-import com.whooo.babr.util.swipe.ItemTouchHelperCallback;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
-import com.whooo.babr.view.history.HistoryActivity;
+import com.whooo.babr.view.cart.HistoryActivity;
 import com.whooo.babr.view.product.ProductRecyclerAdapter;
-import com.whooo.babr.view.qrgenerate.GenerateQR;
-import com.whooo.babr.view.scan.CameraActivity;
+import com.whooo.babr.view.scan.camera.CameraActivity;
 import com.whooo.babr.view.session.signin.SignInActivity;
 import com.whooo.babr.view.widget.DividerItemDecoration;
-import com.whooo.babr.vo.CheckoutHistory;
+import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.zip.DeflaterOutputStream;
 
 import javax.inject.Inject;
-
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, MainContract.View,
         ActionMode.Callback {
@@ -68,25 +60,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private RecyclerView mRecyclerView;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
-    private ProgressWheel mProgressWheel;
     private SearchBox searchBox;
     private FloatingActionButton mFabScan;
     private Toolbar mToolbar;
 
     @Inject
     MainContract.Presenter mPresenter;
+
     private Context mContext;
 
     private boolean mDoubleBackToExitPressedOnce = false;
-    private List<Product> mProducts = new ArrayList<>();
-    private ProgressDialog progressDialog;
-    private String mGenerateListId;
-    private ParseServiceOK parseServiceOK;
-    private Subscription subscription;
-    private Integer userId;
-    private DeflaterOutputStream actionMode;
-    private ItemTouchHelper mItemTouchHelper;
-    private ProductRecyclerAdapter mAdapter;
+    private FrameLayout mLayoutContent;
+    private View mEmptyView;
+    private MainViewModel mViewModel;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -98,13 +85,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mContext = this;
-
         initializeInjector();
+
+        DataBindingUtil.setDefaultComponent(getApp().getAppComponent());
         injectViews(binding);
 
-        setupNavigationView();
-        setupReCyclerView();
+        binding.setPresenter(mPresenter);
+        mViewModel = mPresenter.getViewModel();
+        binding.setViewmodel(mViewModel);
+    }
 
+    private void setupFab() {
         mFabScan.setOnClickListener(v -> {
             // Must be done during an initialization phase like onCreate
             RxPermissions.getInstance(this)
@@ -131,13 +122,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void injectViews(ActivityMainBinding binding) {
         mToolbar = binding.appBarMainView.toolbar;
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         mNavigationView = binding.navView;
         mDrawerLayout = binding.drawerLayout;
         mRecyclerView = binding.appBarMainView.recyclerView;
-        mProgressWheel = binding.appBarMainView.progressWheel;
         mFabScan = binding.appBarMainView.fabScan;
+        mLayoutContent = binding.appBarMainView.layoutContent;
 
-        binding.setPresenter(mPresenter);
+        //set up views
+        setupNavigationView();
+        setupRecyclerView();
+        setupFab();
     }
 
     private void initializeInjector() {
@@ -152,78 +149,50 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
 
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                openSearch();
+                return true;
+            case R.id.action_checkout:
+                if (mViewModel.data.isEmpty()) {
+                    DialogFactory.createGenericErrorDialog(mContext, "You don't have any items!").show();
+                } else {
+                    Cart cart = new Cart();
+                    cart.name = AppUtils.gerenateDateFormat();
+                    cart.timestamp = cart.name;
 
-        if (id == R.id.action_search) {
-            openSearch();
-            return true;
+                    AlertDialog dialogCheckout = new AlertDialog.Builder(this)
+                            .setMessage("Checkout items as name " + cart.name + "?")
+                            .setTitle("Checkout")
+                            .setNegativeButton(R.string.dialog_action_ok, ((dialog, which) -> {
+                                dialog.dismiss();
+                                mPresenter.checkout(cart);
+                            })).setPositiveButton(R.string.dialog_action_cancel, ((dialog1, which1) -> {
+                                dialog1.dismiss();
+                            })).create();
+                    dialogCheckout.show();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        if (id == R.id.action_camera) {
-
-
-            if (mProducts.size() >= 1) {
-
-                new AlertDialog.Builder(this, R.style.MyAlertDialogAppCompatStyle)
-                        .setMessage(getResources().getString(R.string.save_to_history))
-                        .setTitle("Option")
-                        .setNegativeButton("OK", ((dialog, which) -> {
-                            saveProductToHistory();
-                        })).setPositiveButton("Cancle", ((dialog1, which1) -> {
-                    dialog1.dismiss();
-                })).show();
-
-
-            } else {
-                showToast("You don't have any item!");
-            }
-
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
-
-    private void saveProductToHistory() {
-        mGenerateListId = AppUtils.generateString(new Random(), "1254789dhfoendlf89ssofnd896541", 20);
-
-        parseServiceOK.saveListProductNoCheckout(mProducts, mGenerateListId).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(a -> {
-            mProducts.clear();
-            showToast("Generator qr-code has saved to server!");
-        });
-        CheckoutHistory checkoutHistory = new CheckoutHistory();
-        checkoutHistory.listId = mGenerateListId;
-        checkoutHistory.name = AppUtils.gerenateDateFormat();
-        checkoutHistory.size = mProducts.size();
-        parseServiceOK.saveProductHistory(checkoutHistory);
-
-        DialogQrcodeHistory qrcodeHistory = new DialogQrcodeHistory(mContext, mGenerateListId);
-        qrcodeHistory.show();
-
-        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteAll();
-    }
-
 
     public void openSearch() {
         mToolbar.setTitle("");
         mToolbar.setVisibility(View.GONE);
         searchBox.revealFromMenuItem(R.id.action_search, this);
-        searchBox.setMenuListener(new SearchBox.MenuListener() {
-
-            @Override
-            public void onMenuClick() {
-
-            }
+        searchBox.setMenuListener(() -> {
 
         });
+
         searchBox.setSearchListener(new SearchBox.SearchListener() {
 
             @Override
@@ -239,15 +208,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onSearchTermChanged(String term) {
 
-                subscription = Observable.just(term)
-                        .debounce(400, TimeUnit.SECONDS)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe(s -> {
-                            if (mRecyclerView.getAdapter() != null) {
-                                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).filter(s);
-                            }
-                        });
+//                subscription = Observable.just(term)
+//                        .debounce(400, TimeUnit.SECONDS)
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribeOn(Schedulers.io())
+//                        .subscribe(s -> {
+//                            if (mRecyclerView.getAdapter() != null) {
+//                                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).filter(s);
+//                            }
+//                        });
 
             }
 
@@ -283,19 +252,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
             ArrayList<Product> products = data.getParcelableArrayListExtra(CameraActivity.EXTRA_DATA);
             if (products != null && !products.isEmpty()) {
-             //   mProducts.addAll(products);
-                mAdapter.addItems(products);
-                setupWithItemTouch();
-
+                mViewModel.setData(products);
             }
         }
     }
 
-    private void setupWithItemTouch() {
-        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(mAdapter, this);
-        mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
-    }
 
     @Override
     public void onBackPressed() {
@@ -323,15 +284,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
             case R.id.nav_generate:
 
-                if (userId != null) {
-
-                    Intent intentGenerate = new Intent(MainActivity.this, GenerateQR.class);
-                    intentGenerate.putExtra(USER_ID_EXTRA, userId);
-                    startActivity(intentGenerate);
-
-                } else {
-                    showToast("You must SignIn!");
-                }
                 break;
             case R.id.nav_history:
                 startActivity(new Intent(this, HistoryActivity.class));
@@ -341,29 +293,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return true;
     }
 
-
-    public void showProgress(boolean show) {
-        if (show) {
-            mProgressWheel.setVisibility(View.VISIBLE);
-            mRecyclerView.setVisibility(View.GONE);
-        } else {
-            mRecyclerView.setVisibility(View.VISIBLE);
-            mProgressWheel.setVisibility(View.GONE);
-        }
-    }
-
-    public void showProducts(List<Product> products) {
-        mProducts.addAll(products);
-        mAdapter.addItems(products);
-    }
-
-    private void setupReCyclerView() {
+    private void setupRecyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST));
         mRecyclerView.setHasFixedSize(true);
-        mAdapter = new ProductRecyclerAdapter(this, mProducts);
-        mRecyclerView.setAdapter(mAdapter);
-        setupWithItemTouch();
     }
 
 
@@ -407,8 +340,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             int currPos;
             for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
                 currPos = selectedItemPositions.get(i);
-                parseServiceOK.deleteProduct(mProducts.get(currPos).objectId);
-                mProducts.remove(currPos);
+//                mProducts.remove(currPos);
                 ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteItem(currPos);
             }
 
@@ -421,17 +353,80 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void onDestroyActionMode(ActionMode mode) {
-        actionMode = null;
         ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).clearSelections();
     }
 
     @Override
-    public void showNetworkError() {
+    public void onCheckoutSuccess(String keyOfCart) {
+        showToast("Checkout success!");
 
+        DialogQrcodeHistory qrcodeHistory = new DialogQrcodeHistory(mContext, keyOfCart);
+        qrcodeHistory.show();
+    }
+
+    @Override
+    public void onRemoveProductsSuccess() {
+        showToast("onRemoveProductsSuccess");
+    }
+
+    @Override
+    public void requestFailed(String message) {
+        DialogFactory.createGenericErrorDialog(mContext, message).show();
+    }
+
+    @Override
+    public void onEmptyResponse() {
+        if (mEmptyView == null) {
+            mEmptyView = getLayoutInflater().inflate(R.layout.view_empty_product, null);
+        }
+
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mLayoutContent.addView(mEmptyView, layoutParams);
+    }
+
+    @Override
+    public void removeEmptyViewIfNeeded() {
+        if (mEmptyView != null && !mPresenter.getViewModel().empty.get()) {
+            mLayoutContent.removeView(mEmptyView);
+        }
+    }
+
+    @Override
+    public void addPendingRemove(int position, Product product) {
+        final Snackbar snackbar = Snackbar.make(mLayoutContent, "Item deleted", Snackbar.LENGTH_LONG)
+                .setActionTextColor(ContextCompat.getColor(mContext, R.color.white))
+                .setAction("Undo", view -> {
+                    mPresenter.undoRemovedProduct(position, product);
+                });
+        snackbar.show();
+
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            snackbar.dismiss();
+            mPresenter.removeProducts(product);
+        }, 2000);
+    }
+
+    @Override
+    public void showStandaloneProgress(boolean show) {
+        if (mProgressDialog == null) {
+            mProgressDialog = DialogFactory.createProgressDialog(mContext, "Please wait...", "Checking out...");
+        }
+        if (show) {
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.dismiss();
+        }
+    }
+
+
+    @Override
+    public void showNetworkError() {
+        // TODO: 7/13/16 remove this method at the end. it is already handle in presenter
     }
 
     @Override
     public void showInAppError() {
-
+        // TODO: 7/13/16 remove this method at the end. it is already handle in presenter
     }
 }

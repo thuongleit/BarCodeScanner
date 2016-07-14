@@ -21,8 +21,6 @@
         android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
-
-
     <TextView
         android:id="@+id/txtMesage"
         android:layout_width="match_parent"

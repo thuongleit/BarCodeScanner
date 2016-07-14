@@ -2,7 +2,7 @@ package com.whooo.babr.data.remote;
 
 import android.util.Log;
 
-import com.whooo.babr.vo.CheckoutHistory;
+import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class ParseServiceOK {
 //            parseProduct.put("image", product.getImageUrl());
 //        }
 //        if (product.getUpcA() != null) {
-//            parseProduct.put("upcA", product.getUpcA());
+//            parseProduct.put("upc", product.getUpcA());
 //        }
 //        if (product.getEan() != null) {
 //            parseProduct.put("ean", product.getEan());
@@ -48,21 +48,21 @@ public class ParseServiceOK {
 //            parseProduct.put("source", product.getSource());
 //        }
 //
-//        parseProduct.put("listId", "a");
+//        parseProduct.put("cartId", "a");
 //
 //        parseProduct.put("quantity", product.getQuantity());
 //
 //        parseProduct.saveInBackground();
     }
 
-    public void saveProductHistory(CheckoutHistory product) {
+    public void saveProductHistory(Cart product) {
         //save to parse
 //        ParseObject parseProduct = new ParseObject(Constant.PARSE_NAMEHISTORY);
 //        parseProduct.put("userId", ParseUser.getCurrentUser().getObjectId());
 //
 //        parseProduct.put("name", product.getName());
 //
-//        parseProduct.put("listId",product.getListId());
+//        parseProduct.put("cartId",product.getListId());
 //        parseProduct.put("size",product.getSize());
 //
 //
@@ -78,7 +78,7 @@ public class ParseServiceOK {
 //
 //                if (e == null) {
 //
-//                    object.put("listId", listId);
+//                    object.put("cartId", cartId);
 //
 //                    object.saveInBackground();
 //                }
@@ -106,7 +106,7 @@ public class ParseServiceOK {
 
     public Observable<Product> getProductsCheckout(String listId) {
         return Observable.empty();
-//        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId()).whereEqualTo("listId", listId);
+//        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId()).whereEqualTo("cartId", cartId);
 //        return Observable.create(new Observable.OnSubscribe<Product>() {
 //            @Override
 //            public void call(Subscriber<? super Product> subscriber) {
@@ -114,7 +114,7 @@ public class ParseServiceOK {
 //                    if (e == null && objects != null)
 //                        for (ParseObject object : objects) {
 //                            String image = object.getString("image");
-//                            String upcA = object.getString("upcA");
+//                            String upc = object.getString("upc");
 //                            String ean = object.getString("ean");
 //                            String country = object.getString("country");
 //                            String manufacture = object.getString("manufacture");
@@ -122,12 +122,12 @@ public class ParseServiceOK {
 //                            String name = object.getString("name");
 //                            String objectId = object.getObjectId();
 //                            String source = object.getString("source");
-//                            String listId = object.getString("listId");
+//                            String cartId = object.getString("cartId");
 //                            Number quantity = object.getNumber("quantity");
 //
 //                            Product product = new Product();
 //                            product.setImageUrl(image);
-//                            product.setUpcA(upcA);
+//                            product.setUpcA(upc);
 //                            product.setEan(ean);
 //                            product.setCountry(country);
 //                            product.setManufacture(manufacture);
@@ -135,7 +135,7 @@ public class ParseServiceOK {
 //                            product.setObjectId(objectId);
 //                            product.setModel(model);
 //                            product.setSource(source);
-//                            product.setListId(listId);
+//                            product.setListId(cartId);
 //
 //                            subscriber.onNext(product);
 //                        }
@@ -147,7 +147,7 @@ public class ParseServiceOK {
 
     public Observable<Product> getProductsCheckoutScan(String listId) {
         return Observable.empty();
-//        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("listId", listId);
+//        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("cartId", cartId);
 //        return Observable.create(new Observable.OnSubscribe<Product>() {
 //            @Override
 //            public void call(Subscriber<? super Product> subscriber) {
@@ -155,7 +155,7 @@ public class ParseServiceOK {
 //                    if (e == null && objects != null)
 //                        for (ParseObject object : objects) {
 //                            String image = object.getString("image");
-//                            String upcA = object.getString("upcA");
+//                            String upc = object.getString("upc");
 //                            String ean = object.getString("ean");
 //                            String country = object.getString("country");
 //                            String manufacture = object.getString("manufacture");
@@ -163,12 +163,12 @@ public class ParseServiceOK {
 //                            String name = object.getString("name");
 //                            String objectId = object.getObjectId();
 //                            String source = object.getString("source");
-//                            String listId = object.getString("listId");
+//                            String cartId = object.getString("cartId");
 //                            Number quantity = object.getNumber("quantity");
 //
 //                            Product product = new Product();
 //                            product.setImageUrl(image);
-//                            product.setUpcA(upcA);
+//                            product.setUpcA(upc);
 //                            product.setEan(ean);
 //                            product.setCountry(country);
 //                            product.setManufacture(manufacture);
@@ -176,7 +176,7 @@ public class ParseServiceOK {
 //                            product.setObjectId(objectId);
 //                            product.setModel(model);
 //                            product.setSource(source);
-//                            product.setListId(listId);
+//                            product.setListId(cartId);
 //
 //                            subscriber.onNext(product);
 //                        }
@@ -197,7 +197,7 @@ public class ParseServiceOK {
 //                    if (e == null && objects != null)
 //                        for (ParseObject object : objects) {
 //                            String image = object.getString("image");
-//                            String upcA = object.getString("upcA");
+//                            String upc = object.getString("upc");
 //                            String ean = object.getString("ean");
 //                            String country = object.getString("country");
 //                            String manufacture = object.getString("manufacture");
@@ -205,12 +205,12 @@ public class ParseServiceOK {
 //                            String name = object.getString("name");
 //                            String source = object.getString("source");
 //                            String objectId = object.getObjectId();
-//                            String listId = object.getString("listId");
+//                            String cartId = object.getString("cartId");
 //                            Number quantity = object.getNumber("quantity");
 //
 //                            Product product = new Product();
 //                            product.setImageUrl(image);
-//                            product.setUpcA(upcA);
+//                            product.setUpcA(upc);
 //                            product.setEan(ean);
 //                            product.setCountry(country);
 //                            product.setManufacture(manufacture);
@@ -218,7 +218,7 @@ public class ParseServiceOK {
 //                            product.setObjectId(objectId);
 //                            product.setModel(model);
 //                            product.setSource(source);
-//                            product.setListId(listId);
+//                            product.setListId(cartId);
 //
 //                            subscriber.onNext(product);
 //                        }
@@ -228,22 +228,22 @@ public class ParseServiceOK {
 //        });
     }
 
-    public Observable<CheckoutHistory> getProductsHistory() {
+    public Observable<Cart> getProductsHistory() {
 //        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_NAMEHISTORY).whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
-//        return Observable.create(new Observable.OnSubscribe<CheckoutHistory>() {
+//        return Observable.create(new Observable.OnSubscribe<Cart>() {
 //            @Override
-//            public void call(Subscriber<? super CheckoutHistory> subscriber) {
+//            public void call(Subscriber<? super Cart> subscriber) {
 //                query.findInBackground((objects, e) -> {
 //                    if (e == null && objects != null)
 //                        for (ParseObject object : objects) {
 //
 //                            String name = object.getString("name");
-//                            String listId = object.getString("listId");
+//                            String cartId = object.getString("cartId");
 //                            long size = object.getLong("size");
 //
-//                            CheckoutHistory product = new CheckoutHistory();
+//                            Cart product = new Cart();
 //                            product.setName(name);
-//                            product.setListId(listId);
+//                            product.setListId(cartId);
 //                            product.setSize(size);
 //                            subscriber.onNext(product);
 //                        }
@@ -256,7 +256,7 @@ public class ParseServiceOK {
 
     public Observable<Product> getProductBABR(String id) {
         return Observable.empty();
-//        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", id);
+//        ParseQuery<ParseObject> query = new ParseQuery<>(Constant.PARSE_PRODUCTS).whereEqualTo("userId", objectId);
 //        return Observable.create(new Observable.OnSubscribe<Product>() {
 //            @Override
 //            public void call(Subscriber<? super Product> subscriber) {
@@ -264,20 +264,20 @@ public class ParseServiceOK {
 //                    if (e == null && objects != null)
 //                        for (ParseObject object : objects) {
 //                            String image = object.getString("image");
-//                            String upcA = object.getString("upcA");
+//                            String upc = object.getString("upc");
 //                            String ean = object.getString("ean");
 //                            String country = object.getString("country");
 //                            String manufacture = object.getString("manufacture");
 //                            String model = object.getString("model");
 //                            String name = object.getString("name");
 //                            String source = object.getString("source");
-//                            String listId = object.getString("listId");
+//                            String cartId = object.getString("cartId");
 //                            String objectId = object.getObjectId();
 //                            Number quantity = object.getNumber("quantity");
 //
 //                            Product product = new Product();
 //                            product.setImageUrl(image);
-//                            product.setUpcA(upcA);
+//                            product.setUpcA(upc);
 //                            product.setEan(ean);
 //                            product.setCountry(country);
 //                            product.setManufacture(manufacture);
@@ -285,7 +285,7 @@ public class ParseServiceOK {
 //                            product.setObjectId(objectId);
 //                            product.setModel(model);
 //                            product.setSource(source);
-//                            product.setListId(listId);
+//                            product.setListId(cartId);
 //
 //                            subscriber.onNext(product);
 //                        }

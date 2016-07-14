@@ -16,9 +16,11 @@ import android.widget.EditText;
 
 import com.whooo.babr.R;
 import com.whooo.babr.databinding.ActivitySignUpBinding;
+import com.whooo.babr.util.FirebaseUtils;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
+import com.whooo.babr.view.session.base.User;
 import com.whooo.babr.view.session.signin.SignInActivity;
 
 import javax.inject.Inject;
@@ -34,6 +36,8 @@ public class SignUpActivity extends BaseActivity implements SignUpContract.View,
     private EditText mInputPassword;
     private EditText mInputName;
     private Button mBtnSignUp;
+
+    private FirebaseUtils mFirebaseUtil;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -87,8 +91,14 @@ public class SignUpActivity extends BaseActivity implements SignUpContract.View,
 
     @Override
     public void onSignUpSuccess() {
+        writeNewUser();
         setResult(RESULT_OK, getIntent());
         finish();
+    }
+
+    private void writeNewUser() {
+        User user=new User(mFirebaseUtil.getUser().fullname,mFirebaseUtil.getCurrentUserId());
+        mFirebaseUtil.getUsersRef().child(mFirebaseUtil.getCurrentUserId()).setValue(user);
     }
 
     @Override
