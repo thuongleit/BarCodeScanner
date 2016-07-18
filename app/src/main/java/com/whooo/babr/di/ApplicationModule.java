@@ -9,6 +9,7 @@ import com.squareup.picasso.Picasso;
 import com.whooo.babr.data.product.FirebaseProductRepository;
 import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.data.product.SearchService;
+import com.whooo.babr.util.CircleTransform;
 
 import javax.inject.Singleton;
 
@@ -56,5 +57,10 @@ public class ApplicationModule {
     @Singleton
     ProductRepository provideProductRepository(SearchService searchService) {
         return new FirebaseProductRepository(searchService);
+    }
+
+    @Provides
+    CircleTransform provideCircleTransform(){
+        return new CircleTransform();
     }
 }

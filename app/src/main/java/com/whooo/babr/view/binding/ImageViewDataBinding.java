@@ -16,6 +16,7 @@ public class ImageViewDataBinding {
         if (!TextUtils.isEmpty(imageUrl)) {
             component.picasso()
                     .load(imageUrl)
+                    .transform(component.imageTransform())
                     .priority(Picasso.Priority.LOW)
                     .into(view);
         }

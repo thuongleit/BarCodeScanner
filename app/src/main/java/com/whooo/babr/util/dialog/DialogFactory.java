@@ -2,6 +2,7 @@ package com.whooo.babr.util.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -47,6 +48,8 @@ public final class DialogFactory {
     public static AlertDialog createProgressDialog(Context context) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
         alertDialog.setView(LayoutInflater.from(context).inflate(R.layout.dialog_progress, null));
-        return alertDialog.create();
+        AlertDialog dialog = alertDialog.create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(context.getResources().getColor(android.R.color.transparent)));
+        return dialog;
     }
 }

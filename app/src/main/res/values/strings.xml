@@ -38,7 +38,7 @@
     <string name="menu_import">Import</string>
     <string name="menu_generate_qrcode">Generate QRCode</string>
     <string name="menu_log_out">Log out</string>
-    <string name="dialog_error_general_message">Something went wrong. Please try again later</string>
+    <string name="dialog_error_general_message">There was a problem processing to the app. Please try again.</string>
     <string name="delete_crime">Delete Item</string>
     <string name="option_save">Option</string>
     <string name="choose_image">You are having many images. Do you want to save all of them?</string>
@@ -49,7 +49,7 @@
     <string name="dialog_login_as_guest_warning">Login as guest will store your nodes locally. If you want to save them in the cloud, login as your account instead.</string>
     <string name="button_ok">OK</string>
     <string name="button_ignore">Ignore</string>
-    <string name="dialog_internet_disconnnect_error">You has been disconnected!</string>
+    <string name="dialog_internet_disconnnect_error">The Internet connection appears to be offline. Please try again.</string>
     <string name="dialog_authenticating">Authenticating…</string>
     <string name="error_in_same_password">Password must be same</string>
     <string name="save_to_history">Are you sure to save all the nodes to history?</string>
@@ -81,5 +81,6 @@
     <string name="menu_action_save">Save</string>
     <string name="menu_action_checkout">Checkout</string>
     <string name="menu_action_search">Search</string>
+    <string name="input_error_field_is_empty">Field is empty</string>
 
 </resources>

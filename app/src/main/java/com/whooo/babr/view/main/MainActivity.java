@@ -10,21 +10,22 @@ import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -37,7 +38,6 @@ import com.whooo.babr.util.dialog.DialogQrcodeHistory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.cart.HistoryActivity;
-import com.whooo.babr.view.product.ProductRecyclerAdapter;
 import com.whooo.babr.view.scan.camera.CameraActivity;
 import com.whooo.babr.view.session.signin.SignInActivity;
 import com.whooo.babr.view.widget.DividerItemDecoration;
@@ -45,7 +45,6 @@ import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -55,8 +54,7 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, MainContract.View,
-        ActionMode.Callback {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, MainContract.View {
 
     private static final int REQUEST_CAMERA = 1;
     public static final String USER_ID_EXTRA = "user_id_extra";
@@ -64,7 +62,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private RecyclerView mRecyclerView;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
-    private Subscription mSubscription;
     private FloatingActionButton mFabScan;
     private Toolbar mToolbar;
 
@@ -79,6 +76,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private MainViewModel mViewModel;
     private AlertDialog mProgressDialog;
     private MaterialSearchView mSearchView;
+    private Subscription mSubscription;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -181,24 +179,40 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     DialogFactory.createGenericErrorDialog(mContext, "You don't have any items!").show();
                 } else {
                     Cart cart = new Cart();
-                    cart.name = AppUtils.gerenateDateFormat();
+                    cart.name = AppUtils.generateTimeStamp();
                     cart.timestamp = cart.name;
 
-                    AlertDialog dialogCheckout = new AlertDialog.Builder(this)
-                            .setMessage("Checkout items as name " + cart.name + "?")
-                            .setTitle("Checkout")
-                            .setNegativeButton(R.string.dialog_action_ok, ((dialog, which) -> {
-                                dialog.dismiss();
-                                mPresenter.checkout(cart);
-                            })).setPositiveButton(R.string.dialog_action_cancel, ((dialog1, which1) -> {
-                                dialog1.dismiss();
-                            })).create();
-                    dialogCheckout.show();
+                    performCheckout(cart);
                 }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void performCheckout(Cart cart) {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_checkout, null);
+        TextInputEditText inputCartName = (TextInputEditText) dialogView.findViewById(R.id.input_cart_name);
+        inputCartName.setText(cart.timestamp);
+        AlertDialog dialogCheckout = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setPositiveButton(R.string.dialog_action_ok, ((dialog, which) -> {
+                    String cartName = inputCartName.getText().toString();
+                    if (TextUtils.isEmpty(cartName)) {
+                        DialogFactory.createGenericErrorDialog(mContext, "You have to input cart name.").show();
+                    } else {
+                        inputCartName.setError(null);
+                        dialog.dismiss();
+                        cart.name = cartName;
+                        mPresenter.checkout(cart);
+                    }
+                })).setNegativeButton(R.string.dialog_action_cancel, ((dialog, which1) -> {
+                    dialog.dismiss();
+                }))
+                .setNeutralButton("Save for later", (dialog, which) -> {
+
+                }).create();
+        dialogCheckout.show();
     }
 
     public void openSearch() {
@@ -215,18 +229,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 searchListenerObserver(newText);
 
                 return false;
-            }
-        });
-
-        mSearchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-            @Override
-            public void onSearchViewShown() {
-                //Do some magic
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-                //Do some magic
             }
         });
     }
@@ -318,44 +320,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        MenuInflater menuInflater = mode.getMenuInflater();
-        menuInflater.inflate(R.menu.crime_list_item_context, menu);
-
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        return false;
-    }
-
-    @Override
-    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        if (item.getItemId() == R.id.menu_item_delete_crime) {
-
-
-            List<Integer> selectedItemPositions = ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).getSelectedItems();
-            int currPos;
-            for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
-                currPos = selectedItemPositions.get(i);
-//                mProducts.remove(currPos);
-                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).deleteItem(currPos);
-            }
-
-            return true;
-
-        }
-        return false;
-
-    }
-
-    @Override
-    public void onDestroyActionMode(ActionMode mode) {
-        ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).clearSelections();
-    }
-
-    @Override
     public void onCheckoutSuccess(String keyOfCart) {
         showToast("Checkout success!");
 
@@ -397,6 +361,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 .setAction("Undo", view -> {
                     mPresenter.undoRemovedProduct(position, product);
                 });
+        View view = snackbar.getView();
+        TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+        tv.setTextColor(Color.WHITE);
         snackbar.show();
 
         Handler handler = new Handler();

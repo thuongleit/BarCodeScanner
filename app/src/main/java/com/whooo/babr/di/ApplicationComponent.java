@@ -15,6 +15,7 @@ import com.whooo.babr.data.remote.searchupc.SearchUpcParseService;
 import com.whooo.babr.data.remote.upcdatabase.UpcDatabaseParseService;
 import com.whooo.babr.data.remote.upcitemdb.UpcItemDbParseService;
 import com.whooo.babr.data.remote.walmartlabs.WalmartlabsParseService;
+import com.whooo.babr.util.CircleTransform;
 
 import javax.inject.Singleton;
 
@@ -60,6 +61,8 @@ public interface ApplicationComponent extends android.databinding.DataBindingCom
     WalmartlabsParseService walmartParseService();
 
     ParseServiceOK appService();
+
+    CircleTransform imageTransform();
 
 //    FirebaseUtils firebaseUtils();
 //

@@ -10,6 +10,7 @@ public class Cart implements Parcelable {
     public String objectId;
     public String name;
     public String timestamp;
+    public String userId;
 
     public Cart() {
     }
@@ -24,12 +25,14 @@ public class Cart implements Parcelable {
         dest.writeString(this.objectId);
         dest.writeString(this.name);
         dest.writeString(this.timestamp);
+        dest.writeString(this.userId);
     }
 
     protected Cart(Parcel in) {
         this.objectId = in.readString();
         this.name = in.readString();
         this.timestamp = in.readString();
+        this.userId = in.readString();
     }
 
     public static final Creator<Cart> CREATOR = new Creator<Cart>() {

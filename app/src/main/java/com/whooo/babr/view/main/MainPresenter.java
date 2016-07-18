@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 class MainPresenter implements MainContract.Presenter {
 
@@ -86,6 +87,7 @@ class MainPresenter implements MainContract.Presenter {
                         .unsubscribeOn(Schedulers.io())
                         .subscribe(key -> {
                                     mView.onCheckoutSuccess(key);
+                                    mView.onEmptyResponse();
                                     mViewModel.setData(new ArrayList<>());
                                 }
                                 , e -> {
@@ -130,7 +132,8 @@ class MainPresenter implements MainContract.Presenter {
 
                     mView.addPendingRemove(position, clone);
                 } catch (CloneNotSupportedException e) {
-                    // TODO: 7/14/16 handle unexpected exception
+                    Timber.e(e, "WTF error here?");
+                    mView.showInAppError();
                     return;
                 }
                 mViewModel.removeItem(product);

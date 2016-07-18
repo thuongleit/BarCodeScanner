@@ -33,6 +33,7 @@ public class MainViewModel {
     public void setData(List<Product> products) {
         loading.set(false);
         if (products == null || products.isEmpty()) {
+            data.clear();
             empty.set(true);
         } else {
             empty.set(false);

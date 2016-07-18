@@ -13,9 +13,7 @@ import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -137,25 +135,30 @@ public class FirebaseProductRepository implements ProductRepository {
     public Observable<String> checkout(Cart cart, List<Product> products) {
         return Observable.create(subscriber -> {
             DatabaseReference cartRef = FirebaseUtils.getCartRef();
-            String getKey = cartRef.push().getKey();
+            DatabaseReference productsRef = FirebaseUtils.getProductsRef();
 
+            String getKey = cartRef.push().getKey();
+            cart.objectId = getKey;
+            String userId = FirebaseUtils.getCurrentUserId();
+            if (userId == null) {
+                // TODO: 7/18/16 handle userId == null
+                return;
+            }
+            cart.userId = userId;
             cartRef
-                    .child(FirebaseUtils.getCurrentUserId())
-                    .child(getKey)
+                    .child(cart.objectId)
                     .setValue(cart, (databaseError, dbRef) -> {
                         if (databaseError != null) {
                             FirebaseUtils.attachErrorHandler(subscriber, databaseError);
                             return;
                         }
+
                         //update child products
                         for (Product product : products) {
-                            product.cartId = getKey;
-
-                            Map<String, Object> childUpdates = new HashMap<>();
-                            String productPath = FirebaseUtils.getProductsPath() + FirebaseUtils.getCurrentUserId() + FirebaseUtils.PATH + product.objectId + FirebaseUtils.PATH;
-                            childUpdates.put(productPath, product.toMap());
-
-                            FirebaseUtils.getBaseDatabaseRef(FirebaseUtils.DbInstance.KEY_NONE).updateChildren(childUpdates);
+                            cartRef.child(cart.objectId).child("products").child(product.objectId)
+                                    .setValue(product, (databaseError1, databaseReference1) -> {
+                                        productsRef.child(userId).child(product.objectId).removeValue();
+                                    });
                         }
                     });
             subscriber.onNext(getKey);

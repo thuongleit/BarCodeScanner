@@ -27,7 +27,6 @@ public class HistoryActivity extends BaseActivity {
     Toolbar mToolbar;
 
     private ArrayList<Cart> productHistories = new ArrayList<>();
-    private AdapterHistory adapterHistory;
     private AlertDialog progressDialog;
 
     @Override
@@ -47,13 +46,11 @@ public class HistoryActivity extends BaseActivity {
         progressDialog = DialogFactory.createProgressDialog(this);
         progressDialog.show();
 
-        adapterHistory = new AdapterHistory(this, productHistories);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
 
-        mRecyclerView.setAdapter(adapterHistory);
 
 //        subscription = mDataManager.getProductsHistory()
 //                .subscribeOn(Schedulers.newThread())
