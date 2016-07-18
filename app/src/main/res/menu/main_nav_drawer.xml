@@ -11,7 +11,6 @@
     <group android:checkableBehavior="single">
     <item
     android:id="@+id/nav_generate"
-    android:icon="@drawable/ic_add_circle_black_24dp"
     android:title="@string/menu_generate_qrcode" />
     </group>
 
@@ -20,7 +19,6 @@
         android:checkableBehavior="none">
         <item
             android:id="@+id/nav_log_in"
-            android:icon="@drawable/ic_account_circle"
             android:title="@string/menu_login" />
     </group>
     <group

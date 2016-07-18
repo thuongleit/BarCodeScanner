@@ -79,5 +79,7 @@
     <string name="menu_action_flash_off">Flash [OFF]</string>
     <string name="menu_action_flash_on">Flash [ON]</string>
     <string name="menu_action_save">Save</string>
+    <string name="menu_action_checkout">Checkout</string>
+    <string name="menu_action_search">Search</string>
 
 </resources>

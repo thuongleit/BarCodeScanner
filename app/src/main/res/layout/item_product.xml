@@ -45,7 +45,6 @@
                 android:maxLines="2"
                 android:paddingBottom="6dp"
                 android:text="@{item.name}"
-                android:textColor="@color/item_title_tv"
                 android:textSize="@dimen/item_title_tv" />
 
             <TextView
@@ -55,7 +54,6 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:textColor="@color/item_date"
                 android:textSize="@dimen/item_date_tv" />
 
             <LinearLayout
@@ -77,7 +75,6 @@
                     android:background="@drawable/bg_android_tag"
                     android:gravity="center"
                     android:text="@{item.manufacture}"
-                    android:textColor="@color/item_tag_tv"
                     android:textSize="@dimen/item_tag_tv"
                     android:visibility="@{(item.manufacture != null &amp;&amp; item.manufacture.length > 0) ? View.VISIBLE : View.GONE}" />
 
@@ -90,7 +87,6 @@
                     android:background="@drawable/bg_ios_tag"
                     android:gravity="center"
                     android:text="@{item.country}"
-                    android:textColor="@color/item_tag_tv"
                     android:textSize="@dimen/item_tag_tv"
                     android:visibility="@{(item.country != null &amp;&amp; item.country.length > 0) ? View.VISIBLE : View.GONE}" />
 
@@ -103,7 +99,6 @@
                     android:background="@drawable/bg_js_tag"
                     android:gravity="center"
                     android:text="@{item.source}"
-                    android:textColor="@color/item_tag_tv"
                     android:textSize="@dimen/item_tag_tv"
                     android:visibility="@{(item.source != null &amp;&amp; item.source.length > 0) ? View.VISIBLE : View.GONE}" />
             </LinearLayout>

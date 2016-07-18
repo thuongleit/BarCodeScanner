@@ -4,7 +4,6 @@
 
     <item
         android:id="@+id/action_flash"
-        android:icon="@drawable/ic_flash_off"
         android:orderInCategory="100"
         android:title="Flash [OFF]"
         app:showAsAction="always" />

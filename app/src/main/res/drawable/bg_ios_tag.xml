@@ -25,7 +25,6 @@
 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <corners android:radius="2dp" />
-    <solid android:color="@color/common_ios_tag_bg" />
     <padding
         android:bottom="2dp"
         android:left="4dp"

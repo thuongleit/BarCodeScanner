@@ -94,7 +94,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
                  icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_delete_white_24dp);
                // Set color for right swipe
-                p.setColor(ContextCompat.getColor(context, R.color.red500));
+                p.setColor(ContextCompat.getColor(context, R.color.red));
 
                 // Draw Rect with varying right side, equal to displacement dX
                 c.drawRect((float) itemView.getLeft() + DisplayUtils.dpToPx(0), (float) itemView.getTop(), dX + DisplayUtils.dpToPx(0),

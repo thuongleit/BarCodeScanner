@@ -1,87 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="window_background">#FFF5F5F5</color>
-    <color name="window_background_dark">#403f4d</color>
-    <color name="window_background_black">#000000</color>
-    <color name="bt_accent">#00B8D4</color>
+    <!-- Material color palette -->
+    <color name="primary">#9E9E9E</color>
+    <color name="primary_dark">#616161</color>
+    <color name="accent">#FF9800</color>
+    <color name="accent_light">#FFC107</color>
+    <color name="edge_effect">@color/primary_dark</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#727272</color>
+    <color name="primary_text_light">#F5F5F5</color>
+    <color name="icons">@color/accent</color>
+    <color name="divider">#B6B6B6</color>
+    <color name="hint_color_text">#c5c5c5</color>
 
-    <color name="colorPrimary">#FF212121</color>
-    <color name="colorPrimaryDark">#FF131313</color>
-    <color name="colorPrimaryDarker">#FF050505</color>
-    <color name="colorAccent">#F57C00</color>
-    <color name="colorAccentLight">#FFA726</color>
-    <color name="colorAccentDark">#EF6C00</color>
-    <color name="msgr_material_item_hover">#33999999</color>
-    <color name="msgr_material_item_pressed">#66999999</color>
-    <color name="msgr_material_item_hover_dark">#26ffffff</color>
-    <color name="msgr_material_item_pressed_dark">#4dffffff</color>
-    <color name="msgr_material_ripple_mask">#ffffffff</color>
-    <color name="msgr_material_edge_effect">@color/colorPrimaryDark</color>
-    <color name="red500">#db4437</color>
-    <color name="snackbar_undo">#BCAAA4</color>
-
-    <color name="colorPrimaryDarkTheme">#4a4959</color>
-    <color name="colorPrimaryDarkDarkTheme">#525065</color>
-    <color name="colorAccentDarkTheme">#ffb701</color>
-
-    <color name="colorPrimaryBlack">#000000</color>
-    <color name="colorPrimaryDarkBlack">#000000</color>
-    <color name="colorAccentBlack">#ffffff</color>
-
-    <color name="colorSelectableItemWhite">#77ffffff</color>
-
-    <color name="pink_transparent">#44700d39</color>
-    <color name="green_transparent">#44375a1f</color>
-    <color name="blue_transparent">#44293576</color>
-    <color name="red_transparent">#447f3907</color>
-    <color name="purple_transparent">#44432677</color>
-
-    <color name="black_translucent">#66000000</color>
-
-    <color name="progressBackgroundColorLight">#33000000</color>
-    <color name="progressBackgroundColorDark">#33ffffff</color>
+    <color name="black">#000000</color>
+    <color name="white">#ffffffff</color>
+    <color name="red">#FFC93437</color>
+    <color name="blue">#FF375BF1</color>
+    <color name="yellow">#FFF7D23E</color>
+    <color name="green">#FF34A350</color>
 
     <color name="viewfinder_mask">#60000000</color>
     <color name="viewfinder_laser">#ffcc0000</color>
     <color name="viewfinder_border">#ffafed44</color>
     <color name="login_green">#73C547</color>
-    <color name="hint_color">#B8B7B6</color>
-
-    <color name="item_card_background">#ffF6F6EF</color>
-    <color name="item_selectable_pressed">#ff9475CD</color>
-    <color name="item_date">#ffA8A8A8</color>
-    <color name="item_title_tv">#ff000000</color>
-    <color name="item_tag_tv">#ffFFFFFF</color>
-    <color name="common_android_tag_bg">#ff388E3C</color>
-    <color name="common_ios_tag_bg">#ff0377BC</color>
-    <color name="common_js_tag_bg">#ffEF6C02</color>
-
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
-    <color name="black_alpha_12">#1f000000</color>
-    <color name="black_alpha_20">#33000000</color>
-    <color name="black_alpha_25">#40000000</color>
-    <color name="black_alpha_30">#4d000000</color>
-    <color name="black_alpha_34">#57000000</color>
-    <color name="black_alpha_38">#61000000</color>
-    <color name="black_alpha_40">#66000000</color>
-    <color name="black_alpha_48">#78000000</color>
-    <color name="black_alpha_54">#8a000000</color>
-    <color name="black_alpha_67">#aa000000</color>
-    <color name="black_alpha_60">#99000000</color>
-    <color name="black_alpha_87">#de000000</color>
-    <color name="white_alpha_20">#33ffffff</color>
-    <color name="white_alpha_30">#4dffffff</color>
-    <color name="white_alpha_54">#8affffff</color>
-    <color name="white_alpha_60">#99ffffff</color>
-    <color name="white_alpha_70">#b2ffffff</color>
-    <color name="black_87">#212121</color> <!-- Text -->
-    <color name="black_54">#545454</color> <!-- Secondary Text -->
-    <color name="black_38">#9B9B9B</color> <!-- Hint Text -->
-    <color name="black_12">#DBDBDB</color> <!-- Dividers-->
-    <color name="black_10">#C5c5c5</color>
-    <color name="transparent">#00000000</color>
-    <color name="black_overlay">#81000000</color>
-    <color name="white_overlay">#8efff2f2</color>
-    <color name="hightlight_item_select">#90CAF9</color>
 </resources>

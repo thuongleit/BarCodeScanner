@@ -20,7 +20,7 @@
             android:textSize="30sp"
             android:text="Name"
             android:gravity="center"
-            android:textColor="@color/window_background"/>
+            />
 
     </LinearLayout>
 

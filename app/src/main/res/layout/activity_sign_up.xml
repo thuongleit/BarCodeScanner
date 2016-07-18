@@ -25,14 +25,10 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/login_background"
         tools:context=".view.session.signup.SignUpActivity">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/login_background" />
-
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_gravity="top|center_horizontal"
@@ -50,14 +46,12 @@
             android:layout_marginTop="48dp"
             android:orientation="vertical">
 
-            <com.whooo.babr.view.widget.MuliEditText
+            <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/input_email"
                 style="@style/Login.InputEditTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginBottom="8dp"
-                android:drawableLeft="@drawable/ic_email_24dp"
-                android:drawableTint="@color/black_38"
                 android:hint="Email"
                 android:inputType="textEmailAddress"
                 android:nextFocusDown="@+id/input_fullname"
@@ -65,29 +59,26 @@
                 android:paddingStart="6dp"
                 android:text="@={email}" />
 
-            <com.whooo.babr.view.widget.MuliEditText
+            <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/input_fullname"
                 style="@style/Login.InputEditTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginBottom="8dp"
                 android:drawableLeft="@drawable/ic_person"
-                android:drawableTint="@color/black_38"
                 android:hint="Username"
                 android:nextFocusDown="@+id/input_password"
                 android:paddingLeft="6dp"
                 android:paddingStart="6dp"
                 android:text="@={fullname}" />
 
-            <com.whooo.babr.view.widget.MuliEditText
+            <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/input_password"
                 style="@style/Login.InputEditTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginBottom="8dp"
                 android:drawableLeft="@drawable/ic_locked"
-                android:drawableRight="@drawable/ic_visibility"
-                android:drawableTint="@color/black_38"
                 android:hint="Password"
                 android:imeOptions="actionDone"
                 android:inputType="textPassword"
@@ -96,20 +87,20 @@
                 android:text="@={password}" />
 
 
-            <com.whooo.babr.view.widget.MuliButton
+            <android.support.v7.widget.AppCompatButton
                 android:id="@+id/button_sign_up"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bgr_green_button"
+                android:enabled="@{email.length > 0 &amp;&amp; fullname.length > 0 &amp;&amp; password.length > 0}"
                 android:onClick="@{() -> presenter.createUser(email, fullname, password)}"
                 android:text="Create account"
-                android:enabled="@{email.length > 0 &amp;&amp; fullname.length > 0 &amp;&amp; password.length > 0}"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@android:color/white" />
 
-            <com.whooo.babr.view.widget.MuliTextView
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/text_link_sign_in"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
