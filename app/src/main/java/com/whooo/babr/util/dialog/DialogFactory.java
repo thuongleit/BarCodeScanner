@@ -1,10 +1,10 @@
 package com.whooo.babr.util.dialog;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
 
 import com.whooo.babr.R;
 
@@ -44,18 +44,9 @@ public final class DialogFactory {
         return createGenericErrorDialog(context, context.getString(messageResource));
     }
 
-    public static ProgressDialog createProgressDialog(Context context, String title, String message) {
-        ProgressDialog progressDialog = new ProgressDialog(context);
-        if (title != null) {
-            progressDialog.setTitle(title);
-        }
-        progressDialog.setMessage(message);
-        return progressDialog;
-    }
-
-    public static ProgressDialog createProgressDialog(Context context,
-                                                      @StringRes int titleResource,
-                                                      @StringRes int messageResource) {
-        return createProgressDialog(context, context.getString(titleResource), context.getString(messageResource));
+    public static AlertDialog createProgressDialog(Context context) {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+        alertDialog.setView(LayoutInflater.from(context).inflate(R.layout.dialog_progress, null));
+        return alertDialog.create();
     }
 }

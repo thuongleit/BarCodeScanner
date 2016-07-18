@@ -1,7 +1,7 @@
 package com.whooo.babr.view.cart;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -28,7 +28,7 @@ public class HistoryActivity extends BaseActivity {
 
     private ArrayList<Cart> productHistories = new ArrayList<>();
     private AdapterHistory adapterHistory;
-    private ProgressDialog progressDialog;
+    private AlertDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +44,7 @@ public class HistoryActivity extends BaseActivity {
         getSupportActionBar().setTitle("History");
 
 
-        progressDialog = DialogFactory.createProgressDialog(this, "", "Loading...");
+        progressDialog = DialogFactory.createProgressDialog(this);
         progressDialog.show();
 
         adapterHistory = new AdapterHistory(this, productHistories);

@@ -1,7 +1,6 @@
 package com.whooo.babr.view.main;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -28,8 +27,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.quinny898.library.persistentsearch.SearchBox;
-import com.quinny898.library.persistentsearch.SearchResult;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.whooo.babr.R;
 import com.whooo.babr.databinding.ActivityMainBinding;
@@ -48,8 +46,14 @@ import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, MainContract.View,
         ActionMode.Callback {
@@ -60,7 +64,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private RecyclerView mRecyclerView;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
-    private SearchBox searchBox;
+    private Subscription mSubscription;
     private FloatingActionButton mFabScan;
     private Toolbar mToolbar;
 
@@ -73,7 +77,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private FrameLayout mLayoutContent;
     private View mEmptyView;
     private MainViewModel mViewModel;
-    private ProgressDialog mProgressDialog;
+    private AlertDialog mProgressDialog;
+    private MaterialSearchView mSearchView;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -121,7 +126,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void injectViews(ActivityMainBinding binding) {
-        mToolbar = binding.appBarMainView.toolbar;
+        mToolbar = binding.appBarMainView.viewToolbar.toolbar;
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -131,10 +136,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mFabScan = binding.appBarMainView.fabScan;
         mLayoutContent = binding.appBarMainView.layoutContent;
 
+        mSearchView = binding.appBarMainView.viewToolbar.searchView;
+
         //set up views
         setupNavigationView();
         setupRecyclerView();
         setupFab();
+        setupSearchView();
+    }
+
+    private void setupSearchView() {
+        openSearch();
+        mSearchView.setCursorDrawable(R.drawable.custom_cursor);
+        mSearchView.setEllipsize(true);
     }
 
     private void initializeInjector() {
@@ -150,6 +164,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        MenuItem item = menu.findItem(R.id.action_search);
+        mSearchView.setMenuItem(item);
 
         return true;
     }
@@ -186,65 +202,46 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     public void openSearch() {
-        mToolbar.setTitle("");
-        mToolbar.setVisibility(View.GONE);
-        searchBox.revealFromMenuItem(R.id.action_search, this);
-        searchBox.setMenuListener(() -> {
+        mSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchListenerObserver(query);
 
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchListenerObserver(newText);
+
+                return false;
+            }
         });
 
-        searchBox.setSearchListener(new SearchBox.SearchListener() {
-
+        mSearchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
-            public void onSearchOpened() {
-
+            public void onSearchViewShown() {
+                //Do some magic
             }
 
             @Override
-            public void onSearchClosed() {
-                closeSearch();
+            public void onSearchViewClosed() {
+                //Do some magic
             }
-
-            @Override
-            public void onSearchTermChanged(String term) {
-
-//                subscription = Observable.just(term)
-//                        .debounce(400, TimeUnit.SECONDS)
-//                        .observeOn(AndroidSchedulers.mainThread())
-//                        .subscribeOn(Schedulers.io())
-//                        .subscribe(s -> {
-//                            if (mRecyclerView.getAdapter() != null) {
-//                                ((ProductRecyclerAdapter) mRecyclerView.getAdapter()).filter(s);
-//                            }
-//                        });
-
-            }
-
-            @Override
-            public void onSearch(String searchTerm) {
-                Toast.makeText(MainActivity.this, searchTerm + " Searched",
-                        Toast.LENGTH_LONG).show();
-
-            }
-
-            @Override
-            public void onResultClick(SearchResult result) {
-            }
-
-            @Override
-            public void onSearchCleared() {
-
-            }
-
         });
-
     }
 
-    protected void closeSearch() {
-        searchBox.hideCircularly(this);
-        if (searchBox.getSearchText().isEmpty()) mToolbar.setTitle("");
+    private void searchListenerObserver(String query) {
+        mSubscription = Observable.just(query)
+                .debounce(400, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(s -> {
+                    if (mRecyclerView.getAdapter() != null) {
+//                        mAdapter.filter(s);
+                    }
+                });
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -260,7 +257,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (mSearchView.isSearchOpen()) {
+            mSearchView.closeSearch();
+        } else if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
             if (!mDoubleBackToExitPressedOnce) {
@@ -410,7 +409,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void showStandaloneProgress(boolean show) {
         if (mProgressDialog == null) {
-            mProgressDialog = DialogFactory.createProgressDialog(mContext, "Please wait...", "Checking out...");
+            mProgressDialog = DialogFactory.createProgressDialog(mContext);
         }
         if (show) {
             mProgressDialog.show();

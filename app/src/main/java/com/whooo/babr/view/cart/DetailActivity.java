@@ -1,7 +1,7 @@
 package com.whooo.babr.view.cart;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -33,7 +33,7 @@ public class DetailActivity extends BaseActivity {
     ProductRepository mDataManager;
 
     private ArrayList<Product> productHistories = new ArrayList<>();
-    private ProgressDialog progressDialog;
+    private AlertDialog progressDialog;
     private String listId;
 
     private Subscription subscription;
@@ -54,7 +54,7 @@ public class DetailActivity extends BaseActivity {
 
         listId = getIntent().getStringExtra(Constant.KEY_LIST_ID);
 
-        progressDialog = DialogFactory.createProgressDialog(this, "", "Loading...");
+        progressDialog = DialogFactory.createProgressDialog(this);
         progressDialog.show();
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));

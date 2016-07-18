@@ -1,10 +1,10 @@
 package com.whooo.babr.view.session.signin;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
@@ -33,7 +33,7 @@ public class SignInActivity extends BaseActivity implements SignInContract.View,
     @Inject
     SignInContract.Presenter mSignInPresenter;
 
-    private ProgressDialog mProgressDialog;
+    private AlertDialog mProgressDialog;
     private Button mBtnSignIn;
     private EditText mInputEmail;
     private EditText mInputPassword;
@@ -111,8 +111,7 @@ public class SignInActivity extends BaseActivity implements SignInContract.View,
     @Override
     public void showProgress(boolean show) {
         if (mProgressDialog == null) {
-            mProgressDialog = DialogFactory
-                    .createProgressDialog(this, R.string.dialog_processing_title, R.string.dialog_processing_message);
+            mProgressDialog = DialogFactory.createProgressDialog(this);
             setSignInBtnEnable(true);
         }
         if (show) {

@@ -150,7 +150,7 @@ dependencies {
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
     compile 'com.github.kenglxn.QRGen:javase:2.1.0'
     compile 'com.github.paolorotolo:appintro:3.3.0'
-    compile 'com.quinny898.library.persistentsearch:library:1.1.0-SNAPSHOT'
+    compile 'com.miguelcatalan:materialsearchview:1.4.0'
     compile 'com.android.support:multidex:1.0.1'
 
     // debug tools

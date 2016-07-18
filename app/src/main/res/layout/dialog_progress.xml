@@ -4,8 +4,8 @@
     android:layout_height="wrap_content"
     android:background="@android:color/transparent">
 
-    <com.tunedoorinc.tunedoor.view.widget.GoogleProgressBar
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+    <com.whooo.babr.view.widget.GoogleProgressBar
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="center" />
 </FrameLayout>

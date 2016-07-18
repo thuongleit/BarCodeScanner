@@ -79,13 +79,6 @@
                 android:value=".view.scan.camera.CameraActivity" />
         </activity>
 
-        <activity
-            android:name="com.whooo.babr.view.product.BarViewActivity"
-            android:parentActivityName="com.whooo.babr.view.main.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.whooo.babr.view.main.MainActivity" />
-        </activity>
     </application>
 
 </manifest>
