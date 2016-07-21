@@ -9,6 +9,7 @@ import com.whooo.babr.config.Config;
 import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.data.product.SearchService;
 import com.whooo.babr.data.remote.ApiModule;
+import com.whooo.babr.data.remote.DebugModule;
 import com.whooo.babr.data.remote.ParseServiceOK;
 import com.whooo.babr.data.remote.amazon.AmazonParseService;
 import com.whooo.babr.data.remote.searchupc.SearchUpcParseService;
@@ -22,7 +23,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {ApplicationModule.class, ApiModule.class})
+@Component(modules = {ApplicationModule.class, DebugModule.class, ApiModule.class})
 public interface ApplicationComponent extends android.databinding.DataBindingComponent {
 
     Application application();

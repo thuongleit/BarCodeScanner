@@ -6,8 +6,8 @@ import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.whooo.babr.di.ApplicationComponent;
-import com.whooo.babr.di.DaggerApplicationComponent;
 import com.whooo.babr.di.ApplicationModule;
+import com.whooo.babr.di.DaggerApplicationComponent;
 
 import timber.log.Timber;
 
@@ -24,7 +24,6 @@ public class BarApplication extends MultiDexApplication {
         super.onCreate();
 
         //enable to save local db
-        // TODO: 7/13/16 support cache db in local
 //        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         if (BuildConfig.DEBUG) {

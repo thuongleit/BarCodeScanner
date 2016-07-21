@@ -4,34 +4,40 @@
 
     <data>
 
+        <import type="android.view.View" />
+
+        <import type="java.lang.Boolean" />
+
         <variable
             name="presenter"
             type="com.whooo.babr.view.main.ShopContract.Presenter" />
 
         <variable
-            name="handler"
+            name="viewmodel"
             type="com.whooo.babr.view.main.ShopViewModel" />
-
-
     </data>
 
     <FrameLayout
+        android:id="@+id/layout_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            android:visibility="@{viewmodel.empty ? View.GONE : View.VISIBLE, default=gone}"
+            app:enableSwipe="@{Boolean.TRUE}"
+            app:itemViewBinder="@{viewmodel.itemViewBinder}"
+            app:items="@{viewmodel.data}"
+            app:touchHandler="@{presenter.itemTouchHandler}" />
 
         <com.whooo.babr.view.widget.GoogleProgressBar
             android:id="@+id/progress_wheel"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="center_horizontal|center_vertical"
-            android:visibility="gone" />
+            android:visibility="@{viewmodel.loading ? View.VISIBLE : View.GONE, default=visible}" />
 
     </FrameLayout>
 </layout>

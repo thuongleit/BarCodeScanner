@@ -33,4 +33,43 @@ public abstract class BaseFragment extends Fragment {
     public BaseActivity activity() {
         return ((BaseActivity) getActivity());
     }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (getPresenter() != null) {
+            getPresenter().subscribe();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (getPresenter() != null) {
+            getPresenter().unsubscribe();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (getPresenter() != null) {
+            getPresenter().onDestroy();
+        }
+    }
+
+    protected BasePresenter getPresenter() {
+        return null;
+    }
 }

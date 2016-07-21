@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.whooo.babr.R;
-import com.whooo.babr.view.main.MainActivity;
 
 import java.util.concurrent.TimeUnit;
 
@@ -47,7 +46,7 @@ public class GenerateQR extends AppCompatActivity implements Animation.Animation
 
         ButterKnife.bind(this);
 
-        userId=getIntent().getStringExtra(MainActivity.USER_ID_EXTRA);
+//        userId=getIntent().getStringExtra(MainActivity.USER_ID_EXTRA);
 
         mediaPlayer = MediaPlayer.create(this, R.raw.scan);
         animation = AnimationUtils.loadAnimation(this, R.anim.highlight);

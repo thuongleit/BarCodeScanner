@@ -2,7 +2,6 @@ package com.whooo.babr.data.remote;
 
 import android.support.annotation.NonNull;
 
-import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.whooo.babr.data.product.ProductSource;
@@ -11,7 +10,9 @@ import com.whooo.babr.data.remote.searchupc.SearchUpcParseService;
 import com.whooo.babr.data.remote.upcdatabase.UpcDatabaseParseService;
 import com.whooo.babr.data.remote.upcitemdb.UpcItemDbParseService;
 import com.whooo.babr.data.remote.walmartlabs.WalmartlabsParseService;
+import com.whooo.babr.di.Interceptor;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
@@ -19,7 +20,6 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.CallAdapter;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
@@ -60,14 +60,19 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    OkHttpClient provideClient() {
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        // set your desired log level
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+    OkHttpClient provideClient(@Interceptor List<okhttp3.Interceptor> interceptors) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.networkInterceptors().add(new StethoInterceptor());
+        //debug fields
         // add logging as last interceptor
-        builder.interceptors().add(logging);
+        if (interceptors != null && !interceptors.isEmpty()) {
+            for (okhttp3.Interceptor interceptor : interceptors) {
+                if ("StethoInterceptor".equals(interceptor.getClass().getSimpleName())) {
+                    builder.networkInterceptors().add(interceptor);
+                } else {
+                    builder.interceptors().add(interceptor);
+                }
+            }
+        }
         builder.connectTimeout(60, TimeUnit.SECONDS);
         builder.readTimeout(60, TimeUnit.SECONDS);
 
@@ -117,10 +122,10 @@ public class ApiModule {
     @NonNull
     private Retrofit buildRetrofit(OkHttpClient client, Converter.Factory converter, CallAdapter.Factory callAdapter, String url) {
         return new Retrofit.Builder()
-                    .baseUrl(url)
-                    .client(client)
-                    .addCallAdapterFactory(callAdapter)
-                    .addConverterFactory(converter)
-                    .build();
+                .baseUrl(url)
+                .client(client)
+                .addCallAdapterFactory(callAdapter)
+                .addConverterFactory(converter)
+                .build();
     }
 }

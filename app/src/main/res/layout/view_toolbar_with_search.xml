@@ -6,7 +6,7 @@
 
         <variable
             name="presenter"
-            type="com.whooo.babr.view.main.MainContract.Presenter" />
+            type="com.whooo.babr.view.main.ShopContract.Presenter" />
 
     </data>
 

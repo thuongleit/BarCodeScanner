@@ -11,7 +11,7 @@ import com.whooo.babr.vo.Product;
 
 import java.util.List;
 
-public class MainViewModel {
+public class ShopViewModel {
 
     public final ObservableBoolean loading = new ObservableBoolean();
     public final ObservableBoolean empty = new ObservableBoolean();

@@ -7,11 +7,11 @@
 
         <variable
             name="presenter"
-            type="com.whooo.babr.view.main.MainContract.Presenter" />
+            type="com.whooo.babr.view.main.ShopContract.Presenter" />
 
         <variable
             name="viewmodel"
-            type="com.whooo.babr.view.main.MainViewModel" />
+            type="com.whooo.babr.view.main.ShopViewModel" />
 
     </data>
 
@@ -36,8 +36,8 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             app:headerLayout="@layout/nav_main"
-            app:itemIconTint="@color/accent_light"
-            app:menu="@menu/main_nav_drawer" />
+            app:itemIconTint="@color/accent"
+            app:menu="@menu/nav_drawer" />
 
     </android.support.v4.widget.DrawerLayout>
 </layout>

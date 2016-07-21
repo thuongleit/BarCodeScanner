@@ -6,7 +6,7 @@ import com.whooo.babr.view.binding.ItemTouchHandler;
 import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
-public interface MainContract {
+public interface ShopContract {
     interface View extends BaseView {
         void onCheckoutSuccess(String keyOfCart);
 
@@ -30,7 +30,7 @@ public interface MainContract {
 
         void removeProducts(Product product);
 
-        MainViewModel getViewModel();
+        ShopViewModel getViewModel();
 
         ItemTouchHandler<Product> itemTouchHandler();
 

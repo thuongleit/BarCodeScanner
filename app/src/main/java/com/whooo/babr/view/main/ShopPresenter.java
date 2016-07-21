@@ -16,15 +16,15 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-class MainPresenter implements MainContract.Presenter {
+class ShopPresenter implements ShopContract.Presenter {
 
-    private MainContract.View mView;
+    private ShopContract.View mView;
     @NonNull
     private final ProductRepository mProductRepository;
-    private final MainViewModel mViewModel;
+    private final ShopViewModel mViewModel;
     private CompositeSubscription mSubscriptions;
 
-    MainPresenter(@Nullable MainContract.View view, MainViewModel viewModel, @NonNull ProductRepository productRepository) {
+    ShopPresenter(@Nullable ShopContract.View view, ShopViewModel viewModel, @NonNull ProductRepository productRepository) {
         mView = view;
         mProductRepository = productRepository;
         this.mViewModel = viewModel;
@@ -113,7 +113,7 @@ class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public MainViewModel getViewModel() {
+    public ShopViewModel getViewModel() {
         return mViewModel;
     }
 
