@@ -50,15 +50,14 @@
             android:layout_marginTop="48dp"
             android:orientation="vertical">
 
-            <com.whooo.babr.view.widget.MuliEditText
+            <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/input_email"
                 style="@style/Login.InputEditTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginBottom="8dp"
-                android:drawableLeft="@drawable/ic_email_24dp"
+                android:drawableLeft="@drawable/ic_email_16dp"
                 android:drawablePadding="4dp"
-                android:drawableTint="@color/black_38"
                 android:hint="Email"
                 android:inputType="textEmailAddress"
                 android:nextFocusDown="@+id/input_password"
@@ -66,16 +65,14 @@
                 android:paddingStart="8dp"
                 android:text="@={email}" />
 
-
-            <com.whooo.babr.view.widget.MuliEditText
+            <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/input_password"
                 style="@style/Login.InputEditTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginBottom="8dp"
-                android:drawableLeft="@drawable/ic_locked"
+                android:drawableLeft="@drawable/ic_password"
                 android:drawablePadding="4dp"
-                android:drawableTint="@color/black_38"
                 android:hint="Password"
                 android:imeOptions="actionDone"
                 android:inputType="textPassword"
@@ -85,31 +82,31 @@
                 android:text="@={password}" />
 
 
-            <com.whooo.babr.view.widget.MuliButton
+            <android.support.v7.widget.AppCompatButton
                 android:id="@+id/button_sign_in"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bgr_green_button"
+                android:enabled="@{email.length > 0 &amp;&amp; password.length > 0}"
                 android:onClick="@{() -> presenter.performSignIn(email, password)}"
                 android:text="Sign in"
-                android:enabled="@{email.length > 0 &amp;&amp; password.length > 0}"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@android:color/white" />
 
-            <com.whooo.babr.view.widget.MuliTextView
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/text_forgot_password"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|right"
                 android:layout_marginTop="8dp"
-                android:text="Forgot your password?"
                 android:onClick="@{() -> presenter.askForgotPassword(email)}"
+                android:text="Forgot your password?"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@android:color/white" />
 
-            <com.whooo.babr.view.widget.MuliTextView
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/text_link_sign_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

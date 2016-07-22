@@ -8,9 +8,14 @@
         <variable
             name="viewmodel"
             type="com.whooo.babr.view.scan.result.ResultViewModel" />
+
+        <variable
+            name="presenter"
+            type="com.whooo.babr.view.scan.result.ResultContract.Presenter" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/layout_coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".view.scan.result.ResultActivity">
@@ -24,7 +29,6 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
                 android:minHeight="?attr/actionBarSize"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -35,9 +39,11 @@
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:enableSwipe="@{Boolean.TRUE}"
             app:itemViewBinder="@{viewmodel.itemViewBinder}"
             app:items="@{viewmodel.data}"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:touchHandler="@{presenter.itemTouchHandler}" />
 
     </android.support.design.widget.CoordinatorLayout>
 </layout>

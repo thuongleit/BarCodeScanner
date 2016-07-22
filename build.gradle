@@ -62,7 +62,6 @@ ext {
     picassoOkHttpDownloader= '1.0.2'
     videoPlayerManager     = '0.2.0'
     exoPlayer              = 'r1.5.6'
-    dbFlow                 = '3.0.0-beta5'
 
     junit                  = '4.12'
     assertJ                = '1.7.1'

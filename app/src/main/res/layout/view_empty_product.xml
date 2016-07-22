@@ -12,8 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="No products"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@color/black_54" />
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -29,21 +28,20 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|center_vertical"
             android:text="Tap "
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/black_38" />
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_add_circle_black_48dp" />
+            android:src="@drawable/ic_camera_enhance"
+            android:tint="@color/accent" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|center_vertical"
             android:text=" to add more"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/black_38" />
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
     </LinearLayout>
 </RelativeLayout>

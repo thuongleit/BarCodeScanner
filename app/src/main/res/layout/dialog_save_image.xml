@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black_10"
     android:orientation="vertical"
     android:paddingBottom="5dp"
     android:paddingLeft="5dp"
@@ -14,7 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
-        android:textColor="@color/colorAccent"
         android:layout_marginTop="24dp"
         android:text="@string/option_save"
         android:textStyle="bold"
@@ -26,7 +24,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
-        android:textColor="@color/colorAccent"
         android:layout_marginTop="24dp"
         android:text="@string/choose_image"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
@@ -55,7 +52,6 @@
             style="@style/ButtonStyle"
             android:textSize="18sp"
             android:text="Remember"
-            android:shadowColor="@color/login_green"
             android:layout_gravity="center"/>
     </LinearLayout>
 </LinearLayout>

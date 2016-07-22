@@ -4,15 +4,15 @@
     tools:context=".view.main.MainActivity">
     <item
         android:id="@+id/action_search"
-        android:icon="@drawable/ic_search_white_24dp"
+        android:icon="@drawable/ic_search"
         android:orderInCategory="100"
-        android:title="Search"
+        android:title="@string/menu_action_search"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_checkout"
         android:icon="@drawable/ic_checkout_cart"
         android:orderInCategory="100"
-        android:title="Checkout"
-        app:showAsAction="always" />
+        android:title="@string/menu_action_checkout"
+        app:showAsAction="ifRoom" />
 </menu>

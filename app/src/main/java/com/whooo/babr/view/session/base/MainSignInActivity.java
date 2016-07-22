@@ -1,10 +1,10 @@
 package com.whooo.babr.view.session.base;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -61,7 +61,7 @@ public class MainSignInActivity extends BaseActivity implements GoogleApiClient.
     @Inject
     FirebaseAuth mFirebaseAuth;
 
-    private ProgressDialog mProgressDialog;
+    private AlertDialog mProgressDialog;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -152,7 +152,7 @@ public class MainSignInActivity extends BaseActivity implements GoogleApiClient.
     public void showProgress(boolean show) {
         if (mProgressDialog == null) {
             mProgressDialog = DialogFactory
-                    .createProgressDialog(this, R.string.dialog_processing_title, R.string.dialog_processing_message);
+                    .createProgressDialog(this);
             mProgressDialog.setOnCancelListener(dialog -> {
                 dialog.dismiss();
                 setButtonFbEnable(true);

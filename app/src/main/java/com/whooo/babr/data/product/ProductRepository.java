@@ -3,7 +3,6 @@ package com.whooo.babr.data.product;
 import android.support.annotation.NonNull;
 
 import com.whooo.babr.data.DataSource;
-import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.List;
@@ -20,5 +19,6 @@ public interface ProductRepository extends DataSource {
 
     Observable<Boolean> removeProduct(Product product);
 
-    Observable<String> checkout(Cart cart, List<Product> products);
+    Observable<String> checkout(String cart, List<Product> products, boolean askToPending);
+
 }

@@ -4,14 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/login_background"
     tools:context=".view.session.signin.SignInActivity">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/login_background" />
-
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_gravity="center"
@@ -26,7 +22,7 @@
         android:layout_marginBottom="12dp"
         android:orientation="vertical">
 
-        <com.whooo.babr.view.widget.MuliTextView
+        <android.support.v7.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -44,7 +40,7 @@
             android:layout_marginBottom="12dp"
             android:orientation="horizontal">
 
-            <ImageButton
+            <android.support.v7.widget.AppCompatImageButton
                 android:id="@+id/button_facebook_sign_in"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
@@ -53,7 +49,7 @@
                 android:scaleType="center"
                 app:srcCompat="@drawable/ic_facebook_logo" />
 
-            <ImageButton
+            <android.support.v7.widget.AppCompatImageButton
                 android:id="@+id/button_google_sign_in"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
@@ -63,7 +59,7 @@
                 android:scaleType="center"
                 app:srcCompat="@drawable/ic_google_logo" />
 
-            <ImageButton
+            <android.support.v7.widget.AppCompatImageButton
                 android:id="@+id/button_email_sign_in"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
@@ -74,7 +70,7 @@
                 app:srcCompat="@drawable/ic_email" />
         </LinearLayout>
 
-        <com.whooo.babr.view.widget.MuliTextView
+        <android.support.v7.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -83,7 +79,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@android:color/white" />
 
-        <com.whooo.babr.view.widget.MuliButton
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/button_sign_in_anonymous"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
@@ -93,8 +89,8 @@
             android:paddingLeft="36dp"
             android:paddingRight="36dp"
             android:text="Try it out"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@android:color/white" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white" />
     </LinearLayout>
 
     <com.facebook.login.widget.LoginButton
@@ -103,7 +99,7 @@
         android:layout_height="0dp" />
 
     <!--<com.google.android.gms.common.SignInButton-->
-        <!--android:id="@+id/google_original_btn"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="0dp" />-->
+    <!--android:id="@+id/google_original_btn"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="0dp" />-->
 </FrameLayout>

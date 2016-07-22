@@ -94,9 +94,9 @@ public class AppUtils {
         return new String(text);
     }
 
-    public static String gerenateDateFormat(){
+    public static String generateTimeStamp(){
         Date date= Calendar.getInstance().getTime();
-        SimpleDateFormat dateFormat=new SimpleDateFormat("hh:mm:ss dd:MM:yyyy");
+        SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         return dateFormat.format(date);
     }
 }

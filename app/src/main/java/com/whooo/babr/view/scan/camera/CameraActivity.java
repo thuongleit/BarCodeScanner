@@ -1,7 +1,6 @@
 package com.whooo.babr.view.scan.camera;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -17,8 +16,6 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -30,7 +27,6 @@ import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.scan.result.ResultActivity;
 import com.whooo.babr.view.widget.CameraPreview;
-import com.whooo.babr.view.widget.ViewFinderView;
 import com.whooo.babr.vo.Product;
 
 import net.sourceforge.zbar.Config;
@@ -47,20 +43,12 @@ import javax.inject.Inject;
 import timber.log.Timber;
 
 public class CameraActivity extends BaseActivity implements CameraContract.View, Camera.PreviewCallback{
-    public static final String EXTRA_DATA = "exData";
+    public static final String EXTRA_DATA = "EXTRA_DATA";
     private static final int REQUEST_RESULT_ACTIVITY = 1;
 
     //views
     private FrameLayout mCameraPreview;
     private Toolbar mToolbar;
-    private ViewFinderView mFinderView;
-    private FrameLayout mParentPreview;
-
-
-    private static final Interpolator INTERPOLATOR = new DecelerateInterpolator();
-
-    private static final int REQUEST_CAMERA = 1;
-
 
     @Inject
     CameraContract.Presenter mCameraPresenter;
@@ -73,7 +61,7 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
     private Handler mAutoFocusHandler;
     private boolean mPreviewing = true;
     private boolean mFlash = false;
-    private ProgressDialog mProgressDialog;
+    private AlertDialog mProgressDialog;
 
     private Runnable mDoAutoFocus = new Runnable() {
         public void run() {
@@ -104,7 +92,6 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
         initializeInjector();
         setupViews(binding);
         mAutoFocusHandler = new Handler();
-       // mCameraPresenter.searchProducts("631839");
         // Create and configure the ImageScanner;
         setupScanner();
         //Create and Configure Camera
@@ -138,10 +125,9 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_camera, menu);
+        getMenuInflater().inflate(R.menu.camera, menu);
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -180,8 +166,7 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
     @Override
     public void showProgress(boolean show) {
         if (mProgressDialog == null) {
-            mProgressDialog = DialogFactory.createProgressDialog(mContext, R.string.progress_text_please_wait,
-                    R.string.progress_text_searching_products);
+            mProgressDialog = DialogFactory.createProgressDialog(mContext);
         }
 
         if (show) {
@@ -222,12 +207,10 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
     private void setupViews(ActivityCameraBinding binding) {
         mToolbar = binding.toolbar;
         mCameraPreview = binding.preview;
-        mFinderView = binding.viewFinder;
         //mParentPreview = binding.;
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
     }
 
     private void initializeInjector() {

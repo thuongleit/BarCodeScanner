@@ -4,8 +4,10 @@ import android.app.Application;
 import android.content.Context;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.jokotech.babr.data.remote.DebugModule;
 import com.squareup.picasso.Picasso;
 import com.whooo.babr.config.Config;
+import com.whooo.babr.data.cart.CartRepository;
 import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.data.product.SearchService;
 import com.whooo.babr.data.remote.ApiModule;
@@ -15,13 +17,14 @@ import com.whooo.babr.data.remote.searchupc.SearchUpcParseService;
 import com.whooo.babr.data.remote.upcdatabase.UpcDatabaseParseService;
 import com.whooo.babr.data.remote.upcitemdb.UpcItemDbParseService;
 import com.whooo.babr.data.remote.walmartlabs.WalmartlabsParseService;
+import com.whooo.babr.util.CircleTransform;
 
 import javax.inject.Singleton;
 
 import dagger.Component;
 
 @Singleton
-@Component(modules = {ApplicationModule.class, ApiModule.class})
+@Component(modules = {ApplicationModule.class, DebugModule.class, ApiModule.class})
 public interface ApplicationComponent extends android.databinding.DataBindingComponent {
 
     Application application();
@@ -38,6 +41,8 @@ public interface ApplicationComponent extends android.databinding.DataBindingCom
     SearchService searchService();
 
     ProductRepository productRepository();
+
+    CartRepository cartRepository();
 
     AmazonParseService.RetrofitService amazonService();
 
@@ -60,6 +65,8 @@ public interface ApplicationComponent extends android.databinding.DataBindingCom
     WalmartlabsParseService walmartParseService();
 
     ParseServiceOK appService();
+
+    CircleTransform imageTransform();
 
 //    FirebaseUtils firebaseUtils();
 //

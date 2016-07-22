@@ -1,18 +1,30 @@
 package com.whooo.babr.view.scan.result;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.whooo.babr.R;
 import com.whooo.babr.databinding.ActivitySearchResultBinding;
+import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.widget.DividerItemDecoration;
@@ -27,12 +39,18 @@ public class ResultActivity extends BaseActivity implements ResultContract.View 
     public static final String EXTRA_DATA = "EXTRA_DATA";
 
     private RecyclerView mRecyclerView;
-    private Toolbar mToolbar;
 
     private ArrayList<Product> mProducts = new ArrayList<>();
 
     @Inject
     ResultContract.Presenter mPresenter;
+    @NonNull
+    private Context mContext;
+    @Nullable
+    private AlertDialog mProgressDialog;
+
+    @NonNull
+    private CoordinatorLayout mLayoutCoordinator;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -43,18 +61,19 @@ public class ResultActivity extends BaseActivity implements ResultContract.View 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivitySearchResultBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_search_result);
+        mContext = this;
+
 
         mProducts = getIntent().getParcelableArrayListExtra(EXTRA_DATA);
         if (mProducts == null) {
-            // TODO: 7/9/16 handle empty state
-            // FIXME: 7/9/16 no empty list?
+            showInAppError();
             return;
         }
         initializeInjector();
         injectViews(binding);
         setUpRecyclerView();
-
         binding.setViewmodel(mPresenter.getViewModel());
+        binding.setPresenter(mPresenter);
     }
 
     private void initializeInjector() {
@@ -84,8 +103,9 @@ public class ResultActivity extends BaseActivity implements ResultContract.View 
     }
 
     private void injectViews(ActivitySearchResultBinding binding) {
-        mToolbar = binding.toolbar;
+        Toolbar mToolbar = binding.toolbar;
         mRecyclerView = binding.recyclerView;
+        mLayoutCoordinator = binding.layoutCoordinator;
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -100,17 +120,20 @@ public class ResultActivity extends BaseActivity implements ResultContract.View 
 
     @Override
     public void showNetworkError() {
-
+        DialogFactory.
+                createSimpleOkErrorDialog(mContext, R.string.dialog_error_title, R.string.dialog_internet_disconnnect_error).show();
     }
 
     @Override
     public void showInAppError() {
-
+        DialogFactory
+                .createSimpleOkErrorDialog(mContext, R.string.dialog_error_title, R.string.dialog_error_general_message).show();
     }
 
     @Override
     public void requestFailed(String message) {
-
+        DialogFactory
+                .createGenericErrorDialog(mContext, message).show();
     }
 
     @Override
@@ -119,5 +142,36 @@ public class ResultActivity extends BaseActivity implements ResultContract.View 
         intent.putParcelableArrayListExtra(EXTRA_DATA, (ArrayList<? extends Parcelable>) products);
         setResult(Activity.RESULT_OK, intent);
         finish();
+    }
+
+    @Override
+    public void showProgress(boolean show) {
+        if (mProgressDialog == null) {
+            mProgressDialog = DialogFactory.createProgressDialog(mContext);
+            mProgressDialog.setOnCancelListener(dialog -> mPresenter.unsubscribe());
+        }
+
+        if (show) {
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void addPendingRemove(int position, Product product) {
+        final Snackbar snackbar = Snackbar.make(mLayoutCoordinator, "Item deleted", Snackbar.LENGTH_LONG)
+                .setActionTextColor(ContextCompat.getColor(mContext, R.color.white))
+                .setAction("Undo", view -> {
+                    mPresenter.undoRemovedProduct(position, product);
+                });
+
+        View view = snackbar.getView();
+        TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+        tv.setTextColor(Color.WHITE);
+        snackbar.show();
+
+        Handler handler = new Handler();
+        handler.postDelayed(() -> snackbar.dismiss(), 2000);
     }
 }

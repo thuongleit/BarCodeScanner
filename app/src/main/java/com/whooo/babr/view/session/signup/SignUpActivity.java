@@ -1,10 +1,10 @@
 package com.whooo.babr.view.session.signup;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
@@ -31,7 +31,7 @@ public class SignUpActivity extends BaseActivity implements SignUpContract.View,
     @Inject
     SignUpContract.Presenter mSignUpPresenter;
 
-    private ProgressDialog mProgressDialog;
+    private AlertDialog mProgressDialog;
     private EditText mInputEmail;
     private EditText mInputPassword;
     private EditText mInputName;
@@ -109,8 +109,7 @@ public class SignUpActivity extends BaseActivity implements SignUpContract.View,
     @Override
     public void showProgress(boolean show) {
         if (mProgressDialog == null) {
-            mProgressDialog = DialogFactory
-                    .createProgressDialog(this, R.string.dialog_processing_title, R.string.dialog_processing_message);
+            mProgressDialog = DialogFactory.createProgressDialog(this);
         }
         if (show) {
             mProgressDialog.show();

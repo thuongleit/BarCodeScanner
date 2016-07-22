@@ -1,22 +1,22 @@
 <resources>
 
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:textColorSecondary">@color/black_alpha_54</item>
-        <item name="android:windowBackground">@color/black_12</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="colorControlActivated">@color/accent</item>
+        <item name="colorControlHighlight">@color/white</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:textColor">@color/black_alpha_87</item>
-        <item name="android:textColorTertiary">@color/black_alpha_38</item>
+        <item name="android:textColor">@color/primary_dark</item>
         <item name="colorButtonNormal">@color/button_color_state</item>
         <item name="android:buttonStyle">@style/AppTheme.ButtonStyle</item>
-    </style>
-    <style name="AppTheme" parent="AppTheme.Base">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorControlActivated">@color/colorAccent</item>
-        <item name="colorControlHighlight">@color/white</item>
         <item name="windowActionModeOverlay">true</item>
     </style>
+
+    <style name="AppTheme" parent="AppTheme.Base">
+
+    </style>
+
     <style name="AppTheme.ButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:textColor">@color/button_text_state</item>
     </style>
@@ -35,7 +35,7 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
-    <style name="Login"/>
+    <style name="Login" />
 
     <style name="Login.InputEditTextStyle" parent="Login">
         <item name="android:textCursorDrawable">@null</item>
@@ -45,7 +45,7 @@
         <item name="android:paddingRight">15dp</item>
         <item name="android:paddingBottom">10dp</item>
         <item name="android:singleLine">true</item>
-        <item name="android:textColorHint">@color/hint_color</item>
+        <item name="android:textColorHint">@color/hint_color_text</item>
     </style>
 
     <style name="Login.ButtonStyle" parent="Login">
@@ -59,18 +59,18 @@
     <!--Dialog style-->
     <style name="menu_labels_style">
         <item name="android:background">@drawable/fab_label_background</item>
-        <item name="android:textColor">@color/black_54</item>
+        <item name="android:textColor">@color/secondary_text</item>
     </style>
 
     <style name="MyAlertDialogAppCompatStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/accent</item>
         <item name="android:windowTitleStyle">@style/TitleDialogTextStyle</item>
         <item name="android:textColorPrimary">#FFFFFF</item>
-        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:background">@color/primary</item>
     </style>
 
     <style name="TitleDialogTextStyle" parent="Base.DialogWindowTitle.AppCompat">
-        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textColor">@color/accent</item>
     </style>
 
     <style name="ButtonStyle">
@@ -84,7 +84,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textColor">@color/accent</item>
     </style>
 
     <style name="Babr.Card" parent="CardView">
@@ -93,8 +93,6 @@
         <item name="cardPreventCornerOverlap">false</item>
         <!--<item name="cardElevation">@dimen/card_elevation</item>-->
     </style>
-
-
 
 
 </resources>

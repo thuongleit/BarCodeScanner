@@ -10,18 +10,14 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
-    compileOptions.encoding = 'UTF-8' // write your encoding here
 
     defaultConfig {
         applicationId "com.whooo.babr"
-        vectorDrawables.useSupportLibrary = true
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
-        aaptOptions {
-            additionalParameters "--no-version-vectors"
-        }
+
         renderscriptTargetApi 19
         renderscriptSupportModeEnabled true
 
@@ -98,10 +94,6 @@ android {
         disable 'IconMissingDensityFolder'  //For testing purpose. This is safe to remove.
     }
 
-    retrolambda {
-        jvmArgs '-noverify'
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -123,9 +115,7 @@ dependencies {
     //firebase
     compile "com.google.firebase:firebase-core:$rootProject.playServices" //analytics
     compile "com.google.firebase:firebase-database:$rootProject.playServices"
-    compile "com.google.firebase:firebase-storage:$rootProject.playServices"
     compile "com.google.firebase:firebase-auth:$rootProject.playServices"
-    compile "com.google.firebase:firebase-config:$rootProject.playServices"
     compile "com.google.firebase:firebase-crash:$rootProject.playServices"
 
     //google play services
@@ -154,26 +144,13 @@ dependencies {
     // saving view state
     compile "frankiesardo:icepick:$rootProject.icepick"
     apt "frankiesardo:icepick:$rootProject.icepick"
-    apt "com.google.guava:guava:$rootProject.guavaVersion"
     //facebook
     compile 'com.facebook.android:facebook-android-sdk:4.3.0'
-    compile 'com.pnikosis:materialish-progress:1.7'
-    //should remove because this lib is too large
-    compile 'com.nineoldandroids:library:2.4.0'
-    //should remove because this lib is too large
-    compile 'com.daimajia.slider:library:1.1.5@aar'
-    compile 'com.miguelcatalan:materialsearchview:1.4.0'
-    compile "org.greenrobot:eventbus:3.0.0"
 
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
-    compile 'com.pnikosis:materialish-progress:1.7'
-    compile 'com.quinny898.library.persistentsearch:library:1.1.0-SNAPSHOT'
     compile 'com.github.kenglxn.QRGen:javase:2.1.0'
-    compile 'com.miguelcatalan:materialsearchview:1.4.0'
     compile 'com.github.paolorotolo:appintro:3.3.0'
-    compile 'com.nineoldandroids:library:2.4.0'
-    compile 'com.bignerdranch.android:recyclerview-multiselect:0.2'
-    compile 'com.getbase:floatingactionbutton:1.10.1'
+    compile 'com.miguelcatalan:materialsearchview:1.4.0'
     compile 'com.android.support:multidex:1.0.1'
 
     // debug tools
