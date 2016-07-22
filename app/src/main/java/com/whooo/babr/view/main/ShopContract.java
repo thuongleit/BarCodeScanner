@@ -3,7 +3,6 @@ package com.whooo.babr.view.main;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.base.BaseView;
 import com.whooo.babr.view.binding.ItemTouchHandler;
-import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 public interface ShopContract {
@@ -26,7 +25,9 @@ public interface ShopContract {
     interface Presenter extends BasePresenter {
         void getProducts();
 
-        void checkout(Cart cart);
+        void checkout(String cartName);
+
+        void addToPending(String cartName);
 
         void removeProducts(Product product);
 

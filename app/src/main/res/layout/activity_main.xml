@@ -36,7 +36,8 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             app:headerLayout="@layout/nav_main"
-            app:itemIconTint="@color/accent"
+            app:itemIconTint="@color/primary"
+            app:insetForeground="@color/accent"
             app:menu="@menu/nav_drawer" />
 
     </android.support.v4.widget.DrawerLayout>

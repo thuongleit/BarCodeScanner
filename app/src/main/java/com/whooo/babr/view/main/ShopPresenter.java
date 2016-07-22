@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import com.google.firebase.FirebaseNetworkException;
 import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.view.binding.ItemTouchHandler;
-import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
@@ -78,22 +77,13 @@ class ShopPresenter implements ShopContract.Presenter {
 
 
     @Override
-    public void checkout(Cart cart) {
-        mView.showStandaloneProgress(true);
-        mSubscriptions.add(
-                mProductRepository.checkout(cart, mViewModel.data)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .unsubscribeOn(Schedulers.io())
-                        .subscribe(key -> {
-                                    mView.onCheckoutSuccess(key);
-                                    mView.onEmptyResponse();
-                                    mViewModel.setData(new ArrayList<>());
-                                }
-                                , e -> {
-                                    e.printStackTrace();
-                                    mView.showStandaloneProgress(false);
-                                }, () -> mView.showStandaloneProgress(false)));
+    public void checkout(String cartName) {
+        checkout(cartName, false);
+    }
+
+    @Override
+    public void addToPending(String cartName) {
+        checkout(cartName, true);
     }
 
 
@@ -144,5 +134,23 @@ class ShopPresenter implements ShopContract.Presenter {
     @Override
     public void undoRemovedProduct(int position, Product product) {
         mViewModel.addItem(position, product);
+    }
+
+    private void checkout(String cartName, boolean askToPending) {
+        mView.showStandaloneProgress(true);
+        mSubscriptions.add(
+                mProductRepository.checkout(cartName, mViewModel.data, askToPending)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .unsubscribeOn(Schedulers.io())
+                        .subscribe(key -> {
+                                    mView.onCheckoutSuccess(key);
+                                    mView.onEmptyResponse();
+                                    mViewModel.setData(new ArrayList<>());
+                                }
+                                , e -> {
+                                    e.printStackTrace();
+                                    mView.showStandaloneProgress(false);
+                                }, () -> mView.showStandaloneProgress(false)));
     }
 }

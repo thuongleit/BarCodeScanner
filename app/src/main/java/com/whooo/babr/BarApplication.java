@@ -1,5 +1,6 @@
 package com.whooo.babr;
 
+import android.databinding.DataBindingUtil;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
@@ -35,6 +36,8 @@ public class BarApplication extends MultiDexApplication {
                 .builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
+
+        DataBindingUtil.setDefaultComponent(mAppComponent);
     }
 
     public ApplicationComponent getAppComponent() {

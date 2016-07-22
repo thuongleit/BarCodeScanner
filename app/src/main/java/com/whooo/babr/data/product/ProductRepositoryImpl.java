@@ -1,13 +1,12 @@
 package com.whooo.babr.data.product;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.whooo.babr.di.ApplicationScope;
+import com.whooo.babr.util.AppUtils;
 import com.whooo.babr.util.FirebaseUtils;
 import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
@@ -15,21 +14,15 @@ import com.whooo.babr.vo.Product;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import rx.Observable;
 import rx.subscriptions.Subscriptions;
 
-public class FirebaseProductRepository implements ProductRepository {
+public class ProductRepositoryImpl implements ProductRepository {
 
     @NonNull
     private final SearchService mSearchService;
 
-    @Inject
-    @ApplicationScope
-    Context mContext;
-
-    public FirebaseProductRepository(@NonNull SearchService searchService) {
+    public ProductRepositoryImpl(@NonNull SearchService searchService) {
         mSearchService = searchService;
     }
 
@@ -128,23 +121,29 @@ public class FirebaseProductRepository implements ProductRepository {
                 }
             });
         });
-
     }
 
     @Override
-    public Observable<String> checkout(Cart cart, List<Product> products) {
+    public Observable<String> checkout(String cartName, List<Product> products, boolean askToPending) {
+
         return Observable.create(subscriber -> {
             DatabaseReference cartRef = FirebaseUtils.getCartRef();
             DatabaseReference productsRef = FirebaseUtils.getProductsRef();
 
-            String getKey = cartRef.push().getKey();
-            cart.objectId = getKey;
             String userId = FirebaseUtils.getCurrentUserId();
             if (userId == null) {
                 // TODO: 7/18/16 handle userId == null
                 return;
             }
+            Cart cart = new Cart();
             cart.userId = userId;
+            String getKey = cartRef.push().getKey();
+            cart.objectId = getKey;
+            cart.name = cartName;
+            cart.timestamp = AppUtils.generateTimeStamp();
+            cart.size = products.size();
+            cart.pending = askToPending;
+
             cartRef
                     .child(cart.objectId)
                     .setValue(cart, (databaseError, dbRef) -> {
@@ -156,13 +155,12 @@ public class FirebaseProductRepository implements ProductRepository {
                         //update child products
                         for (Product product : products) {
                             cartRef.child(cart.objectId).child("products").child(product.objectId)
-                                    .setValue(product, (databaseError1, databaseReference1) -> {
-                                        productsRef.child(userId).child(product.objectId).removeValue();
-                                    });
+                                    .setValue(product, (databaseError1, databaseReference1) ->
+                                            productsRef.child(userId).child(product.objectId).removeValue());
                         }
+                        subscriber.onNext(getKey);
+                        subscriber.onCompleted();
                     });
-            subscriber.onNext(getKey);
-            subscriber.onCompleted();
         });
     }
 }

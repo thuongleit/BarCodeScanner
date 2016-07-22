@@ -28,11 +28,17 @@ public class FirebaseUtils {
 
     @Nullable
     public static String getCurrentUserId() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = getCurrentUser();
         if (user != null) {
             return user.getUid();
         }
         return null;
+    }
+
+
+    @Nullable
+    public static FirebaseUser getCurrentUser() {
+      return FirebaseAuth.getInstance().getCurrentUser();
     }
 
     @Nullable
@@ -83,6 +89,10 @@ public class FirebaseUtils {
         return PATH + DbInstance.KEY_CARTS + PATH;
     }
 
+    public static DatabaseReference getHistoryProductsRef(String cartId) {
+        return getBaseDatabaseRef(DbInstance.KEY_CARTS).child(cartId).child("products");
+    }
+
     /**
      * This method add to subsriber the proper error according to the
      *
@@ -100,6 +110,10 @@ public class FirebaseUtils {
             default:
                 subscriber.onError(dbError.toException());
         }
+    }
+
+    public static DatabaseReference getPendingCartRef() {
+        return null;
     }
 
     public enum DbInstance {

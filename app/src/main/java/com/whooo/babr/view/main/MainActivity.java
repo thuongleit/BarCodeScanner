@@ -9,30 +9,31 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.whooo.babr.R;
 import com.whooo.babr.databinding.ActivityMainBinding;
-import com.whooo.babr.util.dialog.DialogFactory;
+import com.whooo.babr.util.FirebaseUtils;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
+import com.whooo.babr.view.cart.CartFragment;
 import com.whooo.babr.view.scan.camera.CameraActivity;
 import com.whooo.babr.view.session.signin.SignInActivity;
-import com.whooo.babr.vo.Cart;
 
 import java.util.concurrent.TimeUnit;
 
@@ -41,20 +42,19 @@ import javax.inject.Inject;
 import rx.subjects.PublishSubject;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
-
-    private DrawerLayout mDrawerLayout;
-    private NavigationView mNavigationView;
-    private FloatingActionButton mFabScan;
-    private Toolbar mToolbar;
-    private PublishSubject<Integer> mNavSubject = PublishSubject.create();
-
     @Inject
     ShopContract.Presenter mPresenter;
 
     private boolean mDoubleBackToExitPressedOnce = false;
-    private MaterialSearchView mSearchView;
+    private PublishSubject<Integer> mNavSubject = PublishSubject.create();
     private Context mContext;
-    private FrameLayout mLayContent;
+
+    private MaterialSearchView mSearchView;
+    private DrawerLayout mDrawerLayout;
+    private NavigationView mNavigationView;
+    private FloatingActionButton mFabScan;
+    private Toolbar mToolbar;
+    private FrameLayout mLayoutContent;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -67,20 +67,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mContext = this;
 
-
         mToolbar = binding.appBarMainView.viewToolbar.toolbar;
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         mNavigationView = binding.navView;
         mDrawerLayout = binding.drawerLayout;
-        mLayContent = binding.appBarMainView.layoutContent;
+        mLayoutContent = binding.appBarMainView.layoutContent;
         mFabScan = binding.appBarMainView.fabScan;
         mSearchView = binding.appBarMainView.viewToolbar.searchView;
 
         setupFab();
         setupNavigationView();
-        mNavSubject.onNext(R.id.nav_action_shop);
+        setupSearchView();
         mNavSubject
                 .distinctUntilChanged()
                 .delay(350, TimeUnit.MILLISECONDS)
@@ -91,8 +90,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                             fragment = ShopFragment.createInstance();
                             break;
                         case R.id.nav_action_pending_carts:
+                            fragment = CartFragment.createInstance(true); //get pending carts
                             break;
                         case R.id.nav_action_history:
+                            fragment = CartFragment.createInstance(false); //get history carts
                             break;
                         default:
                             break;
@@ -103,6 +104,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         transaction.replace(R.id.layout_content, fragment).commitAllowingStateLoss();
                     }
                 });
+        mNavSubject.onNext(R.id.nav_action_shop);
     }
 
     private void setupFab() {
@@ -126,56 +128,30 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void setupSearchView() {
-//        openSearch();
+        openSearch();
         mSearchView.setCursorDrawable(R.drawable.custom_cursor);
         mSearchView.setEllipsize(true);
     }
 
+    public void openSearch() {
+        mSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchListenerObserver(query);
 
-    private void performCheckout(Cart cart) {
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_checkout, null);
-        TextInputEditText inputCartName = (TextInputEditText) dialogView.findViewById(R.id.input_cart_name);
-        inputCartName.setText(cart.timestamp);
-        AlertDialog dialogCheckout = new AlertDialog.Builder(this)
-                .setView(dialogView)
-                .setPositiveButton(R.string.dialog_action_ok, ((dialog, which) -> {
-                    String cartName = inputCartName.getText().toString();
-                    if (TextUtils.isEmpty(cartName)) {
-                        DialogFactory.createGenericErrorDialog(mContext, "You have to input cart name.").show();
-                    } else {
-                        inputCartName.setError(null);
-                        dialog.dismiss();
-                        cart.name = cartName;
-                        mPresenter.checkout(cart);
-                    }
-                })).setNegativeButton(R.string.dialog_action_cancel, ((dialog, which1) -> {
-                    dialog.dismiss();
-                }))
-                .setNeutralButton("Save for later", (dialog, which) -> {
+                return false;
+            }
 
-                }).create();
-        dialogCheckout.show();
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchListenerObserver(newText);
+
+                return false;
+            }
+        });
     }
 
-//    public void openSearch() {
-//        mSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                searchListenerObserver(query);
-//
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                searchListenerObserver(newText);
-//
-//                return false;
-//            }
-//        });
-//    }
-
-//    private void searchListenerObserver(String query) {
+    private void searchListenerObserver(String query) {
 //        Subscription mSubscription = Observable.just(query)
 //                .debounce(400, TimeUnit.SECONDS)
 //                .observeOn(AndroidSchedulers.mainThread())
@@ -185,7 +161,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 ////                        mAdapter.filter(s);
 //                    }
 //                });
-//    }
+    }
 
 
     @Override
@@ -215,9 +191,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mNavSubject.onNext(item.getItemId());
                 break;
             case R.id.nav_action_login:
+                if (FirebaseUtils.getCurrentUser() != null) {
+                    FirebaseAuth.getInstance().signOut();
+                    Toast.makeText(mContext, "Signed out", Toast.LENGTH_SHORT).show();
+                }
                 Intent i = new Intent(this, SignInActivity.class);
                 startActivity(i);
-                this.finish();
+                finish();
                 break;
 
         }
@@ -232,7 +212,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 float moveFactor = (drawerView.getWidth() * slideOffset);
-                mLayContent.setTranslationX(moveFactor);
+                mLayoutContent.setTranslationX(moveFactor);
                 super.onDrawerSlide(drawerView, slideOffset);
             }
         };
@@ -241,5 +221,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         drawerToggle.syncState();
 
         mNavigationView.setNavigationItemSelectedListener(this);
+        FirebaseUser currentUser = FirebaseUtils.getCurrentUser();
+        if (currentUser != null) {
+            mNavigationView.getMenu().findItem(R.id.nav_action_login).setTitle("Log out");
+            if (!TextUtils.isEmpty(currentUser.getEmail())) {
+                ((TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_text_username)).setText(currentUser.getEmail());
+            }
+        }
     }
 }

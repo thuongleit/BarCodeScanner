@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 
 import com.whooo.babr.R;
 import com.whooo.babr.databinding.FragmentProductBinding;
+import com.whooo.babr.util.AppUtils;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.util.dialog.DialogQrcodeHistory;
 import com.whooo.babr.view.base.BaseFragment;
@@ -88,15 +91,11 @@ public class ShopFragment extends BaseFragment implements ShopContract.View {
 //                openSearch();
                 return true;
             case R.id.action_checkout:
-//                if (mViewModel.data.isEmpty()) {
-//                    DialogFactory.createGenericErrorDialog(mContext, "You don't have any items!").show();
-//                } else {
-//                    Cart cart = new Cart();
-//                    cart.name = AppUtils.generateTimeStamp();
-//                    cart.timestamp = cart.name;
-//
-//                    performCheckout(cart);
-//                }
+                if (mPresenter.getViewModel().data.isEmpty()) {
+                    DialogFactory.createGenericErrorDialog(mContext, "You don't have any items!").show();
+                } else {
+                    performCheckout();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -202,5 +201,38 @@ public class ShopFragment extends BaseFragment implements ShopContract.View {
 
     private void showToast(String message) {
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void performCheckout() {
+        final String[] cartName = {AppUtils.generateTimeStamp()};
+
+        View dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_checkout, null);
+        TextInputEditText inputCartName = (TextInputEditText) dialogView.findViewById(R.id.input_cart_name);
+        inputCartName.setText(cartName[0]);
+        AlertDialog dialogCheckout = new AlertDialog.Builder(mContext)
+                .setView(dialogView)
+                .setPositiveButton(R.string.dialog_action_ok, ((dialog, which) -> {
+                    cartName[0] = inputCartName.getText().toString();
+                    if (TextUtils.isEmpty(cartName[0])) {
+                        DialogFactory.createGenericErrorDialog(mContext, "You have to input cart name.").show();
+                    } else {
+                        inputCartName.setError(null);
+                        dialog.dismiss();
+                        mPresenter.checkout(cartName[0]);
+                    }
+                })).setNegativeButton(R.string.dialog_action_cancel, ((dialog, which1) -> {
+                    dialog.dismiss();
+                }))
+                .setNeutralButton("Save for later", (dialog, which) -> {
+                    cartName[0] = inputCartName.getText().toString();
+                    if (TextUtils.isEmpty(cartName[0])) {
+                        DialogFactory.createGenericErrorDialog(mContext, "You have to input cart name.").show();
+                    } else {
+                        inputCartName.setError(null);
+                        dialog.dismiss();
+                        mPresenter.addToPending(cartName[0]);
+                    }
+                }).create();
+        dialogCheckout.show();
     }
 }

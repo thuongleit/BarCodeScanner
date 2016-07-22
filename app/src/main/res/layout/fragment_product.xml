@@ -33,7 +33,7 @@
             app:touchHandler="@{presenter.itemTouchHandler}" />
 
         <com.whooo.babr.view.widget.GoogleProgressBar
-            android:id="@+id/progress_wheel"
+            android:id="@+id/progress"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="center_horizontal|center_vertical"
