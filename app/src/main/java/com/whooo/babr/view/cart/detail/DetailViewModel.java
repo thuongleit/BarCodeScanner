@@ -8,6 +8,7 @@ import com.whooo.babr.BR;
 import com.whooo.babr.R;
 import com.whooo.babr.view.binding.ConditionalDataBinder;
 import com.whooo.babr.view.binding.ItemBinder;
+import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.List;
@@ -45,5 +46,12 @@ public class DetailViewModel extends BaseObservable {
             empty.set(false);
         }
         loading.set(false);
+    }
+
+    public void removeItem(Cart cart) {
+        data.remove(cart);
+        if (data.isEmpty()) {
+            empty.set(true);
+        }
     }
 }

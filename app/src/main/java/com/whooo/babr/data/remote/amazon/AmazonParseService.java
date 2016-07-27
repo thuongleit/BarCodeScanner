@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.whooo.babr.config.Constant;
+import com.whooo.babr.data.product.ProductSource;
 import com.whooo.babr.data.remote.ParseService;
 import com.whooo.babr.data.remote.amazon.model.AmazonApisResponse;
 import com.whooo.babr.vo.Product;
@@ -49,6 +50,7 @@ public class AmazonParseService implements ParseService {
                         product.upc = amazonProduct.attributes.upc;
                         product.imageUrl = amazonProduct.image.url;
                         product.manufacture = amazonProduct.attributes.manufacturer;
+                        product.source = ProductSource.AMAZON.getDisplay();
 
                         return Observable.just(product);
                     })
@@ -72,62 +74,6 @@ public class AmazonParseService implements ParseService {
         }
         return signedUrl;
     }
-
-//    private Observable<Product> parseProductFromSite(AmazonProduct amazonProduct) {
-//        Product product = new Product();
-//        try {
-//            Document document = Jsoup.connect(amazonProduct.detailPageURL).get();
-//
-//            //check if item is valid or not
-//            Elements spanElements = document.select("span");
-//            for (Element element : spanElements) {
-//                String idElement = element.attr("objectId");
-//                if ("productTitle".equals(idElement)) {
-//                    String productTitle = element.text();
-//                    product.name = productTitle;
-//                    product.source = "amazon.com";
-//                    product.cartId = "a";
-//                }
-//            }
-//
-//            //parsing product image
-//            Elements divElements = document.select("div");
-//            for (Element element : divElements) {
-//                String objectId = element.attr("objectId");
-//                if ("leftCol".equals(objectId)) {
-//                    element.getAllElements();
-//                    Elements imgElements = element.getElementsByTag("img");
-//                    if (imgElements != null && !imgElements.isEmpty()) {
-//                        for (Element imgElement : imgElements) {
-//                            String img = imgElement.attr("data-a-dynamic-image");
-//                            if (!"".equals(img)) {
-//                                String url = img.substring(img.indexOf("http://"), img.indexOf(".jpg")) + ".jpg";
-//                                if (url.matches(IMAGE_URL_PATTERN)) {
-//                                    product.imageUrl = url;
-//                                } else {
-//                                    url = img.substring(img.indexOf("http://"), img.indexOf(".jpeg")) + ".jpeg";
-//                                    if (url.matches(IMAGE_URL_PATTERN)) {
-//                                        product.imageUrl = url;
-//                                    } else {
-//                                        url = img.substring(img.indexOf("http://"), img.indexOf(".png")) + ".png";
-//                                        if (url.matches(IMAGE_URL_PATTERN)) {
-//                                            product.imageUrl = url;
-//                                        }
-//
-//                                    }
-//                                }
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        } catch (IOException e) {
-//            return Observable.empty();
-//        }
-//
-//        return Observable.just(product);
-//    }
 
     public interface RetrofitService {
         @GET

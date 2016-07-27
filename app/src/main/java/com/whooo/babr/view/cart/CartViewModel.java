@@ -39,7 +39,7 @@ public class CartViewModel extends BaseObservable {
         this.data.addAll(data);
         if (this.data.isEmpty()) {
             empty.set(true);
-        }else {
+        } else {
             empty.set(false);
         }
         loading.set(false);
@@ -49,5 +49,12 @@ public class CartViewModel extends BaseObservable {
         loading.set(true);
         empty.set(false);
         data.clear();
+    }
+
+    public void removeItem(Cart cart) {
+        this.data.remove(cart);
+        if (this.data.isEmpty()) {
+            empty.set(true);
+        }
     }
 }

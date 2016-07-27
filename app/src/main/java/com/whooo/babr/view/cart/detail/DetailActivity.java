@@ -19,11 +19,12 @@ public class DetailActivity extends BaseActivity implements DetailContract.View 
 
     public static final String EXTRA_CART_ID = "EXTRA_CART_ID";
     public static final String EXTRA_CART_NAME = "EXTRA_CART_NAME";
-    @Inject
-    DetailContract.Presenter mPresenter;
 
     private String mId;
     private String mProductName;
+
+    @Inject
+    DetailContract.Presenter mPresenter;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -41,7 +42,7 @@ public class DetailActivity extends BaseActivity implements DetailContract.View 
         }
         initInjector();
         initViews(binding);
-        binding.setPresenter(mPresenter);
+        binding.setPresenter((DetailPresenter) mPresenter);
         binding.setViewModel(mPresenter.getViewModel());
     }
 

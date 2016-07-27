@@ -35,7 +35,6 @@ public class UpcItemDbParseService implements ParseService {
                     Product product = new Product();
 
                     product.source = ProductSource.UPC_ITEM_DB.getDisplay();
-                    product.cartId = "a";
                     product.name = childNode.title;
                     product.ean = childNode.ean;
                     product.upc = childNode.upc;

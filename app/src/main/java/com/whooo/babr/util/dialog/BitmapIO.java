@@ -1,4 +1,4 @@
-package com.whooo.babr.view.qrgenerate;
+package com.whooo.babr.util.dialog;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -10,7 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class BitmapIO {
+class BitmapIO {
 
     public static boolean write(Bitmap image, String type, OutputStream stream) throws IOException {
         if (type.equals(ImageType.PNG)) {

@@ -12,6 +12,5 @@ public class DetailContract {
     public interface Presenter extends BasePresenter{
 
         DetailViewModel getViewModel();
-
     }
 }

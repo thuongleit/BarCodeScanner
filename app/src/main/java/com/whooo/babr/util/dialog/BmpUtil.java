@@ -1,4 +1,4 @@
-package com.whooo.babr.view.qrgenerate;
+package com.whooo.babr.util.dialog;
 
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 
-public class BmpUtil {
+class BmpUtil {
 
     private static final int BMP_WIDTH_OF_TIMES = 4;
     private static final int BYTE_PER_PIXEL = 3;

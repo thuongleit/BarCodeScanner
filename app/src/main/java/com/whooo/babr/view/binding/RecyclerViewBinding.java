@@ -12,6 +12,7 @@ public class RecyclerViewBinding {
     private static final int KEY_LONG_CLICK_HANDLER = -125;
     private static final int KEY_ITEM_TOUCH_HANDLER = -126;
     private static final int KEY_ENABLE_SWIPE = -127;
+    private static final int KEY_CHILD_ITEMS_CLICK_BINDER = -128;
 
     @SuppressWarnings("unchecked")
     @BindingAdapter(value = "items", requireAll = true)
@@ -31,6 +32,7 @@ public class RecyclerViewBinding {
         ClickHandler<T> clickHandler = (ClickHandler<T>) recyclerView.getTag(KEY_CLICK_HANDLER);
         LongClickHandler<T> longClickHandler = (LongClickHandler<T>) recyclerView.getTag(KEY_LONG_CLICK_HANDLER);
         ItemTouchHandler<T> itemTouchHandler = (ItemTouchHandler<T>) recyclerView.getTag(KEY_ITEM_TOUCH_HANDLER);
+        ChildItemsClickBinder<T> childItemsClickBinder = (ChildItemsClickBinder<T>) recyclerView.getTag(KEY_CHILD_ITEMS_CLICK_BINDER);
         Boolean enableSwipe = (Boolean) recyclerView.getTag(KEY_ENABLE_SWIPE);
 
         BindingRecyclerViewAdapter<T> adapter = new BindingRecyclerViewAdapter<>(itemViewMapper, items);
@@ -42,6 +44,10 @@ public class RecyclerViewBinding {
         }
         if (itemTouchHandler != null) {
             adapter.setTouchHandler(itemTouchHandler);
+        }
+
+        if (childItemsClickBinder != null) {
+            adapter.setChildItemsClickBinder(childItemsClickBinder);
         }
 
         recyclerView.setAdapter(adapter);
@@ -88,9 +94,19 @@ public class RecyclerViewBinding {
 
     @SuppressWarnings("unchecked")
     @BindingAdapter(value = "enableSwipe", requireAll = false)
-    public static <T> void setHandler(RecyclerView recyclerView, Boolean enableSwipe) {
+    public static void setHandler(RecyclerView recyclerView, Boolean enableSwipe) {
         if (enableSwipe) {
             recyclerView.setTag(KEY_ENABLE_SWIPE, enableSwipe);
+        }
+    }
+
+    @BindingAdapter(value = "childItemsClickBinder", requireAll = false)
+    public static <T> void setChildItemsClickHandler(RecyclerView recyclerView, ChildItemsClickBinder<T> binder) {
+        BindingRecyclerViewAdapter<T> adapter = (BindingRecyclerViewAdapter<T>) recyclerView.getAdapter();
+        if (adapter != null) {
+            adapter.setChildItemsClickBinder(binder);
+        } else {
+            recyclerView.setTag(KEY_CHILD_ITEMS_CLICK_BINDER, binder);
         }
     }
 }

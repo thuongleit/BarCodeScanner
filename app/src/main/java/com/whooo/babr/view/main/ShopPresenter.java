@@ -8,6 +8,7 @@ import com.whooo.babr.data.product.ProductRepository;
 import com.whooo.babr.view.binding.ItemTouchHandler;
 import com.whooo.babr.vo.Product;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import rx.android.schedulers.AndroidSchedulers;
@@ -89,17 +90,22 @@ class ShopPresenter implements ShopContract.Presenter {
 
     @Override
     public void removeProducts(Product product) {
-        mProductRepository.removeProduct(product).subscribeOn(Schedulers.io())
+        mSubscriptions.add(mProductRepository
+                .removeProduct(product).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(Schedulers.io())
                 .subscribe(isSuccess -> {
-                            if (isSuccess) {
-                                mView.onRemoveProductsSuccess();
-                            }
-                        }, Throwable::printStackTrace
-                        , () -> {
-
-                        });
+                    if (isSuccess) {
+                        mView.onRemoveProductsSuccess();
+                    }
+                }, e -> {
+                    Timber.e(e, "Error in removing out product", product.objectId);
+                    if (e instanceof IOException) {
+                        mView.showNetworkError();
+                    } else {
+                        mView.showInAppError();
+                    }
+                }));
     }
 
     @Override
@@ -149,8 +155,13 @@ class ShopPresenter implements ShopContract.Presenter {
                                     mViewModel.setData(new ArrayList<>());
                                 }
                                 , e -> {
-                                    e.printStackTrace();
                                     mView.showStandaloneProgress(false);
+                                    Timber.e(e, "Error in check out cart %s", cartName);
+                                    if (e instanceof IOException) {
+                                        mView.showNetworkError();
+                                    } else {
+                                        mView.showInAppError();
+                                    }
                                 }, () -> mView.showStandaloneProgress(false)));
     }
 }

@@ -9,7 +9,7 @@
 
         <variable
             name="presenter"
-            type="com.whooo.babr.view.cart.detail.DetailContract.Presenter" />
+            type="com.whooo.babr.view.cart.detail.DetailPresenter" />
 
         <variable
             name="viewModel"

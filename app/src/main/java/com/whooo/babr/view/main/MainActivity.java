@@ -80,6 +80,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setupFab();
         setupNavigationView();
         setupSearchView();
+
         mNavSubject
                 .distinctUntilChanged()
                 .delay(350, TimeUnit.MILLISECONDS)
@@ -104,7 +105,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         transaction.replace(R.id.layout_content, fragment).commitAllowingStateLoss();
                     }
                 });
-        mNavSubject.onNext(R.id.nav_action_shop);
+        //select first nav item
+        onNavigationItemSelected(mNavigationView.getMenu().getItem(0));
     }
 
     private void setupFab() {
@@ -198,6 +200,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 Intent i = new Intent(this, MainSignInActivity.class);
                 startActivity(i);
                 finish();
+                break;
+            case R.id.nav_settings:
+            case R.id.nav_feedback:
+                Toast.makeText(MainActivity.this, "Under construction!", Toast.LENGTH_SHORT).show();
                 break;
 
         }

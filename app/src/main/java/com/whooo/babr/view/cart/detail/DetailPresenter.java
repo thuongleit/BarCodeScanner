@@ -9,7 +9,7 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-class DetailPresenter implements DetailContract.Presenter {
+public class DetailPresenter implements DetailContract.Presenter {
     private String mCartId;
     private DetailContract.View mView;
     private DetailViewModel mViewModel;
