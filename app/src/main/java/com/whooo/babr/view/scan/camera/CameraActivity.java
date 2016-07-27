@@ -167,6 +167,7 @@ public class CameraActivity extends BaseActivity implements CameraContract.View,
     public void showProgress(boolean show) {
         if (mProgressDialog == null) {
             mProgressDialog = DialogFactory.createProgressDialog(mContext);
+            mProgressDialog.setCancelable(false);
         }
 
         if (show) {

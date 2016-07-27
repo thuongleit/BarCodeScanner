@@ -1,5 +1,7 @@
 package com.whooo.babr.view.session.signup;
 
+import android.support.annotation.Nullable;
+
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.base.BaseView;
 
@@ -15,12 +17,12 @@ public interface SignUpContract {
 
         void setSignUpBtnEnable(boolean enabled);
 
-        boolean validateInput(String email, String fullname, String password);
+        boolean validateInput(@Nullable String email, @Nullable String password, @Nullable String confirmPassword);
     }
 
     interface Presenter extends BasePresenter {
 
-        void createUser(String email, String fullname, String password);
+        void createUser(@Nullable String email, @Nullable String password, @Nullable String confirmPassword);
 
     }
 }

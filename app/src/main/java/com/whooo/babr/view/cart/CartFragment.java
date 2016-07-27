@@ -2,8 +2,10 @@ package com.whooo.babr.view.cart;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,6 +18,7 @@ import android.view.ViewGroup;
 import com.whooo.babr.R;
 import com.whooo.babr.databinding.FragmentCartBinding;
 import com.whooo.babr.util.dialog.DialogFactory;
+import com.whooo.babr.util.dialog.QrCodeDialogFactory;
 import com.whooo.babr.view.base.BaseFragment;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.cart.detail.DetailActivity;
@@ -28,11 +31,12 @@ public class CartFragment extends BaseFragment implements CartContract.View {
 
     private static final String ARG_IS_NEED_PENDING = "ARG_IS_NEED_PENDING";
 
-    @Inject
-    CartContract.Presenter mPresenter;
+    private AlertDialog mProgressDialog;
 
     private boolean mIsPending;
 
+    @Inject
+    CartContract.Presenter mPresenter;
 
     public static Fragment createInstance(boolean needPending) {
         Fragment fragment = new CartFragment();
@@ -127,5 +131,42 @@ public class CartFragment extends BaseFragment implements CartContract.View {
         intent.putExtra(DetailActivity.EXTRA_CART_ID, cart.objectId);
         intent.putExtra(DetailActivity.EXTRA_CART_NAME, cart.name);
         startActivity(intent);
+    }
+
+    @Override
+    public void showProgress(boolean show) {
+        if (mProgressDialog == null) {
+            mProgressDialog = DialogFactory.createProgressDialog(getContext());
+            mProgressDialog.setCancelable(false);
+        }
+
+        if (show) {
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void showConfirmDialogInDelete(@NonNull Cart cart) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Are you sure to delete " + cart.name + "? \nIt's permanently deleted.");
+        builder.setPositiveButton(R.string.dialog_action_ok, (dialog, which) -> mPresenter.deleteCart(cart));
+        builder.setNegativeButton(R.string.dialog_action_cancel, null);
+        builder.create().show();
+    }
+
+    @Override
+    public void showConfirmDialogInCheckout(@NonNull Cart cart) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Are you sure to checkout " + cart.name + "?");
+        builder.setPositiveButton(R.string.dialog_action_ok, (dialog, which) -> mPresenter.checkout(cart));
+        builder.setNegativeButton(R.string.dialog_action_cancel, null);
+        builder.create().show();
+    }
+
+    @Override
+    public void generateQRCode(@NonNull Cart cart) {
+        QrCodeDialogFactory.create(getContext(), cart.objectId).show();
     }
 }

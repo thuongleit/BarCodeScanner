@@ -30,6 +30,7 @@
             app:clickHandler="@{presenter.clickHandler}"
             app:itemViewBinder="@{viewModel.itemViewBinder}"
             app:items="@{viewModel.data}"
+            app:childItemsClickBinder="@{presenter.childItemsClickBinder}"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <com.whooo.babr.view.widget.GoogleProgressBar

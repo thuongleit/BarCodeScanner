@@ -8,9 +8,8 @@ import dagger.Component;
 
 @PerActivity
 @Component(modules = SplashModule.class, dependencies = ApplicationComponent.class)
-public interface SplashComponent {
+interface SplashComponent {
 
     void inject(SplashActivity activity);
-
-    SplashContract.Presenter presenter();
+    
 }

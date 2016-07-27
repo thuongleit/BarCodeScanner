@@ -1,8 +1,8 @@
 package com.whooo.babr;
 
+import android.app.Application;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.Nullable;
-import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
@@ -12,7 +12,7 @@ import com.whooo.babr.di.DaggerApplicationComponent;
 
 import timber.log.Timber;
 
-public class BarApplication extends MultiDexApplication {
+public class BarApplication extends Application {
 
     static {
         System.loadLibrary("iconv");

@@ -36,8 +36,6 @@ public class SearchUpcParseService implements ParseService {
                 .flatMap(childNode -> {
                     Product product = new Product();
                     product.source = ProductSource.SEARCH_UPC.getDisplay();
-                    product.cartId = "a";
-
                     product.name = childNode.productName;
                     product.imageUrl = childNode.imageUrl;
                     product.upc = code;

@@ -1,13 +1,14 @@
 package com.whooo.babr.view.session.signup;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import timber.log.Timber;
 
-public class SignUpPresenter implements SignUpContract.Presenter {
+class SignUpPresenter implements SignUpContract.Presenter {
 
     @NonNull
     private SignUpContract.View mView;
@@ -53,10 +54,12 @@ public class SignUpPresenter implements SignUpContract.Presenter {
     }
 
     @Override
-    public void createUser(String email, String fullname, String password) {
-        if(mView.validateInput(email, fullname, password)) {
+    public void createUser(@Nullable String email, @Nullable String password, @Nullable String confirmPassword) {
+        if (mView.validateInput(email, password, confirmPassword)) {
             mView.showProgress(true);
             mView.setSignUpBtnEnable(false);
+            assert email != null;
+            assert password != null;
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {

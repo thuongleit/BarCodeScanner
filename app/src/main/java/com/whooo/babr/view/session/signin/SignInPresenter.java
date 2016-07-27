@@ -8,15 +8,16 @@ import com.google.firebase.auth.FirebaseUser;
 
 import timber.log.Timber;
 
-public class SignInPresenter implements SignInContract.Presenter {
+class SignInPresenter implements SignInContract.Presenter {
 
     @NonNull
     private SignInContract.View mView;
     @NonNull
     private final FirebaseAuth mAuth;
+
     private FirebaseAuth.AuthStateListener mAuthListener;
 
-    public SignInPresenter(SignInContract.View view, FirebaseAuth auth) {
+    public SignInPresenter(@NonNull SignInContract.View view, @NonNull FirebaseAuth auth) {
         mView = view;
         mAuth = auth;
 
@@ -58,6 +59,8 @@ public class SignInPresenter implements SignInContract.Presenter {
         if (mView.validateInput(email, password)) {
             mView.showProgress(true);
             mView.setSignInBtnEnable(false);
+            assert email != null;
+            assert password != null;
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
@@ -76,6 +79,7 @@ public class SignInPresenter implements SignInContract.Presenter {
     public void askForgotPassword(@Nullable String email) {
         if (mView.validateInput(email)) {
             mView.showProgress(true);
+            assert email != null;
             mAuth.sendPasswordResetEmail(email)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
@@ -84,7 +88,6 @@ public class SignInPresenter implements SignInContract.Presenter {
                             mView.onResetPasswordFailed(task.getException().getMessage());
                         }
                         mView.showProgress(false);
-
                     });
         }
     }

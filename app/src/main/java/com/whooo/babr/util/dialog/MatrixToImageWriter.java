@@ -1,4 +1,4 @@
-package com.whooo.babr.view.qrgenerate;
+package com.whooo.babr.util.dialog;
 
 import android.graphics.Bitmap;
 
@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class MatrixToImageWriter {
+class MatrixToImageWriter {
 
     private static final MatrixToImageConfig DEFAULT_CONFIG = new MatrixToImageConfig();
 

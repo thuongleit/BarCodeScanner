@@ -7,7 +7,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.base.BaseView;
 
-public interface SignInBaseContract {
+interface SignInBaseContract {
     interface View extends BaseView {
 
         void onSignInSuccess();
@@ -16,7 +16,7 @@ public interface SignInBaseContract {
 
         void showProgress(boolean show);
 
-        void setButtonSignInAnonymusEnable(boolean enabled);
+        void setButtonSignInAnonymousEnable(boolean enabled);
 
         void setButtonFbEnable(boolean enabled);
 

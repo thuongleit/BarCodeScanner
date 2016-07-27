@@ -27,7 +27,7 @@ import com.whooo.babr.R;
 import com.whooo.babr.databinding.FragmentProductBinding;
 import com.whooo.babr.util.AppUtils;
 import com.whooo.babr.util.dialog.DialogFactory;
-import com.whooo.babr.util.dialog.DialogQrcodeHistory;
+import com.whooo.babr.util.dialog.QrCodeDialogFactory;
 import com.whooo.babr.view.base.BaseFragment;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.widget.DividerItemDecoration;
@@ -35,10 +35,6 @@ import com.whooo.babr.vo.Product;
 
 import javax.inject.Inject;
 
-
-/**
- * Created by thuongle on 7/21/16.
- */
 public class ShopFragment extends BaseFragment implements ShopContract.View {
 
     @Inject
@@ -87,9 +83,6 @@ public class ShopFragment extends BaseFragment implements ShopContract.View {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_search:
-//                openSearch();
-                return true;
             case R.id.action_checkout:
                 if (mPresenter.getViewModel().data.isEmpty()) {
                     DialogFactory.createGenericErrorDialog(mContext, "You don't have any items!").show();
@@ -106,13 +99,13 @@ public class ShopFragment extends BaseFragment implements ShopContract.View {
     public void onCheckoutSuccess(String keyOfCart) {
         showToast("Checkout success!");
 
-        DialogQrcodeHistory qrcodeHistory = new DialogQrcodeHistory(mContext, keyOfCart);
-        qrcodeHistory.show();
+        AlertDialog alertDialog = QrCodeDialogFactory.create(mContext, keyOfCart);
+        alertDialog.show();
     }
 
     @Override
     public void onRemoveProductsSuccess() {
-        showToast("onRemoveProductsSuccess");
+        showToast("Item removed!");
     }
 
     @Override

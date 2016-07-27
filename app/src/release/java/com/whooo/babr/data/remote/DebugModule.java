@@ -1,4 +1,4 @@
-package com.jokotech.babr.data.remote;
+package com.whooo.babr.data.remote;
 
 import com.whooo.babr.di.Interceptor;
 

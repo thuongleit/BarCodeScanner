@@ -25,6 +25,7 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingR
     private ClickHandler<T> clickHandler;
     private LongClickHandler<T> longClickHandler;
     private ItemTouchHandler<T> touchHandler;
+    private ChildItemsClickBinder<T> childItemsClickBinder;
 
     public BindingRecyclerViewAdapter(ItemBinder<T> itemBinder, @Nullable Collection<T> items) {
         this.itemBinder = itemBinder;
@@ -80,6 +81,9 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingR
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         final T item = items.get(position);
         viewHolder.binding.setVariable(itemBinder.getBindingVariable(item), item);
+        if(childItemsClickBinder != null){
+            viewHolder.binding.setVariable(childItemsClickBinder.getBindingVariable(item), childItemsClickBinder.childItemsClickHandlers());
+        }
         viewHolder.binding.getRoot().setTag(ITEM_MODEL, item);
         viewHolder.binding.getRoot().setOnClickListener(this);
         viewHolder.binding.getRoot().setOnLongClickListener(this);
@@ -213,5 +217,9 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingR
 
     public void setTouchHandler(ItemTouchHandler<T> touchHandler) {
         this.touchHandler = touchHandler;
+    }
+
+    public void setChildItemsClickBinder(ChildItemsClickBinder<T> childItemsClickBinder) {
+        this.childItemsClickBinder = childItemsClickBinder;
     }
 }

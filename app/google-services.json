@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "277691162338-u9rkq3uf9l5b0kvpka9euckm902fq0l8.apps.googleusercontent.com",
+          "client_id": "277691162338-2eg7q7h23kr5pmh1rppqnc76dtcs1urk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.whooo.babr",
-            "certificate_hash": "3445DF53D8FC6E31C1272AD5E3E8942FB7F9B4F2"
+            "certificate_hash": "694A66920F255535829CA0D16708E15B44463374"
           }
         },
         {

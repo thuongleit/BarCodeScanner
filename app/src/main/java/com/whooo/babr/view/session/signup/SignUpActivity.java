@@ -16,11 +16,9 @@ import android.widget.EditText;
 
 import com.whooo.babr.R;
 import com.whooo.babr.databinding.ActivitySignUpBinding;
-import com.whooo.babr.util.FirebaseUtils;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
-import com.whooo.babr.view.session.base.User;
 import com.whooo.babr.view.session.signin.SignInActivity;
 
 import javax.inject.Inject;
@@ -28,16 +26,16 @@ import javax.inject.Inject;
 public class SignUpActivity extends BaseActivity implements SignUpContract.View, View.OnClickListener {
 
     private static final int REQUEST_SIGN_IN = 1;
-    @Inject
-    SignUpContract.Presenter mSignUpPresenter;
 
-    private AlertDialog mProgressDialog;
     private EditText mInputEmail;
     private EditText mInputPassword;
-    private EditText mInputName;
+    private EditText mInputPasswordConfirmation;
     private Button mBtnSignUp;
 
-    private FirebaseUtils mFirebaseUtil;
+    private AlertDialog mProgressDialog;
+
+    @Inject
+    SignUpContract.Presenter mSignUpPresenter;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -49,34 +47,11 @@ public class SignUpActivity extends BaseActivity implements SignUpContract.View,
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
-        initializeInjector();
-
         ActivitySignUpBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_up);
+
+        initializeInjector();
+        initViews(binding);
         binding.setPresenter(mSignUpPresenter);
-
-        mInputEmail = binding.inputEmail;
-        mInputPassword = binding.inputPassword;
-        mInputName = binding.inputFullname;
-        mBtnSignUp = binding.buttonSignUp;
-        binding.textLinkSignIn.setOnClickListener(this);
-        mInputPassword.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                mSignUpPresenter.createUser(mInputName.getText().toString(),
-                        mInputName.getText().toString(),
-                        mInputPassword.getText().toString());
-                return true;
-            }
-            return false;
-        });
-    }
-
-    private void initializeInjector() {
-        DaggerSignUpComponent
-                .builder()
-                .applicationComponent(getApp().getAppComponent())
-                .signUpModule(new SignUpModule(this))
-                .build()
-                .inject(this);
     }
 
     @Override
@@ -91,14 +66,8 @@ public class SignUpActivity extends BaseActivity implements SignUpContract.View,
 
     @Override
     public void onSignUpSuccess() {
-        writeNewUser();
         setResult(RESULT_OK, getIntent());
         finish();
-    }
-
-    private void writeNewUser() {
-        User user=new User(mFirebaseUtil.getUser().fullname,mFirebaseUtil.getCurrentUserId());
-        mFirebaseUtil.getUsersRef().child(mFirebaseUtil.getCurrentUserId()).setValue(user);
     }
 
     @Override
@@ -124,23 +93,8 @@ public class SignUpActivity extends BaseActivity implements SignUpContract.View,
     }
 
     @Override
-    public boolean validateInput(String email, String fullname, String password) {
+    public boolean validateInput(@Nullable String email, @Nullable String password, @Nullable String confirmPassword) {
         boolean valid = true;
-        if (email == null || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            mInputEmail.setError(getString(R.string.error_invalid_email));
-            mInputEmail.requestFocus();
-            valid = false;
-        } else {
-            mInputEmail.setError(null);
-        }
-
-        if (TextUtils.isEmpty(fullname)) {
-            mInputName.setError(getString(R.string.error_invalid_username));
-            mInputName.requestFocus();
-            valid = false;
-        } else {
-            mInputName.setError(null);
-        }
 
         if (TextUtils.isEmpty(password)) {
             mInputPassword.setError(getString(R.string.error_incorrect_password));
@@ -148,6 +102,21 @@ public class SignUpActivity extends BaseActivity implements SignUpContract.View,
             valid = false;
         } else {
             mInputPassword.setError(null);
+        }
+
+        if (password != null && !password.equals(confirmPassword)) {
+            mInputPasswordConfirmation.setError(getString(R.string.error_in_same_password));
+            valid = false;
+        } else {
+            mInputPasswordConfirmation.setError(null);
+        }
+
+        if (email == null || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            mInputEmail.setError(getString(R.string.error_invalid_email));
+            mInputEmail.requestFocus();
+            valid = false;
+        } else {
+            mInputEmail.setError(null);
         }
 
         return valid;
@@ -171,5 +140,33 @@ public class SignUpActivity extends BaseActivity implements SignUpContract.View,
                 startActivityForResult(intent, REQUEST_SIGN_IN);
                 break;
         }
+    }
+
+    private void initializeInjector() {
+        DaggerSignUpComponent
+                .builder()
+                .applicationComponent(getApp().getAppComponent())
+                .signUpModule(new SignUpModule(this))
+                .build()
+                .inject(this);
+    }
+
+    private void initViews(ActivitySignUpBinding binding) {
+        mInputEmail = binding.inputEmail;
+        mInputPassword = binding.inputPassword;
+        mInputPasswordConfirmation = binding.inputPasswordConfirmation;
+        mBtnSignUp = binding.buttonSignUp;
+
+        binding.textLinkSignIn.setOnClickListener(this);
+
+        mInputPasswordConfirmation.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                mSignUpPresenter.createUser(mInputEmail.getText().toString(),
+                        mInputPassword.getText().toString(),
+                        mInputPasswordConfirmation.getText().toString());
+                return true;
+            }
+            return false;
+        });
     }
 }

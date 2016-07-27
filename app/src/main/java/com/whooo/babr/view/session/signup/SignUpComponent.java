@@ -7,9 +7,7 @@ import dagger.Component;
 
 @PerActivity
 @Component(modules = SignUpModule.class, dependencies = ApplicationComponent.class)
-public interface SignUpComponent {
-
-    SignUpContract.Presenter presenter();
+interface SignUpComponent {
 
     void inject(SignUpActivity activity);
 }

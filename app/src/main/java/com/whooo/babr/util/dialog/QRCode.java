@@ -1,4 +1,4 @@
-package com.whooo.babr.view.qrgenerate;
+package com.whooo.babr.util.dialog;
 
 import android.graphics.Bitmap;
 
@@ -16,7 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class QRCode extends AbstractQRCode {
+class QRCode extends AbstractQRCode {
 
     protected final String text;
     private MatrixToImageConfig matrixToImageConfig = new MatrixToImageConfig();

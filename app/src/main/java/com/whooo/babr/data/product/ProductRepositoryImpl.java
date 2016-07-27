@@ -102,24 +102,18 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Observable<Boolean> removeProduct(Product product) {
         return Observable.create(subscriber -> {
-            DatabaseReference userRef = null;
             DatabaseReference productRef = FirebaseUtils.getProductsRef();
-            userRef.child(product.objectId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        userRef.child(product.objectId).removeValue();
-                        productRef.child(product.objectId).removeValue();
-                    }
-                    subscriber.onNext(true);
-                    subscriber.onCompleted();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
+            productRef
+                    .child(FirebaseUtils.getCurrentUserId())
+                    .child(product.objectId)
+                    .removeValue((databaseError, databaseReference) -> {
+                        if (databaseError == null) {
+                            subscriber.onNext(Boolean.TRUE);
+                            subscriber.onCompleted();
+                        } else {
+                            FirebaseUtils.attachErrorHandler(subscriber, databaseError);
+                        }
+                    });
         });
     }
 

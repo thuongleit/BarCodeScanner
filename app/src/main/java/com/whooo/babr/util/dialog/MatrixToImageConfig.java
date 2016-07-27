@@ -1,8 +1,8 @@
-package com.whooo.babr.view.qrgenerate;
+package com.whooo.babr.util.dialog;
 
 import android.graphics.Bitmap;
 
-public class MatrixToImageConfig {
+class MatrixToImageConfig {
 
     public static final int BLACK = 0xFF000000;
 

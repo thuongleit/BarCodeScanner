@@ -10,10 +10,6 @@ import com.whooo.babr.BarApplication;
 import com.whooo.babr.R;
 import com.whooo.babr.util.dialog.DialogFactory;
 
-
-/**
- * Created by thuongle on 12/23/15.
- */
 public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
@@ -81,7 +77,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                 .setTitle(R.string.error_generic_error_title)
                 .setMessage(R.string.error_generic_error_message)
                 .setNeutralButton(getString(R.string.dialog_action_send_feedback), (dialog, which) -> {
-                    //// TODO: 6/29/16 add feedback action
                     dialog.dismiss();
                 })
                 .setPositiveButton(R.string.dialog_action_ok, null);
