@@ -7,7 +7,7 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class SignUpModule {
+class SignUpModule {
 
     private final SignUpContract.View mView;
 

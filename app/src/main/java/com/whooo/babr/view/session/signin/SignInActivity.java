@@ -30,13 +30,14 @@ public class SignInActivity extends BaseActivity implements SignInContract.View,
 
     private static final int REQUEST_SIGN_UP = 1;
 
-    @Inject
-    SignInContract.Presenter mSignInPresenter;
-
-    private AlertDialog mProgressDialog;
     private Button mBtnSignIn;
     private EditText mInputEmail;
     private EditText mInputPassword;
+
+    private AlertDialog mProgressDialog;
+
+    @Inject
+    SignInContract.Presenter mSignInPresenter;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -48,33 +49,11 @@ public class SignInActivity extends BaseActivity implements SignInContract.View,
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
-        initializeInjector();
         ActivitySignInBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_in);
+
+        initInjector();
+        initViews(binding);
         binding.setPresenter(mSignInPresenter);
-
-        mBtnSignIn = binding.buttonSignIn;
-        mInputEmail = binding.inputEmail;
-        mInputPassword = binding.inputPassword;
-
-        binding.inputPassword.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                mSignInPresenter.performSignIn(binding.getEmail(), binding.getPassword());
-                return true;
-            }
-            return false;
-        });
-
-        binding.textForgotPassword.setOnClickListener(this);
-        binding.textLinkSignUp.setOnClickListener(this);
-    }
-
-    private void initializeInjector() {
-        DaggerSignInComponent
-                .builder()
-                .applicationComponent(getApp().getAppComponent())
-                .signInModule(new SignInModule(this))
-                .build()
-                .inject(this);
     }
 
     @Override
@@ -178,5 +157,30 @@ public class SignInActivity extends BaseActivity implements SignInContract.View,
                 startActivityForResult(intent, REQUEST_SIGN_UP);
                 break;
         }
+    }
+
+    private void initInjector() {
+        DaggerSignInComponent
+                .builder()
+                .applicationComponent(getApp().getAppComponent())
+                .signInModule(new SignInModule(this))
+                .build()
+                .inject(this);
+    }
+
+    private void initViews(ActivitySignInBinding binding) {
+        mBtnSignIn = binding.buttonSignIn;
+        mInputEmail = binding.inputEmail;
+        mInputPassword = binding.inputPassword;
+
+        binding.textLinkSignUp.setOnClickListener(this);
+
+        binding.inputPassword.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                mSignInPresenter.performSignIn(binding.getEmail(), binding.getPassword());
+                return true;
+            }
+            return false;
+        });
     }
 }

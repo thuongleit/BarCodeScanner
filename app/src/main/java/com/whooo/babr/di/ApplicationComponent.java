@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.jokotech.babr.data.remote.DebugModule;
+import com.whooo.babr.data.remote.DebugModule;
 import com.squareup.picasso.Picasso;
 import com.whooo.babr.config.Config;
 import com.whooo.babr.data.cart.CartRepository;

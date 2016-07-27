@@ -11,7 +11,7 @@ import rx.Observable;
 import rx.Subscription;
 import timber.log.Timber;
 
-public class SplashPresenter implements SplashContract.Presenter {
+class SplashPresenter implements SplashContract.Presenter {
 
     private SplashContract.View mView;
     private final FirebaseAuth mAuth;
@@ -27,11 +27,11 @@ public class SplashPresenter implements SplashContract.Presenter {
             if (user != null) {
                 // User is signed in
                 Timber.d("onAuthStateChanged:signed_in: %s" + user.getUid());
-                mView.onUserHasSignedIn();
+                mView.onSessionExists();
             } else {
                 // User is signed out
                 Timber.d("onAuthStateChanged:signed_out");
-                mView.onUserNotSignedIn();
+                mView.onSessionNotFound();
             }
         };
     }
@@ -64,5 +64,6 @@ public class SplashPresenter implements SplashContract.Presenter {
     public void onDestroy() {
         mView = null;
         mAuthStateListener = null;
+        mSubscription = null;
     }
 }

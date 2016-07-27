@@ -10,31 +10,24 @@ import android.widget.ImageView;
 import com.whooo.babr.R;
 import com.whooo.babr.view.qrgenerate.QRCode;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
 /**
  * Created by ThongLe on 4/1/2016.
  */
 public class DialogQrcodeHistory extends AlertDialog {
 
 
-
-    @Bind(R.id.iv_qrGenerate)
     ImageView ivQRGenerate;
 
-    public DialogQrcodeHistory(Context context,String listId) {
+    public DialogQrcodeHistory(Context context, String listId) {
         super(context);
-        init(context,listId);
+        init(context, listId);
 
     }
 
-    private void init(Context context,String listId) {
+    private void init(Context context, String listId) {
         View inflater = LayoutInflater.from(context).inflate(R.layout.dialog_qrcode_history, null);
         setView(inflater);
-        ButterKnife.bind(this,inflater);
         Bitmap myBitmap = QRCode.from(listId).bitmap();
         ivQRGenerate.setImageBitmap(myBitmap);
     }
-
 }

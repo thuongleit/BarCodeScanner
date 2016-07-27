@@ -7,7 +7,7 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class SplashModule {
+class SplashModule {
 
     private final SplashContract.View mView;
 

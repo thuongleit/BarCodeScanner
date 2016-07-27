@@ -33,7 +33,7 @@ import com.whooo.babr.view.base.BaseActivity;
 import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.cart.CartFragment;
 import com.whooo.babr.view.scan.camera.CameraActivity;
-import com.whooo.babr.view.session.signin.SignInActivity;
+import com.whooo.babr.view.session.base.MainSignInActivity;
 
 import java.util.concurrent.TimeUnit;
 
@@ -195,7 +195,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     FirebaseAuth.getInstance().signOut();
                     Toast.makeText(mContext, "Signed out", Toast.LENGTH_SHORT).show();
                 }
-                Intent i = new Intent(this, SignInActivity.class);
+                Intent i = new Intent(this, MainSignInActivity.class);
                 startActivity(i);
                 finish();
                 break;

@@ -13,7 +13,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 import timber.log.Timber;
 
-public class SignInBasePresenter implements SignInBaseContract.Presenter {
+class SignInBasePresenter implements SignInBaseContract.Presenter {
 
     private SignInBaseContract.View mView;
     private final FirebaseAuth mAuth;
@@ -68,7 +68,7 @@ public class SignInBasePresenter implements SignInBaseContract.Presenter {
                     // signed in user can be handled in the listener.
                     if (!task.isSuccessful()) {
                         Timber.w("signInWithCredential", task.getException());
-                        mView.onSignInFailed("Authentication failed.");
+                        mView.onSignInFailed(task.getException().getMessage());
                     }
 
                     mView.showProgress(false);
@@ -94,7 +94,7 @@ public class SignInBasePresenter implements SignInBaseContract.Presenter {
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Timber.w("signInWithCredential", task.getException());
-                            mView.onSignInFailed("Authentication failed.");
+                            mView.onSignInFailed(task.getException().getMessage());
                         }
 
                         mView.showProgress(false);
@@ -102,14 +102,14 @@ public class SignInBasePresenter implements SignInBaseContract.Presenter {
                     });
         } else {
             // Google Sign In failed, update UI appropriately
-            mView.onSignInFailed("Authentication failed!");
+            mView.onSignInFailed("Authentication failed. \n" + googleSignIn.getStatus().getStatusMessage());
         }
     }
 
     @Override
     public void signInAnonymous() {
         mView.showProgress(true);
-        mView.setButtonSignInAnonymusEnable(false);
+        mView.setButtonSignInAnonymousEnable(false);
         mAuth.signInAnonymously()
                 .addOnCompleteListener(task -> {
                     Timber.d("signInAnonymously:onComplete:" + task.isSuccessful());
@@ -122,7 +122,7 @@ public class SignInBasePresenter implements SignInBaseContract.Presenter {
                         mView.onSignInFailed(task.getException().getMessage());
                     }
                     mView.showProgress(false);
-                    mView.setButtonSignInAnonymusEnable(true);
+                    mView.setButtonSignInAnonymousEnable(true);
                 });
     }
 }

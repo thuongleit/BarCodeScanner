@@ -10,11 +10,11 @@
             type="String" />
 
         <variable
-            name="fullname"
+            name="password"
             type="String" />
 
         <variable
-            name="password"
+            name="confirmPassword"
             type="String" />
 
         <variable
@@ -55,23 +55,10 @@
                 android:drawableLeft="@drawable/ic_email_16dp"
                 android:hint="Email"
                 android:inputType="textEmailAddress"
-                android:nextFocusDown="@+id/input_fullname"
-                android:paddingLeft="6dp"
-                android:paddingStart="6dp"
-                android:text="@={email}" />
-
-            <android.support.v7.widget.AppCompatEditText
-                android:id="@+id/input_fullname"
-                style="@style/Login.InputEditTextStyle"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginBottom="8dp"
-                android:drawableLeft="@drawable/ic_person"
-                android:hint="Username"
                 android:nextFocusDown="@+id/input_password"
-                android:paddingLeft="6dp"
-                android:paddingStart="6dp"
-                android:text="@={fullname}" />
+                android:paddingLeft="8dp"
+                android:paddingStart="8dp"
+                android:text="@={email}" />
 
             <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/input_password"
@@ -81,11 +68,24 @@
                 android:layout_marginBottom="8dp"
                 android:drawableLeft="@drawable/ic_password"
                 android:hint="Password"
-                android:imeOptions="actionDone"
                 android:inputType="textPassword"
-                android:paddingLeft="6dp"
-                android:paddingStart="6dp"
+                android:nextFocusDown="@+id/input_password_confirmation"
+                android:paddingLeft="8dp"
+                android:paddingStart="8dp"
                 android:text="@={password}" />
+
+            <android.support.v7.widget.AppCompatEditText
+                android:id="@+id/input_password_confirmation"
+                style="@style/Login.InputEditTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginBottom="8dp"
+                android:drawableLeft="@drawable/ic_password"
+                android:hint="Password confirmation"
+                android:imeOptions="actionDone"
+                android:paddingLeft="8dp"
+                android:paddingStart="8dp"
+                android:text="@={confirmPassword}" />
 
 
             <android.support.v7.widget.AppCompatButton
@@ -95,8 +95,8 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bgr_green_button"
-                android:enabled="@{email.length > 0 &amp;&amp; fullname.length > 0 &amp;&amp; password.length > 0}"
-                android:onClick="@{() -> presenter.createUser(email, fullname, password)}"
+                android:enabled="@{email.length > 0 &amp;&amp; password.length > 0 &amp;&amp; confirmPassword.length > 0}"
+                android:onClick="@{() -> presenter.createUser(email, password, confirmPassword)}"
                 android:text="Create account"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@android:color/white" />

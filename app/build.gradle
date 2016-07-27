@@ -21,8 +21,6 @@ android {
         renderscriptTargetApi 19
         renderscriptSupportModeEnabled true
 
-        // Enabling multidex support.
-        multiDexEnabled true
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
@@ -136,22 +134,15 @@ dependencies {
         exclude group: 'stax', module: 'stax-api'
         exclude group: 'stax', module: 'stax'
     }
-    //utils
-    compile "com.jakewharton:butterknife:$rootProject.butterKnife"
     compile "com.jakewharton.timber:timber:$rootProject.timber"
     compile "com.squareup.picasso:picasso:$rootProject.picasso"
     compile "com.jakewharton.picasso:picasso2-okhttp3-downloader:$rootProject.picassoOkHttpDownloader"
-    // saving view state
-    compile "frankiesardo:icepick:$rootProject.icepick"
-    apt "frankiesardo:icepick:$rootProject.icepick"
     //facebook
     compile 'com.facebook.android:facebook-android-sdk:4.3.0'
 
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
     compile 'com.github.kenglxn.QRGen:javase:2.1.0'
-    compile 'com.github.paolorotolo:appintro:3.3.0'
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
-    compile 'com.android.support:multidex:1.0.1'
 
     // debug tools
     debugCompile "com.squareup.okhttp3:logging-interceptor:$rootProject.okHttp"

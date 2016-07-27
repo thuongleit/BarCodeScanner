@@ -38,9 +38,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.whooo.babr.view.AppIntroActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="com.whooo.babr.view.qrgenerate.GenerateQR"
             android:screenOrientation="portrait" />
 

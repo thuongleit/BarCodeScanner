@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -22,8 +23,6 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.whooo.babr.R;
 import com.whooo.babr.util.dialog.DialogFactory;
 import com.whooo.babr.view.base.BaseActivity;
@@ -33,35 +32,25 @@ import com.whooo.babr.view.session.signin.SignInActivity;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import timber.log.Timber;
 
-public class MainSignInActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener, SignInBaseContract.View {
+public class MainSignInActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener, SignInBaseContract.View, View.OnClickListener {
 
     private static final int REQUEST_GOOGLE_SIGN_IN = 1;
     private static final int REQUEST_EMAIL_SIGN_IN = 2;
 
-    @Bind(R.id.fb_original_btn)
-    LoginButton mFbOriginalBtn;
-    @Bind(R.id.button_facebook_sign_in)
-    ImageButton mBtnFbSignIn;
-    @Bind(R.id.button_google_sign_in)
-    ImageButton mBtnGoogleSignIn;
-    @Bind(R.id.button_sign_in_anonymous)
-    Button mBtnAnonymousSignIn;
+    private LoginButton mFbOriginalBtn;
+    private ImageButton mBtnFbSignIn;
+    private ImageButton mBtnGoogleSignIn;
+    private Button mBtnAnonymousSignIn;
+
+    private AlertDialog mProgressDialog;
 
     private GoogleApiClient mGoogleApiClient;
     private CallbackManager mCallbackManager;
 
     @Inject
     SignInBaseContract.Presenter mPresenter;
-
-    @Inject
-    FirebaseAuth mFirebaseAuth;
-
-    private AlertDialog mProgressDialog;
 
     @Override
     protected BasePresenter getPresenter() {
@@ -75,43 +64,11 @@ public class MainSignInActivity extends BaseActivity implements GoogleApiClient.
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in_main);
-        ButterKnife.bind(this);
 
+        initInjector();
+        initViews();
         initializeSocialAuth();
-
-        DaggerSignInBaseComponent
-                .builder()
-                .applicationComponent(getApp().getAppComponent())
-                .signInBaseModule(new SignInBaseModule(this))
-                .build()
-                .inject(this);
-
         initializeFacebookAuth();
-
-//        mFirebaseAuth.createUserWithEmailAndPassword("thongle123@gmail.com", "123123")
-//                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<AuthResult> task) {
-//                        if (!task.isSuccessful()) {
-//                            Toast.makeText(MainSignInActivity.this, "Authentication failed.",
-//                                    Toast.LENGTH_SHORT).show();
-//                        } else {
-//                            onAuthSuccess(mFirebaseAuth.getCurrentUser());
-//                        }
-//                    }
-//                });
-    }
-
-    private void onAuthSuccess(FirebaseUser user) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ButterKnife.unbind(this);
     }
 
     @Override
@@ -129,8 +86,28 @@ public class MainSignInActivity extends BaseActivity implements GoogleApiClient.
     }
 
     @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.button_facebook_sign_in:
+                mFbOriginalBtn.performClick();
+                break;
+            case R.id.button_google_sign_in:
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                startActivityForResult(signInIntent, REQUEST_GOOGLE_SIGN_IN);
+                break;
+            case R.id.button_email_sign_in:
+                Intent intent = new Intent(this, SignInActivity.class);
+                startActivityForResult(intent, REQUEST_EMAIL_SIGN_IN);
+                break;
+            case R.id.button_sign_in_anonymous:
+                mPresenter.signInAnonymous();
+                break;
+        }
+    }
+
+    @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Timber.d("onConnectionFailed:" + connectionResult);
+        Timber.d("onConnectionFailed: %s", connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
@@ -157,7 +134,7 @@ public class MainSignInActivity extends BaseActivity implements GoogleApiClient.
                 dialog.dismiss();
                 setButtonFbEnable(true);
                 setButtonGoogleEnable(true);
-                setButtonSignInAnonymusEnable(true);
+                setButtonSignInAnonymousEnable(true);
             });
         }
         if (show) {
@@ -168,7 +145,7 @@ public class MainSignInActivity extends BaseActivity implements GoogleApiClient.
     }
 
     @Override
-    public void setButtonSignInAnonymusEnable(boolean enabled) {
+    public void setButtonSignInAnonymousEnable(boolean enabled) {
         mBtnAnonymousSignIn.setEnabled(enabled);
     }
 
@@ -194,33 +171,32 @@ public class MainSignInActivity extends BaseActivity implements GoogleApiClient.
         showInAppErrorDialog();
     }
 
-    @OnClick(R.id.button_facebook_sign_in)
-    void performFbSignIn() {
-        mFbOriginalBtn.performClick();
+    private void initViews() {
+        mFbOriginalBtn = (LoginButton) findViewById(R.id.fb_original_btn);
+        mBtnFbSignIn = (ImageButton) findViewById(R.id.button_facebook_sign_in);
+        mBtnGoogleSignIn = (ImageButton) findViewById(R.id.button_google_sign_in);
+        mBtnAnonymousSignIn = (Button) findViewById(R.id.button_sign_in_anonymous);
+
+        mFbOriginalBtn.setOnClickListener(this);
+        mBtnFbSignIn.setOnClickListener(this);
+        mBtnGoogleSignIn.setOnClickListener(this);
+        mBtnAnonymousSignIn.setOnClickListener(this);
+        findViewById(R.id.button_email_sign_in).setOnClickListener(this);
     }
 
-    @OnClick(R.id.button_google_sign_in)
-    void performGoogleSignIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, REQUEST_GOOGLE_SIGN_IN);
-    }
-
-    @OnClick(R.id.button_email_sign_in)
-    void performSignInUsingEmail() {
-        Intent intent = new Intent(this, SignInActivity.class);
-        startActivityForResult(intent, REQUEST_EMAIL_SIGN_IN);
-
-    }
-
-    @OnClick(R.id.button_sign_in_anonymous)
-    void performSignInAnonymous() {
-        mPresenter.signInAnonymous();
+    private void initInjector() {
+        DaggerSignInBaseComponent
+                .builder()
+                .applicationComponent(getApp().getAppComponent())
+                .signInBaseModule(new SignInBaseModule(this))
+                .build()
+                .inject(this);
     }
 
     private void initializeSocialAuth() {
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestIdToken("277691162338-birrp9k8249msj6btlgr2cgp5i7u97of.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -237,7 +213,7 @@ public class MainSignInActivity extends BaseActivity implements GoogleApiClient.
         mFbOriginalBtn.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Timber.d("facebook:onSuccess:" + loginResult);
+                Timber.d("facebook:onSuccess: %s", loginResult);
                 mPresenter.signInWithFacebook(loginResult.getAccessToken());
             }
 

@@ -16,8 +16,6 @@ import com.whooo.babr.R;
 
 import java.util.concurrent.TimeUnit;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -27,11 +25,8 @@ import rx.schedulers.Schedulers;
  */
 public class GenerateQR extends AppCompatActivity implements Animation.AnimationListener {
 
-    @Bind(R.id.iv_qrGenerate)
     ImageView ivQRGenerate;
-    @Bind(R.id.laybar)
     ImageView ivLaybar;
-    @Bind(R.id.tv_generating)
     TextView tvGenerating;
     private MediaPlayer mediaPlayer;
     private Observable observable;
@@ -44,7 +39,6 @@ public class GenerateQR extends AppCompatActivity implements Animation.Animation
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gererate_qr);
 
-        ButterKnife.bind(this);
 
 //        userId=getIntent().getStringExtra(MainActivity.USER_ID_EXTRA);
 
@@ -81,12 +75,6 @@ public class GenerateQR extends AppCompatActivity implements Animation.Animation
                 });
 
 
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ButterKnife.unbind(this);
     }
 
     @Override

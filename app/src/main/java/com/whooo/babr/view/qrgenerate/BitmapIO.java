@@ -19,9 +19,7 @@ public class BitmapIO {
             return image.compress(CompressFormat.JPEG, 80, stream);
         }
 
-
         return BmpUtil.save(image, stream);
-
     }
 
     public static boolean write(Bitmap image, String type, File file) throws IOException {
