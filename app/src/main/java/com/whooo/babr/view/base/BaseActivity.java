@@ -57,7 +57,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract BasePresenter getPresenter();
 
-    protected void reloadActivity() {
+    public void reloadActivity() {
         overridePendingTransition(0, 0);
         Intent intent = getIntent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

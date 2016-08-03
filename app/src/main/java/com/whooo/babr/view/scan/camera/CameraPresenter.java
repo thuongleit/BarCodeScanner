@@ -44,8 +44,8 @@ class CameraPresenter implements CameraContract.Presenter {
     public void searchProducts(@Nullable String code) {
         // TODO: 7/8/16 check NPE
         unsubscribe();
+        mView.stopCamera();
         mView.showProgress(true);
-        mView.playRingtone();
 
         mSubscription = mRepository
                 .searchProducts(code)
