@@ -13,11 +13,11 @@ interface CameraContract {
 
         void showProgress(boolean show);
 
-        void playRingtone();
-
         void onSearchSuccess(List<Product> products);
 
         void onEmptyResponse();
+
+        void stopCamera();
     }
 
     interface Presenter extends BasePresenter {

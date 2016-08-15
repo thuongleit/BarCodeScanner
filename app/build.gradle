@@ -143,6 +143,7 @@ dependencies {
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
     compile 'com.github.kenglxn.QRGen:javase:2.1.0'
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
+    compile 'me.dm7.barcodescanner:zbar:1.9'
 
     // debug tools
     debugCompile "com.squareup.okhttp3:logging-interceptor:$rootProject.okHttp"

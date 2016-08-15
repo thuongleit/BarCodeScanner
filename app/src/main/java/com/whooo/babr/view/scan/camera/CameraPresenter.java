@@ -44,13 +44,12 @@ class CameraPresenter implements CameraContract.Presenter {
     public void searchProducts(@Nullable String code) {
         // TODO: 7/8/16 check NPE
         unsubscribe();
+        mView.stopCamera();
         mView.showProgress(true);
-        mView.playRingtone();
 
         mSubscription = mRepository
                 .searchProducts(code)
-                .filter(products -> products != null && !products.isEmpty())
-                .first()
+                .first(products -> products != null && !products.isEmpty())
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

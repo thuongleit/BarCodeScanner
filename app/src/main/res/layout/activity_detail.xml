@@ -58,5 +58,21 @@
 
         </FrameLayout>
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="@dimen/fab_margin"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:src="@android:drawable/ic_input_add"
+            android:tint="@color/white"
+            app:backgroundTint="@color/primary"
+            app:borderWidth="0dp"
+            app:elevation="6dp"
+            app:layout_behavior="com.whooo.babr.util.ScrollingFABBehavior"
+            app:pressedTranslationZ="12dp" />
+
     </android.support.design.widget.CoordinatorLayout>
 </layout>

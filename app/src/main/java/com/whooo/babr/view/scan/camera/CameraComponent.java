@@ -1,14 +1,13 @@
 package com.whooo.babr.view.scan.camera;
 
-import com.whooo.babr.di.PerActivity;
 import com.whooo.babr.di.ApplicationComponent;
+import com.whooo.babr.di.PerFragment;
 
 import dagger.Component;
 
-@PerActivity
+@PerFragment
 @Component(modules = CameraModule.class, dependencies = ApplicationComponent.class)
 interface CameraComponent {
-    void inject(CameraActivity activity);
 
-    CameraContract.Presenter presenter();
+    void inject(FullScannerFragment fragment);
 }

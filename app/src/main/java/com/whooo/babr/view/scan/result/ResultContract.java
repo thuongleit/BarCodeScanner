@@ -24,7 +24,7 @@ public interface ResultContract {
 
         ResultViewModel getViewModel();
 
-        void saveProducts();
+        void saveProducts(String cardId);
 
         ItemTouchHandler<Product> itemTouchHandler();
 

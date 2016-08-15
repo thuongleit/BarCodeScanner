@@ -37,10 +37,12 @@ import javax.inject.Inject;
 
 public class ResultActivity extends BaseActivity implements ResultContract.View {
     public static final String EXTRA_DATA = "EXTRA_DATA";
+    public static final String EXTRA_CART_ID = "EXTRA_CART_ID";
 
     private RecyclerView mRecyclerView;
 
     private ArrayList<Product> mProducts = new ArrayList<>();
+    private String mCardId;
 
     @Inject
     ResultContract.Presenter mPresenter;
@@ -63,8 +65,13 @@ public class ResultActivity extends BaseActivity implements ResultContract.View 
         ActivitySearchResultBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_search_result);
         mContext = this;
 
-
-        mProducts = getIntent().getParcelableArrayListExtra(EXTRA_DATA);
+        if (savedInstanceState == null) {
+            mProducts = getIntent().getParcelableArrayListExtra(EXTRA_DATA);
+            mCardId = getIntent().getStringExtra(EXTRA_CART_ID);
+        } else {
+            mProducts = savedInstanceState.getParcelableArrayList(EXTRA_DATA);
+            mCardId = savedInstanceState.getString(EXTRA_CART_ID);
+        }
         if (mProducts == null) {
             showInAppError();
             return;
@@ -86,6 +93,13 @@ public class ResultActivity extends BaseActivity implements ResultContract.View 
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(EXTRA_DATA, mProducts);
+        outState.putString(EXTRA_CART_ID, mCardId);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.result, menu);
         return true;
@@ -95,7 +109,10 @@ public class ResultActivity extends BaseActivity implements ResultContract.View 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_action_save:
-                mPresenter.saveProducts();
+                mPresenter.saveProducts(mCardId);
+                return true;
+            case android.R.id.home:
+                super.onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

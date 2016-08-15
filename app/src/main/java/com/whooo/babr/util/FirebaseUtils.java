@@ -102,8 +102,8 @@ public class FirebaseUtils {
         }
     }
 
-    public static DatabaseReference getPendingCartRef() {
-        return null;
+    public static DatabaseReference getCartRef(String cartId) {
+        return getBaseDatabaseRef(DbInstance.KEY_CARTS).child(cartId);
     }
 
     public enum DbInstance {
