@@ -3,7 +3,6 @@ package com.whooo.babr.view.main;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
@@ -33,7 +32,13 @@ import com.whooo.babr.view.base.BasePresenter;
 import com.whooo.babr.view.widget.DividerItemDecoration;
 import com.whooo.babr.vo.Product;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
+
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class ShopFragment extends BaseFragment implements ShopContract.View {
 
@@ -44,6 +49,7 @@ public class ShopFragment extends BaseFragment implements ShopContract.View {
     private View mEmptyView;
     private AlertDialog mProgressDialog;
     private FrameLayout mLayoutContent;
+    private Subscription mSubscription;
 
     public static Fragment createInstance() {
         return new ShopFragment();
@@ -74,6 +80,13 @@ public class ShopFragment extends BaseFragment implements ShopContract.View {
         return binding.getRoot();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mSubscription != null) {
+            mSubscription.unsubscribe();
+        }
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -142,11 +155,13 @@ public class ShopFragment extends BaseFragment implements ShopContract.View {
         tv.setTextColor(Color.WHITE);
         snackbar.show();
 
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            snackbar.dismiss();
-            mPresenter.removeProducts(clone);
-        }, 2000);
+        mSubscription = Observable
+                .timer(2, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(count -> {
+                    snackbar.dismiss();
+                    mPresenter.removeProducts(clone);
+                });
     }
 
     @Override

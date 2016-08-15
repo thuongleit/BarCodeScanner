@@ -48,12 +48,12 @@ class ResultPresenter implements ResultContract.Presenter {
     }
 
     @Override
-    public void saveProducts() {
+    public void saveProducts(String cardId) {
         Timber.d("Save products with size %s", mViewModel.data.size());
         mView.showProgress(true);
         mSubscriptions.add(
                 mProductRespository
-                        .saveProducts(mViewModel.data)
+                        .saveProducts(cardId, mViewModel.data)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(result -> {

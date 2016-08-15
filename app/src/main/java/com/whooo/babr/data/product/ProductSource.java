@@ -8,7 +8,7 @@ public enum ProductSource {
     AMAZON("amazon", "http://" + AmazonSignedRequestsHelper.ENDPOINT + AmazonSignedRequestsHelper.REQUEST_URI),
     UPC_ITEM_DB("upcitemdb.com", "https://api.upcitemdb.com/"),
     UPC_DATABASE("upcdatabase.org", "http://api.upcdatabase.org/"),
-    IN_APP("babr", "http://www.searchupc.com/handlers/");
+    IN_APP("in-app", "");
 
     private final String mDisplay;
     private final String mEndpoint;

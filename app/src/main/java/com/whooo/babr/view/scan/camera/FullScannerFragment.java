@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -35,6 +36,8 @@ import me.dm7.barcodescanner.zbar.ZBarScannerView;
 import timber.log.Timber;
 
 public class FullScannerFragment extends BaseFragment implements ZBarScannerView.ResultHandler, CameraContract.View {
+    private static final String ARG_CART_ID = "ARG_CART_ID";
+
     private static final String FLASH_STATE = "FLASH_STATE";
     private static final String AUTO_FOCUS_STATE = "AUTO_FOCUS_STATE";
     private static final String SELECTED_FORMATS = "SELECTED_FORMATS";
@@ -46,12 +49,25 @@ public class FullScannerFragment extends BaseFragment implements ZBarScannerView
     private boolean mAutoFocus;
     private ArrayList<Integer> mSelectedIndices;
     private int mCameraId = -1;
+    private String mCardId;
 
     private ZBarScannerView mScannerView;
     private AlertDialog mProgressDialog;
 
     @Inject
     CameraContract.Presenter mCameraPresenter;
+
+    public static Fragment newInstance(String cardId) {
+        Fragment fragment = new FullScannerFragment();
+        if (cardId != null) {
+            Bundle args = new Bundle();
+            args.putString(ARG_CART_ID, cardId);
+
+            fragment.setArguments(args);
+        }
+
+        return fragment;
+    }
 
     @Override
     protected BasePresenter getPresenter() {
@@ -75,6 +91,12 @@ public class FullScannerFragment extends BaseFragment implements ZBarScannerView
             mAutoFocus = true;
             mSelectedIndices = null;
             mCameraId = -1;
+        }
+
+        if (state == null && getArguments() != null) {
+            mCardId = getArguments().getString(ARG_CART_ID, null);
+        } else if (state != null) {
+            mCardId = state.getString(ARG_CART_ID);
         }
         setupFormats();
         return mScannerView;
@@ -156,6 +178,7 @@ public class FullScannerFragment extends BaseFragment implements ZBarScannerView
         outState.putBoolean(AUTO_FOCUS_STATE, mAutoFocus);
         outState.putIntegerArrayList(SELECTED_FORMATS, mSelectedIndices);
         outState.putInt(CAMERA_ID, mCameraId);
+        outState.putString(ARG_CART_ID, mCardId);
     }
 
     @Override
@@ -204,7 +227,7 @@ public class FullScannerFragment extends BaseFragment implements ZBarScannerView
                     intent.putParcelableArrayListExtra(EXTRA_DATA, data.getParcelableArrayListExtra(ResultActivity.EXTRA_DATA));
                     activity().setResult(Activity.RESULT_OK, intent);
                     activity().finish();
-                }else {
+                } else {
                     startCamera();
                 }
                 break;
@@ -232,6 +255,9 @@ public class FullScannerFragment extends BaseFragment implements ZBarScannerView
     public void onSearchSuccess(List<Product> products) {
         Intent intent = new Intent(getContext(), ResultActivity.class);
         intent.putParcelableArrayListExtra(ResultActivity.EXTRA_DATA, (ArrayList<? extends Parcelable>) products);
+        if (mCardId != null) {
+            intent.putExtra(ResultActivity.EXTRA_CART_ID, mCardId);
+        }
         startActivityForResult(intent, REQUEST_RESULT_ACTIVITY);
     }
 
@@ -252,7 +278,7 @@ public class FullScannerFragment extends BaseFragment implements ZBarScannerView
 
     @Override
     public void showInAppError() {
-        buildFailedDialog(getString(R.string.dialog_error_general_message)).show();
+        buildFailedDialog("No products found by this code. Try another.").show();
     }
 
     private void initInjector() {
