@@ -12,9 +12,12 @@ import com.whooo.babr.vo.Cart;
 import com.whooo.babr.vo.Product;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.subscriptions.Subscriptions;
 
 public class ProductRepositoryImpl implements ProductRepository {
@@ -29,14 +32,15 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Observable<List<Product>> searchProducts(@NonNull String code) {
 
-        return Observable.merge(
-                mSearchService.searchProducts(ProductSource.SEARCH_UPC, code),
-                mSearchService.searchProducts(ProductSource.AMAZON, code),
-//                mSearchService.searchProducts(ProductSource.IN_APP, code),
-                mSearchService.searchProducts(ProductSource.UPC_DATABASE, code),
-                mSearchService.searchProducts(ProductSource.UPC_ITEM_DB, code),
-                mSearchService.searchProducts(ProductSource.WALMART, code)
-        );
+        return Observable
+                .mergeDelayError(
+                        mSearchService.searchProducts(ProductSource.IN_APP, code),
+                        mSearchService.searchProducts(ProductSource.SEARCH_UPC, code),
+                        mSearchService.searchProducts(ProductSource.AMAZON, code),
+                        mSearchService.searchProducts(ProductSource.UPC_DATABASE, code),
+                        mSearchService.searchProducts(ProductSource.UPC_ITEM_DB, code),
+                        mSearchService.searchProducts(ProductSource.WALMART, code)
+                );
     }
 
     @Override
@@ -68,34 +72,90 @@ public class ProductRepositoryImpl implements ProductRepository {
                     //when the subscription is cancelled, remove the listener
                     subscriber.add(Subscriptions.create(() -> productRef.removeEventListener(eventListener)));
                 });
-
     }
 
     @Override
-    public Observable<List<Product>> saveProducts(List<Product> products) {
+    public Observable<List<Product>> saveProducts(String cardId, List<Product> products) {
         return Observable.create(subscriber -> {
-            List<Product> result = new ArrayList<>();
-            DatabaseReference productRef = FirebaseUtils.getProductsRef();
-            // FIXME: 7/13/16 Need to investigate more in saving products
-            for (Product product : products) {
-                String productKey = productRef.push().getKey();
-                try {
-                    Product newProduct = (Product) product.clone();
-                    newProduct.objectId = productKey;
-                    productRef
-                            .child(FirebaseUtils.getCurrentUserId())
-                            .child(newProduct.objectId).setValue(newProduct, (databaseError, databaseReference) -> {
-                        if (databaseError != null) {
-                            FirebaseUtils.attachErrorHandler(subscriber, databaseError);
-                        }
-                    });
-                    result.add(newProduct);
-                } catch (CloneNotSupportedException e) {
-                    subscriber.onError(e);
-                }
+
+            if (cardId == null) {
+                saveProductsForCurrentUser(subscriber, products);
+            } else {
+                saveProductForCart(subscriber, cardId, products);
             }
-            subscriber.onNext(result);
-            subscriber.onCompleted();
+        });
+    }
+
+    private void saveProductsForCurrentUser(Subscriber<? super List<Product>> subscriber, List<Product> products) {
+        List<Product> result = new ArrayList<>();
+        DatabaseReference productRef = FirebaseUtils.getProductsRef();
+        for (Product product : products) {
+            String productKey = productRef.push().getKey();
+            try {
+                Product newProduct = (Product) product.clone();
+                newProduct.objectId = productKey;
+                productRef
+                        .child(FirebaseUtils.getCurrentUserId())
+                        .child(newProduct.objectId)
+                        .setValue(newProduct, (databaseError, databaseReference) -> {
+                            if (databaseError != null) {
+                                FirebaseUtils.attachErrorHandler(subscriber, databaseError);
+                            }
+                        });
+                result.add(newProduct);
+            } catch (CloneNotSupportedException e) {
+                subscriber.onError(e);
+            }
+        }
+        subscriber.onNext(result);
+        subscriber.onCompleted();
+    }
+
+    private void saveProductForCart(Subscriber<? super List<Product>> subscriber, String cardId, List<Product> products) {
+        List<Product> result = new ArrayList<>();
+
+        DatabaseReference cartRef = FirebaseUtils.getCartRef(cardId);
+        DatabaseReference productsRef = FirebaseUtils.getHistoryProductsRef(cardId);
+
+        cartRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Cart cart = dataSnapshot.getValue(Cart.class);
+                if (cart != null) {
+                    cart.size += products.size();
+
+                    Map<String, Object> values = new HashMap<>();
+                    values.put("size", cart.size);
+                    dataSnapshot.getRef().updateChildren(values);
+
+                    //update products
+                    for (Product product : products) {
+                        String productKey = productsRef.push().getKey();
+                        try {
+                            Product newProduct = (Product) product.clone();
+                            newProduct.objectId = productKey;
+
+                            productsRef
+                                    .child(newProduct.objectId)
+                                    .setValue(newProduct, (databaseError, databaseReference) -> {
+                                        if (databaseError != null) {
+                                            FirebaseUtils.attachErrorHandler(subscriber, databaseError);
+                                        }
+                                    });
+                            result.add(newProduct);
+                        } catch (CloneNotSupportedException e) {
+                            subscriber.onError(e);
+                        }
+                    }
+                    subscriber.onNext(result);
+                }
+                subscriber.onCompleted();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                FirebaseUtils.attachErrorHandler(subscriber, databaseError);
+            }
         });
     }
 

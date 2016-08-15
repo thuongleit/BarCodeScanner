@@ -59,12 +59,11 @@ public class CartFragment extends BaseFragment implements CartContract.View {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = getArguments();
-        if (arguments == null) {
-            return;
+        if(savedInstanceState == null && getArguments() != null){
+            mIsPending = getArguments().getBoolean(ARG_IS_NEED_PENDING, false);
+        }else if(savedInstanceState != null){
+            mIsPending = savedInstanceState.getBoolean(ARG_IS_NEED_PENDING, false);
         }
-
-        mIsPending = arguments.getBoolean(ARG_IS_NEED_PENDING, false);
     }
 
     @Nullable
@@ -82,6 +81,12 @@ public class CartFragment extends BaseFragment implements CartContract.View {
         binding.setViewModel(mPresenter.getViewModel());
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(ARG_IS_NEED_PENDING, mIsPending);
     }
 
     @Override
@@ -130,6 +135,7 @@ public class CartFragment extends BaseFragment implements CartContract.View {
         Intent intent = new Intent(getContext(), DetailActivity.class);
         intent.putExtra(DetailActivity.EXTRA_CART_ID, cart.objectId);
         intent.putExtra(DetailActivity.EXTRA_CART_NAME, cart.name);
+        intent.putExtra(DetailActivity.EXTRA_IS_PENDING, mIsPending);
         startActivity(intent);
     }
 

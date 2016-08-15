@@ -82,5 +82,7 @@
     <string name="menu_action_checkout">Checkout</string>
     <string name="menu_action_search">Search</string>
     <string name="input_error_field_is_empty">Field is empty</string>
+    <string name="auto_focus_on">Auto Focus [ON]</string>
+    <string name="auto_focus_off">Auto Focus [OFF]</string>
 
 </resources>

@@ -18,6 +18,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -84,16 +87,30 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mNavSubject
                 .distinctUntilChanged()
                 .delay(350, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(id -> {
                     Fragment fragment = null;
                     switch (id) {
                         case R.id.nav_action_shop:
+                            mFabScan.setVisibility(View.VISIBLE);
+                            Animation zoomIn = AnimationUtils.loadAnimation(this, R.anim.zoom_in);
+                            mFabScan.setAnimation(zoomIn);
                             fragment = ShopFragment.createInstance();
                             break;
                         case R.id.nav_action_pending_carts:
+                            if (mFabScan.getVisibility() == View.VISIBLE) {
+                                mFabScan.setVisibility(View.GONE);
+                                Animation zoomOut = AnimationUtils.loadAnimation(this, R.anim.zoom_out);
+                                mFabScan.setAnimation(zoomOut);
+                            }
                             fragment = CartFragment.createInstance(true); //get pending carts
                             break;
                         case R.id.nav_action_history:
+                            if (mFabScan.getVisibility() == View.VISIBLE) {
+                                mFabScan.setVisibility(View.GONE);
+                                Animation zoomOut1 = AnimationUtils.loadAnimation(this, R.anim.zoom_out);
+                                mFabScan.setAnimation(zoomOut1);
+                            }
                             fragment = CartFragment.createInstance(false); //get history carts
                             break;
                         default:
